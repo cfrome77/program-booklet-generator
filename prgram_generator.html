@@ -357,7 +357,39 @@
       .scrollwork-frame::before { top: -8px; left: 10px; }
       .scrollwork-frame::after { bottom: -8px; right: 10px; }
 
-      .bottom-parchment-banner {
+      /* Bottom Parchment / Torn Edge Ribbon Styles */
+      .bottom-banner-torn {
+        background: var(--parchment-subtle, #efe5d0);
+        border-top: 2px dashed #bba990;
+        border-bottom: 1px solid #d0c2a8;
+        padding: 10px 16px;
+        text-align: center;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--navy-dark);
+        margin-top: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        box-shadow: 0 -3px 8px rgba(0,0,0,0.08);
+        clip-path: polygon(0 8%, 5% 0%, 10% 6%, 15% 0%, 20% 8%, 25% 0%, 30% 7%, 35% 0%, 40% 6%, 45% 0%, 50% 8%, 55% 0%, 60% 7%, 65% 0%, 70% 8%, 75% 0%, 80% 6%, 85% 0%, 90% 7%, 95% 0%, 100% 8%, 100% 100%, 0% 100%);
+      }
+
+      .bottom-banner-gold {
+        background: linear-gradient(135deg, #e6ca65 0%, #b89835 100%);
+        border: 2px solid #8c6d1f;
+        padding: 8px 14px;
+        text-align: center;
+        font-size: 0.74rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        margin-top: 10px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      }
+
+      .bottom-banner-simple {
         background: rgba(225, 212, 185, 0.9);
         border: 1px solid #c0b298;
         padding: 6px 12px;
@@ -849,6 +881,7 @@
               emblemText: "[ Logo / Emblem ]",
               emblemImg: "",
               topBarColor: "#005f73",
+              bottomBannerStyle: "torn",
               bottomBannerText: "JOIN US FOR AN UNFORGETTABLE PROGRAM",
               bgImage: "",
               scrollworkFrame: true,
@@ -880,6 +913,7 @@
               qrImg: "",
               sponsorsText: "Thank You To Our Sponsors:",
               sponsors: ["Sponsor Alpha", "Sponsor Beta", "Sponsor Gamma", "Sponsor Delta"],
+              bottomBannerStyle: "torn",
               bottomBannerText: "THANK YOU FOR YOUR SUPPORT"
             }
           ]
@@ -905,6 +939,7 @@
               emblemText: "[ 75th Patch Logo ]",
               emblemImg: "",
               topBarColor: "#005f73",
+              bottomBannerStyle: "torn",
               bottomBannerText: "JOIN US IN CELEBRATING 75 YEARS OF CHEERFUL SERVICE!",
               bgImage: "",
               scrollworkFrame: true,
@@ -1035,6 +1070,7 @@
               qrImg: "",
               sponsorsText: "Thank You To Our Banquet Sponsors:",
               sponsors: ["NCAC Council", "Riggs Alumni Center", "Lodge Key Three", "Lodge Executive Committee"],
+              bottomBannerStyle: "torn",
               bottomBannerText: "CELEBRATING 75 YEARS OF SERVICE"
             }
           ]
@@ -1060,6 +1096,7 @@
               emblemText: "[ Logo ]",
               emblemImg: "",
               topBarColor: "#2980b9",
+              bottomBannerStyle: "gold",
               bottomBannerText: "WELCOME DELEGATES & GUESTS",
               bgImage: ""
             },
@@ -1089,6 +1126,7 @@
               qrImg: "",
               sponsorsText: "Sponsors:",
               sponsors: ["Partner Corp", "Global Tech", "Innovate Inc"],
+              bottomBannerStyle: "gold",
               bottomBannerText: "THANK YOU FOR ATTENDING"
             }
           ]
@@ -1188,6 +1226,15 @@
                 </select>
               </div>
               <div class="form-group">
+                <label>Bottom Banner / Overlay Style</label>
+                <select onchange="updatePageField(${index}, 'bottomBannerStyle', this.value)">
+                  <option value="torn" ${page.bottomBannerStyle==='torn'||!page.bottomBannerStyle?'selected':''}>Torn Parchment Ribbon Scroll</option>
+                  <option value="gold" ${page.bottomBannerStyle==='gold'?'selected':''}>Gold Foil Frame</option>
+                  <option value="simple" ${page.bottomBannerStyle==='simple'?'selected':''}>Simple Parchment Strip</option>
+                  <option value="none" ${page.bottomBannerStyle==='none'?'selected':''}>None</option>
+                </select>
+              </div>
+              <div class="form-group">
                 <label>Bottom Parchment Banner Text</label>
                 <input type="text" value="${escapeAttr(page.bottomBannerText || '')}" onchange="updatePageField(${index}, 'bottomBannerText', this.value)" />
               </div>
@@ -1211,6 +1258,15 @@
                 <label>Page Background Image (Per-Page Override)</label>
                 <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${index}, 'bgImage', this.value)" />
                 <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'bgImage', val))" />
+              </div>
+              <div class="form-group">
+                <label>Bottom Banner / Overlay Style</label>
+                <select onchange="updatePageField(${index}, 'bottomBannerStyle', this.value)">
+                  <option value="torn" ${page.bottomBannerStyle==='torn'||!page.bottomBannerStyle?'selected':''}>Torn Parchment Ribbon Scroll</option>
+                  <option value="gold" ${page.bottomBannerStyle==='gold'?'selected':''}>Gold Foil Frame</option>
+                  <option value="simple" ${page.bottomBannerStyle==='simple'?'selected':''}>Simple Parchment Strip</option>
+                  <option value="none" ${page.bottomBannerStyle==='none'?'selected':''}>None</option>
+                </select>
               </div>
               <div class="form-group">
                 <label>Sponsors / Partners (Comma separated)</label>
@@ -1366,6 +1422,16 @@
         return pages;
       }
 
+      function renderBottomBanner(page) {
+        if (!page.bottomBannerText || page.bottomBannerStyle === 'none') return '';
+        const style = page.bottomBannerStyle || 'torn';
+        let className = 'bottom-banner-torn';
+        if (style === 'gold') className = 'bottom-banner-gold';
+        if (style === 'simple') className = 'bottom-banner-simple';
+
+        return `<div class="${className}">${page.bottomBannerText}</div>`;
+      }
+
       function renderPageHTML(page, pageNum, totalPages) {
         const isLeft = pageNum % 2 !== 0; // Page 1 is right side of spread
         const bgImgUrl = page.bgImage || bookletData.theme.bgImage;
@@ -1394,7 +1460,7 @@
             <div style="font-size: 0.78rem; font-style: italic; color: var(--charcoal); font-weight: 600;">
               ${page.tagline || ''}
             </div>
-            ${page.bottomBannerText ? `<div class="bottom-parchment-banner">${page.bottomBannerText}</div>` : ''}
+            ${renderBottomBanner(page)}
           `;
           return `<div class="booklet-page cover-page ${alignClass}" ${bgStyle}>
             ${contentHTML}
@@ -1423,7 +1489,7 @@
                 ${sponsorsList.map(s => `<div class="sponsor-item">${s}</div>`).join('')}
               </div>
             ` : ''}
-            ${page.bottomBannerText ? `<div class="bottom-parchment-banner">${page.bottomBannerText}</div>` : ''}
+            ${renderBottomBanner(page)}
           `;
           return `<div class="booklet-page cover-page ${alignClass}" style="justify-content:center; text-align:center;" ${bgStyle}>
             ${contentHTML}
