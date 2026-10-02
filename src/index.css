@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-cream: #f4eedb;
+  --parchment-subtle: #efe5d0;
+  --navy-dark: #122230;
+  --teal-accent: #005f73;
+  --charcoal: #2b2b2b;
+  --silver: #d9d9d9;
+  --font-main: "Open Sans", sans-serif;
+  --font-title: "Cinzel", serif;
+}
+
+body {
+  font-family: var(--font-main);
+}
