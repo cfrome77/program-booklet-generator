@@ -1,152 +1,276 @@
 <!doctype html>
-
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Amangamek-Wipit Lodge 470 — 75th Anniversary Banquet Booklet</title>
+    <title>Dynamic Booklet Generation Engine</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght\@600;700;800&amp;family=Open+Sans:ital,wght\@0,400;0,600;0,700;1,400&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
         --bg-cream: #f4eedb;
-
         --parchment-subtle: #efe5d0;
-
         --navy-dark: #122230;
-
         --teal-accent: #005f73;
-
         --charcoal: #2b2b2b;
-
         --silver: #d9d9d9;
+        --font-main: "Open Sans", sans-serif;
+        --font-title: "Cinzel", serif;
       }
 
       * {
         box-sizing: border-box;
-
         margin: 0;
-
         padding: 0;
       }
 
       body {
-        font-family: "Open Sans", sans-serif;
-
-        background-color: #222;
-
+        font-family: var(--font-main);
+        background-color: #1e1e24;
         color: var(--charcoal);
-
-        padding: 20px;
-
-        display: flex;
-
-        flex-direction: column;
-
-        align-items: center;
-
         min-height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
 
+      /* App Bar Header */
       header.app-header {
-        text-align: center;
-
+        background: #111116;
         color: #fff;
-
-        margin-bottom: 20px;
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #333;
       }
 
       header.app-header h1 {
-        font-family: "Cinzel", serif;
-
-        font-size: 1.8rem;
-
-        margin-bottom: 5px;
-
+        font-family: var(--font-title);
+        font-size: 1.4rem;
         letter-spacing: 1px;
+        color: #f0e6d2;
       }
 
       header.app-header p {
-        font-size: 0.9rem;
-
-        color: var(--silver);
+        font-size: 0.82rem;
+        color: #a0a0a0;
       }
 
-      .controls {
-        margin-bottom: 25px;
-
+      .header-actions {
         display: flex;
+        gap: 10px;
+        align-items: center;
+      }
 
-        gap: 12px;
+      .header-actions button, .header-actions label {
+        background: var(--teal-accent);
+        color: white;
+        border: none;
+        padding: 7px 14px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
 
+      .header-actions button:hover, .header-actions label:hover {
+        background: #00424f;
+      }
+
+      .header-actions button.secondary-btn {
+        background: #3a3a42;
+        color: #e0e0e0;
+      }
+
+      .header-actions button.secondary-btn:hover {
+        background: #4a4a54;
+      }
+
+      /* Main Layout */
+      .app-layout {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      /* Sidebar Editor Controls */
+      .sidebar-editor {
+        width: 380px;
+        background: #282830;
+        color: #e0e0e0;
+        border-right: 1px solid #3a3a44;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        z-index: 10;
+        height: calc(100vh - 65px);
+        overflow-y: auto;
+      }
+
+      .sidebar-section {
+        padding: 16px;
+        border-bottom: 1px solid #3a3a44;
+      }
+
+      .sidebar-section h3 {
+        font-size: 0.95rem;
+        font-family: var(--font-title);
+        color: #f0e6d2;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .form-group {
+        margin-bottom: 12px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 0.78rem;
+        color: #bbb;
+        margin-bottom: 4px;
+        font-weight: 600;
+      }
+
+      .form-group input[type="text"],
+      .form-group input[type="url"],
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        background: #1e1e24;
+        border: 1px solid #444;
+        color: #fff;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 0.82rem;
+        font-family: inherit;
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 55px;
+      }
+
+      .form-group input[type="color"] {
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        cursor: pointer;
+        background: none;
+      }
+
+      .color-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .color-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+      }
+
+      /* Page Cards List in Editor */
+      .editor-page-card {
+        background: #1e1e24;
+        border: 1px solid #444;
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .editor-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        font-weight: 700;
+        font-size: 0.82rem;
+        color: #70c0d0;
+      }
+
+      .page-actions-btns {
+        display: flex;
+        gap: 4px;
+      }
+
+      .page-actions-btns button {
         background: #333;
+        color: #fff;
+        border: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.75rem;
+      }
 
+      .page-actions-btns button:hover {
+        background: #555;
+      }
+
+      .page-actions-btns button.danger-btn:hover {
+        background: #c0392b;
+      }
+
+      /* Preview Workspace */
+      .preview-workspace {
+        flex: 1;
+        background: #18181c;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .controls-bar {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 12px;
+        background: #282830;
         padding: 8px 16px;
-
         border-radius: 8px;
-
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       }
 
-      .controls button {
+      .controls-bar button {
         background: var(--teal-accent);
-
         color: white;
-
         border: none;
-
         padding: 8px 16px;
-
         font-weight: 600;
-
         border-radius: 4px;
-
         cursor: pointer;
-
-        transition:
-          background 0.2s,
-          transform 0.1s;
+        transition: background 0.2s;
+        font-size: 0.85rem;
       }
 
-      .controls button:hover {
+      .controls-bar button:hover {
         background: #00424f;
-
-        transform: translateY(-1px);
       }
 
-      .controls button.active {
+      .controls-bar button.active {
         background: var(--navy-dark);
-
         border: 1px solid var(--silver);
-      }
-
-      .booklet-container {
-        display: flex;
-
-        flex-direction: column;
-
-        gap: 40px;
-
-        width: 100%;
-
-        max-width: 1100px;
-
-        align-items: center;
-
-        padding-bottom: 50px;
       }
 
       .view-section {
         display: none;
-
         width: 100%;
-
         flex-direction: column;
-
         align-items: center;
-
         gap: 30px;
       }
 
@@ -154,560 +278,7 @@
         display: flex;
       }
 
-      .sheet-wrapper {
-        background: #191919;
-
-        border: 2px dashed #555;
-
-        padding: 25px;
-
-        border-radius: 10px;
-
-        width: 100%;
-
-        max-width: 980px;
-
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-
-        position: relative;
-      }
-
-      .sheet-info {
-        color: var(--silver);
-
-        font-size: 0.9rem;
-
-        margin-bottom: 12px;
-
-        font-weight: 600;
-
-        display: flex;
-
-        justify-content: space-between;
-
-        align-items: center;
-      }
-
-      /* Spread Layout */
-
-      .spread-row {
-        display: flex;
-
-        width: 900px;
-
-        height: 698px;
-
-        background: var(--bg-cream);
-
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-
-        position: relative;
-
-        overflow: hidden;
-
-        margin: 0 auto;
-      }
-
-      .spread-row::after {
-        content: "";
-
-        position: absolute;
-
-        left: 50%;
-
-        top: 0;
-
-        bottom: 0;
-
-        width: 2px;
-
-        background: repeating-linear-gradient(
-          to bottom,
-
-          #d5c8b0,
-          #d5c8b0 6px,
-
-          transparent 6px,
-
-          transparent 12px
-        );
-
-        z-index: 10;
-      }
-
-      .booklet-page {
-        width: 50%;
-
-        height: 100%;
-
-        padding: 28px 32px;
-
-        display: flex;
-
-        flex-direction: column;
-
-        position: relative;
-
-        background-color: var(--bg-cream);
-
-        overflow: hidden;
-
-        justify-content: space-between;
-      }
-
-      .page-content-area {
-        display: flex;
-
-        flex-direction: column;
-
-        gap: 8px;
-      }
-
-      .page-number-tag {
-        position: absolute;
-
-        bottom: 12px;
-
-        font-size: 0.75rem;
-
-        color: #777;
-
-        font-weight: 600;
-      }
-
-      .page-number-tag.left {
-        left: 32px;
-      }
-
-      .page-number-tag.right {
-        right: 32px;
-      }
-
-      .page-title {
-        font-family: "Cinzel", serif;
-
-        font-size: 1rem;
-
-        font-weight: 700;
-
-        color: var(--navy-dark);
-
-        text-transform: uppercase;
-
-        letter-spacing: 1px;
-
-        margin-bottom: 6px;
-
-        padding-bottom: 3px;
-
-        border-bottom: 1px solid var(--teal-accent);
-
-        display: inline-block;
-      }
-
-      /* Front & Back Cover */
-
-      .cover-page {
-        align-items: center;
-
-        text-align: center;
-
-        justify-content: space-between;
-
-        padding: 40px 35px;
-      }
-
-      .patch-emblem-box {
-        width: 110px;
-
-        height: 110px;
-
-        border-radius: 50%;
-
-        background: #bce1f2;
-
-        border: 3px solid var(--navy-dark);
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-      }
-
-      .scroll-title-group h2 {
-        font-family: "Cinzel", serif;
-
-        font-size: 1.3rem;
-
-        font-weight: 800;
-
-        color: var(--navy-dark);
-      }
-
-      .scroll-title-group h3 {
-        font-family: "Cinzel", serif;
-
-        font-size: 1.75rem;
-
-        font-weight: 800;
-
-        color: var(--navy-dark);
-
-        margin: 4px 0;
-      }
-
-      .scroll-title-group p {
-        font-size: 0.78rem;
-
-        font-weight: 700;
-
-        color: var(--teal-accent);
-
-        text-transform: uppercase;
-
-        letter-spacing: 1.5px;
-
-        margin-top: 6px;
-      }
-
-      /* Illustrated Leadership Blocks */
-
-      .leader-container {
-        display: flex;
-
-        gap: 10px;
-
-        align-items: flex-start;
-      }
-
-      .leader-photo {
-        width: 70px;
-
-        height: 85px;
-
-        background: #d8cdb8;
-
-        border: 1px solid var(--navy-dark);
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        font-size: 0.55rem;
-
-        text-align: center;
-
-        color: #555;
-
-        flex-shrink: 0;
-      }
-
-      .leader-content h4 {
-        font-family: "Cinzel", serif;
-
-        font-size: 0.78rem;
-
-        color: var(--navy-dark);
-
-        margin-bottom: 1px;
-      }
-
-      .leader-role {
-        font-size: 0.64rem;
-
-        font-weight: 700;
-
-        color: var(--teal-accent);
-
-        margin-bottom: 3px;
-      }
-
-      .leader-content p {
-        font-size: 0.67rem;
-
-        line-height: 1.32;
-
-        color: var(--charcoal);
-      }
-
-      /* Keynote */
-
-      .keynote-container {
-        display: flex;
-
-        gap: 12px;
-
-        align-items: flex-start;
-      }
-
-      .speaker-photo {
-        width: 80px;
-
-        height: 100px;
-
-        background: #d8cdb8;
-
-        border: 1px solid var(--navy-dark);
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        font-size: 0.6rem;
-
-        text-align: center;
-
-        color: #555;
-
-        flex-shrink: 0;
-      }
-
-      /* Vigil Honor Roster Columns */
-
-      .vigil-roster-columns {
-        display: grid;
-
-        grid-template-columns: repeat(2, 1fr);
-
-        gap: 3px 15px;
-
-        font-size: 0.65rem;
-
-        line-height: 1.3;
-      }
-
-      .vigil-roster-item {
-        display: flex;
-
-        justify-content: space-between;
-
-        border-bottom: 1px dotted #dcd1be;
-
-        padding-bottom: 1px;
-      }
-
-      .vigil-name {
-        font-weight: 700;
-
-        color: var(--navy-dark);
-      }
-
-      .vigil-totem {
-        color: var(--teal-accent);
-
-        font-style: italic;
-      }
-
-      /* Compact Award Section Blocks with Featured Medallions */
-
-      .award-grid-compact {
-        display: grid;
-
-        grid-template-columns: repeat(2, 1fr);
-
-        gap: 6px 10px;
-      }
-
-      .award-card-compact {
-        background: rgba(255, 255, 255, 0.4);
-
-        padding: 6px 8px;
-
-        border-radius: 4px;
-
-        border: 1px solid #e2d5bd;
-      }
-
-      .award-card-compact h4 {
-        font-family: "Cinzel", serif;
-
-        font-size: 0.7rem;
-
-        color: var(--navy-dark);
-
-        margin-bottom: 1px;
-      }
-
-      .award-card-compact p {
-        font-size: 0.58rem;
-
-        line-height: 1.25;
-
-        color: var(--charcoal);
-      }
-
-      /* Featured Flagship Award Cards */
-
-      .award-card-featured {
-        grid-column: span 2;
-
-        display: flex;
-
-        gap: 10px;
-
-        align-items: center;
-
-        background: rgba(239, 229, 208, 0.6);
-
-        border: 1px solid var(--teal-accent);
-
-        padding: 6px 10px;
-
-        border-radius: 4px;
-      }
-
-      .award-medallion-placeholder {
-        width: 48px;
-
-        height: 48px;
-
-        background: #d8cdb8;
-
-        border: 1px solid var(--navy-dark);
-
-        border-radius: 50%;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        font-size: 0.48rem;
-
-        text-align: center;
-
-        color: var(--navy-dark);
-
-        font-weight: 700;
-
-        flex-shrink: 0;
-      }
-
-      /* Schedule */
-
-      .schedule-list {
-        display: flex;
-
-        flex-direction: column;
-
-        gap: 6px;
-      }
-
-      .schedule-row {
-        display: flex;
-
-        align-items: baseline;
-
-        gap: 12px;
-
-        border-bottom: 1px dotted #ccc;
-
-        padding-bottom: 4px;
-      }
-
-      .schedule-time {
-        font-family: "Cinzel", serif;
-
-        font-size: 0.72rem;
-
-        font-weight: 700;
-
-        color: var(--teal-accent);
-
-        min-width: 60px;
-      }
-
-      .schedule-details h4 {
-        font-size: 0.75rem;
-
-        font-weight: 700;
-
-        color: var(--navy-dark);
-      }
-
-      .schedule-details p {
-        font-size: 0.65rem;
-
-        color: #555;
-      }
-
-      @media print {
-        @page {
-          size: letter landscape;
-
-          margin: 0;
-        }
-
-        body {
-          background: white;
-
-          padding: 0;
-        }
-
-        header.app-header,
-        .controls {
-          display: none;
-        }
-
-        .sheet-wrapper {
-          border: none;
-
-          box-shadow: none;
-
-          padding: 0;
-
-          margin: 0 auto;
-
-          page-break-after: always;
-
-          width: 11in;
-
-          height: 8.5in;
-        }
-
-        .spread-row {
-          border: none;
-
-          box-shadow: none;
-
-          width: 11in;
-
-          height: 8.5in;
-        }
-      }
-    </style>
-    <style>
-      /* Final print/layout corrections */
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        background: #d9d2c4;
-        color: var(--charcoal, #292b2d);
-        font-family: "Open Sans", Arial, sans-serif;
-      }
-      .view-section {
-        display: none;
-      }
-      .view-section.active {
-        display: block;
-      }
-      .booklet-container {
-        width: 100%;
-      }
+      /* Booklet Render Styles */
       .spread-row {
         width: 11in !important;
         height: 8.5in !important;
@@ -716,10 +287,13 @@
         display: flex;
         position: relative;
         overflow: hidden;
-        margin: 24px auto;
-        background: var(--bg-cream, #f5f0e6);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        margin: 15px auto;
+        background: var(--bg-cream);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        background-size: cover;
+        background-position: center;
       }
+
       .spread-row::after {
         content: "";
         position: absolute;
@@ -731,6 +305,7 @@
         border-left: 1px dashed #c9bea9;
         z-index: 20;
       }
+
       .booklet-page {
         flex: 0 0 5.5in !important;
         width: 5.5in !important;
@@ -740,203 +315,388 @@
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        background: var(--bg-cream, #f5f0e6);
+        background: var(--bg-cream);
         justify-content: space-between;
+        background-size: cover;
+        background-position: center;
       }
-      .page-title {
-        font-size: 18pt !important;
-        line-height: 1.12 !important;
-        margin-bottom: 12pt !important;
+
+      /* Custom page elements */
+      .top-banner-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 12px;
+        background: var(--teal-accent);
       }
-      .page-content-area,
-      .schedule-list,
-      .award-grid-compact {
-        gap: 9pt !important;
-      }
-      p {
-        font-size: 9.5pt;
-        line-height: 1.42;
-      }
-      h4 {
-        font-size: 11pt;
-        line-height: 1.2;
-      }
-      .schedule-time {
-        font-size: 10.5pt !important;
-      }
-      .schedule-details h4 {
-        margin: 0 0 2pt;
-      }
-      .schedule-details p {
-        margin: 0;
-      }
-      .award-card-compact,
-      .award-card-featured {
-        padding: 8pt !important;
-      }
-      .vigil-intro {
-        display: flex;
-        flex-direction: column;
-        gap: 8pt;
-      }
-      .vigil-quote {
-        font-size: 8.5pt;
-        font-style: italic;
-        line-height: 1.35;
-      }
-      .class-honoree {
-        margin-top: 9pt;
-        padding: 10pt;
-        border: 1px solid #c8bda8;
-        background: #fbf8f0;
+
+      .bottom-parchment-banner {
+        background: rgba(225, 212, 185, 0.9);
+        border: 1px solid #c0b298;
+        padding: 6px 12px;
         text-align: center;
-        flex: 1;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--navy-dark);
+        border-radius: 4px;
+        margin-top: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .page-title {
+        font-family: var(--font-title);
+        font-size: 16pt;
+        line-height: 1.15;
+        font-weight: 700;
+        color: var(--navy-dark);
+        margin-bottom: 10pt;
+        border-bottom: 1px solid var(--teal-accent);
+        padding-bottom: 3px;
+      }
+
+      .page-content-area {
         display: flex;
         flex-direction: column;
+        gap: 9pt;
+        flex: 1;
+      }
+
+      .page-number-tag {
+        position: absolute;
+        bottom: 12px;
+        font-size: 7.5pt;
+        color: #777;
+        font-weight: 600;
+      }
+
+      .page-number-tag.left { left: 32px; }
+      .page-number-tag.right { right: 32px; }
+
+      /* Front & Back Cover */
+      .cover-page {
         align-items: center;
-        justify-content: center;
+        text-align: center;
+        justify-content: space-between;
+        padding: 0.5in 0.45in !important;
       }
-      .class-honoree-label {
-        font-family: "Cinzel", serif;
-        font-size: 11pt;
-        font-weight: 700;
-        color: var(--navy-dark, #18344a);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-      .honoree-photo {
-        width: 1.25in;
-        height: 1.25in;
-        margin: 8pt auto;
-        border: 1px solid #aaa;
-        background: #fff;
+
+      .patch-emblem-box {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: #bce1f2;
+        border: 3px solid var(--navy-dark);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 7pt;
-        color: #777;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
       }
-      .honoree-name {
-        font-family: "Cinzel", serif;
-        font-size: 16pt;
+
+      .patch-emblem-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .scroll-title-group h2 {
+        font-family: var(--font-title);
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--navy-dark);
+      }
+
+      .scroll-title-group h3 {
+        font-family: var(--font-title);
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--navy-dark);
+        margin: 4px 0;
+      }
+
+      .scroll-title-group p {
+        font-size: 0.78rem;
         font-weight: 700;
-        color: var(--navy-dark, #18344a);
+        color: var(--teal-accent);
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        margin-top: 6px;
       }
-      .honoree-title {
-        margin-top: 3pt;
-        font-size: 9.5pt;
+
+      /* Leadership & Keynote */
+      .leader-container {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+
+      .leader-photo, .speaker-photo {
+        width: 70px;
+        height: 85px;
+        background: #d8cdb8;
+        border: 1px solid var(--navy-dark);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.55rem;
+        text-align: center;
+        color: #555;
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+
+      .leader-photo img, .speaker-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .leader-content h4 {
+        font-family: var(--font-title);
+        font-size: 0.82rem;
+        color: var(--navy-dark);
+        margin-bottom: 1px;
+      }
+
+      .leader-role {
+        font-size: 0.68rem;
         font-weight: 700;
-        color: var(--teal-accent, #287f82);
+        color: var(--teal-accent);
+        margin-bottom: 3px;
       }
-      .honoree-bio {
-        max-width: 3.8in;
-        margin-top: 7pt;
-        font-size: 9pt;
-        line-height: 1.4;
+
+      .leader-content p {
+        font-size: 0.68rem;
+        line-height: 1.32;
+        color: var(--charcoal);
+      }
+
+      /* Awards */
+      .award-grid-compact {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px 10px;
+      }
+
+      .award-card-compact {
+        background: rgba(255, 255, 255, 0.45);
+        padding: 6px 8px;
+        border-radius: 4px;
+        border: 1px solid #e2d5bd;
+      }
+
+      .award-card-compact h4 {
+        font-family: var(--font-title);
+        font-size: 0.72rem;
+        color: var(--navy-dark);
+        margin-bottom: 2px;
+      }
+
+      .award-card-compact p {
+        font-size: 0.6rem;
+        line-height: 1.25;
+        color: var(--charcoal);
+      }
+
+      .award-card-featured {
+        grid-column: span 2;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        background: rgba(239, 229, 208, 0.7);
+        border: 1px solid var(--teal-accent);
+        padding: 6px 10px;
+        border-radius: 4px;
+      }
+
+      .award-medallion-placeholder {
+        width: 48px;
+        height: 48px;
+        background: #d8cdb8;
+        border: 1px solid var(--navy-dark);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.48rem;
+        text-align: center;
+        color: var(--navy-dark);
+        font-weight: 700;
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+
+      .award-medallion-placeholder img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Schedule */
+      .schedule-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .schedule-row {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        border-bottom: 1px dotted #ccc;
+        padding-bottom: 4px;
+      }
+
+      .schedule-time {
+        font-family: var(--font-title);
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--teal-accent);
+        min-width: 60px;
+      }
+
+      .schedule-details h4 {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--navy-dark);
+      }
+
+      .schedule-details p {
+        font-size: 0.68rem;
         color: #555;
       }
+
+      /* Vigil & Rosters */
       .vigil-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(6, 1fr);
-        gap: 6pt;
+        gap: 5pt;
         flex: 1;
         min-height: 0;
       }
+
       .vigil-card {
         min-height: 0;
         border: 1px solid #cfc5b4;
         background: #fbf9f3;
         padding: 4pt;
         display: grid;
-        grid-template-columns: 0.62in 1fr;
+        grid-template-columns: 0.58in 1fr;
         grid-template-rows: auto auto;
-        column-gap: 5pt;
+        column-gap: 4pt;
         align-items: center;
       }
+
       .vigil-photo {
         grid-row: 1 / span 2;
-        width: 0.62in;
-        height: 0.62in;
+        width: 0.58in;
+        height: 0.58in;
         border: 1px solid #aaa;
         background: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 6.5pt;
+        font-size: 6pt;
         color: #777;
+        overflow: hidden;
       }
+
+      .vigil-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
       .vigil-card .vigil-name {
-        font-size: 8.7pt;
+        font-size: 8pt;
         line-height: 1.05;
         font-weight: 700;
         align-self: end;
       }
+
       .vigil-card .vigil-totem {
-        font-size: 8pt;
+        font-size: 7.5pt;
         line-height: 1.05;
-        color: var(--teal-accent, #287f82);
+        color: var(--teal-accent);
         font-style: italic;
         align-self: start;
       }
-      .page-number-tag {
-        font-size: 7.5pt !important;
+
+      /* Sponsor Grid on Back Cover */
+      .sponsors-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        width: 100%;
+        margin-top: 10px;
       }
-      .imposition-note {
-        width: 11in;
-        margin: 18px auto 10px;
-        padding: 10px 14px;
-        background: #f5f0e6;
-        border-left: 4px solid var(--navy-dark, #18344a);
-        font-size: 9pt;
+
+      .sponsor-item {
+        background: rgba(255, 255, 255, 0.55);
+        padding: 4px 8px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        border-radius: 3px;
+        border: 1px solid #dcd0b8;
+        text-align: center;
       }
+
       .imposition-sheet {
         width: 11in;
         margin: 0 auto 28px;
       }
+
       .sheet-label {
+        color: var(--silver);
         font-weight: 700;
-        font-size: 10pt;
-        margin: 0 0 5px;
+        font-size: 0.9rem;
+        margin: 0 0 6px 4px;
       }
-      .imposition-sheet .spread-row {
-        margin: 0;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+      .imposition-note {
+        width: 11in;
+        margin: 0 auto 15px;
+        padding: 10px 14px;
+        background: #282830;
+        color: #e0e0e0;
+        border-left: 4px solid var(--teal-accent);
+        font-size: 0.85rem;
+        border-radius: 4px;
       }
-      .controls {
-        position: sticky;
-        top: 0;
-        z-index: 50;
-      }
-      @media screen and (max-width: 1100px) {
-        .spread-row,
-        .imposition-sheet,
-        .imposition-note {
-          transform-origin: top center;
-        }
-      }
+
       @media print {
         @page {
           size: 11in 8.5in landscape;
           margin: 0;
         }
+
         body {
           background: #fff;
         }
-        .controls,
-        header,
-        .view-section:not(.active) {
+
+        header.app-header, .sidebar-editor, .controls-bar, .imposition-note, .sheet-label {
           display: none !important;
         }
+
+        .preview-workspace {
+          padding: 0 !important;
+          background: #fff !important;
+        }
+
         .spread-row {
           margin: 0 !important;
           box-shadow: none !important;
           page-break-after: always;
           break-after: page;
         }
+
         #view-spreads .spread-row {
           display: flex !important;
         }
+
         #view-spreads {
           display: block !important;
         }
@@ -945,1417 +705,940 @@
   </head>
   <body>
     <header class="app-header">
-      <h1>Amangamek-Wipit Lodge 470</h1>
-      <p>75th Anniversary Banquet Booklet — Consolidated Awards Edition</p>
+      <div>
+        <h1>Booklet Generation Engine</h1>
+        <p>Dynamic 5.5 × 8.5 in Folded Booklet & Imposition Generator</p>
+      </div>
+      <div class="header-actions">
+        <select id="preset-select" onchange="loadPreset(this.value)" style="background: #282830; color: #fff; border: 1px solid #555; padding: 6px 10px; border-radius: 4px; font-size: 0.82rem;">
+          <option value="blank">-- Load Preset --</option>
+          <option value="blank">Blank Booklet (New)</option>
+          <option value="oa75">75th OA Lodge Banquet Program</option>
+          <option value="generic">Generic Conference / Event Booklet</option>
+        </select>
+        <button onclick="exportJSON()">Export JSON</button>
+        <label for="import-json-file">Import JSON</label>
+        <input type="file" id="import-json-file" accept=".json" style="display:none" onchange="importJSON(event)" />
+        <button class="secondary-btn" onclick="window.print()">Print / Save PDF</button>
+      </div>
     </header>
-    <div class="controls">
-      <button class="active" id="btn-spreads" onclick="switchView('spreads')">
-        Booklet Reader — 5.5 × 8.5 in Pages
-      </button>
-      <button id="btn-imposition" onclick="switchView('imposition')">
-        Print Imposition — 11 × 8.5 in Sheets
-      </button>
+
+    <div class="app-layout">
+      <!-- SIDEBAR EDITOR PANEL -->
+      <div class="sidebar-editor">
+        <!-- GLOBAL STYLING -->
+        <div class="sidebar-section">
+          <h3>Global Styling</h3>
+          <div class="form-group">
+            <label>Booklet Title / Project Name</label>
+            <input type="text" id="global-title" onchange="updateGlobalField('title', this.value)" />
+          </div>
+          <div class="form-group">
+            <label>Global Background Image / Pattern URL</label>
+            <input type="url" id="global-bg-image" placeholder="https://... or upload" onchange="updateGlobalField('bgImage', this.value)" />
+            <input type="file" accept="image/*" style="margin-top: 4px; font-size: 0.72rem;" onchange="uploadImage(event, 'global-bg-image', (val) => updateGlobalField('bgImage', val))" />
+          </div>
+          <div class="form-group">
+            <label>Color Theme</label>
+            <div class="color-row">
+              <div class="color-item">
+                <input type="color" id="theme-bg" onchange="updateTheme('bgCream', this.value)" />
+                <span>Page BG</span>
+              </div>
+              <div class="color-item">
+                <input type="color" id="theme-navy" onchange="updateTheme('navyDark', this.value)" />
+                <span>Primary</span>
+              </div>
+              <div class="color-item">
+                <input type="color" id="theme-teal" onchange="updateTheme('tealAccent', this.value)" />
+                <span>Accent</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Title Font Style</label>
+            <select id="theme-title-font" onchange="updateTheme('titleFont', this.value)">
+              <option value="'Cinzel', serif">Cinzel (Classic / Serpentine)</option>
+              <option value="'Merriweather', serif">Merriweather (Traditional Serif)</option>
+              <option value="'Open Sans', sans-serif">Open Sans (Modern Clean)</option>
+              <option value="'Roboto', sans-serif">Roboto (Bold Contemporary)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- PAGE LIST & CONTENT EDITOR -->
+        <div class="sidebar-section">
+          <h3>
+            Pages Management
+            <button onclick="addNewPage()" style="background: var(--teal-accent); color: #fff; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.75rem;">+ Add Page</button>
+          </h3>
+          <div id="editor-pages-list">
+            <!-- Dynamic Page Editor Cards -->
+          </div>
+        </div>
+      </div>
+
+      <!-- PREVIEW WORKSPACE -->
+      <div class="preview-workspace">
+        <div class="controls-bar">
+          <button class="active" id="btn-spreads" onclick="switchView('spreads')">
+            Booklet Reader (Page Spreads)
+          </button>
+          <button id="btn-imposition" onclick="switchView('imposition')">
+            Print Imposition (11 × 8.5 in Folded Sheets)
+          </button>
+        </div>
+
+        <div id="view-spreads" class="view-section active">
+          <!-- Rendered Spreads -->
+        </div>
+
+        <div id="view-imposition" class="view-section">
+          <!-- Rendered Imposition Sheets -->
+        </div>
+      </div>
     </div>
-    <div class="booklet-container">
-      <!-- VIEW 1: BOOKLET SPREADS (12 Pages Total) -->
-      <div class="view-section active" id="view-spreads">
-        <div class="spread-row">
-          <div class="booklet-page cover-page">
+
+    <script>
+      // INITIAL PRESETS
+      const PRESETS = {
+        blank: {
+          title: "New Custom Booklet",
+          theme: {
+            bgCream: "#f4eedb",
+            navyDark: "#122230",
+            tealAccent: "#005f73",
+            charcoal: "#2b2b2b",
+            bgImage: "",
+            titleFont: "'Cinzel', serif"
+          },
+          pages: [
+            {
+              id: "page-1",
+              type: "cover",
+              title: "BOOKLET TITLE",
+              subtitle: "EVENT SUBTITLE / 2027",
+              dateLocation: "Date & Event Location",
+              tagline: "\"Welcome to Our Event\"",
+              emblemText: "[ Logo / Emblem ]",
+              emblemImg: "",
+              topBarColor: "#005f73",
+              bottomBannerText: "JOIN US FOR AN UNFORGETTABLE PROGRAM",
+              bgImage: ""
+            },
+            {
+              id: "page-2",
+              type: "schedule",
+              title: "Sequence of Events",
+              items: [
+                { time: "5:00 PM", title: "Doors Open", details: "Welcome & Check-in" },
+                { time: "6:00 PM", title: "Opening Program", details: "Welcome Ceremony" },
+                { time: "7:00 PM", title: "Dinner Service", details: "Main Event" },
+                { time: "8:30 PM", title: "Closing Remarks", details: "Farewell" }
+              ]
+            },
+            {
+              id: "page-3",
+              type: "custom",
+              title: "About Our Organization",
+              content: "Add your customized content, story, background history, or announcements here. This engine supports dynamic page generation and center-fold print imposition."
+            },
+            {
+              id: "page-4",
+              type: "backCover",
+              organization: "ORGANIZATION / HOST NAME",
+              subOrganization: "District / Council / Region",
+              qrText: "Scan to view event details online.",
+              qrImg: "",
+              sponsorsText: "Thank You To Our Sponsors:",
+              sponsors: ["Sponsor Alpha", "Sponsor Beta", "Sponsor Gamma", "Sponsor Delta"],
+              bottomBannerText: "THANK YOU FOR YOUR SUPPORT"
+            }
+          ]
+        },
+        oa75: {
+          title: "Amangamek-Wipit Lodge 75th Anniversary Banquet Booklet",
+          theme: {
+            bgCream: "#f4eedb",
+            navyDark: "#122230",
+            tealAccent: "#005f73",
+            charcoal: "#2b2b2b",
+            bgImage: "",
+            titleFont: "'Cinzel', serif"
+          },
+          pages: [
+            {
+              id: "page-1",
+              type: "cover",
+              title: "CHOMPING THROUGH HISTORY",
+              subtitle: "Amangamek-Wipit Lodge Banquet 2027",
+              dateLocation: "January 9th @ UMD Samuel Riggs IV Center",
+              tagline: "\"Celebrating 75 Years of Cheerful Service\"",
+              emblemText: "[ 75th Patch Logo ]",
+              emblemImg: "",
+              topBarColor: "#005f73",
+              bottomBannerText: "JOIN US IN CELEBRATING 75 YEARS OF CHEERFUL SERVICE!",
+              bgImage: ""
+            },
+            {
+              id: "page-2",
+              type: "schedule",
+              title: "Sequence of Events",
+              items: [
+                { time: "5:00 PM", title: "Doors Open & Fellowship", details: "Arrival & historical exhibit viewing" },
+                { time: "6:00 PM", title: "Opening Ceremonies", details: "Colors & Call to Order" },
+                { time: "6:30 PM", title: "Banquet Dinner Service", details: "Catered buffet by Riggs Alumni Center" },
+                { time: "7:30 PM", title: "Keynote & Anniversary Program", details: "Historical retrospective" },
+                { time: "8:30 PM", title: "Awards & Recognitions", details: "Presentation of honors" }
+              ]
+            },
+            {
+              id: "page-3",
+              type: "leadership",
+              title: "Leadership Remarks",
+              leaders: [
+                { title: "Lodge Chief's Welcome", role: "Lodge Chief", text: "Welcome, Arrowmen, families, and honored guests! Tonight marks an extraordinary milestone as we celebrate 75 years of fellowship and leadership. Thank you for your relentless dedication to our camps and chapters.", img: "" },
+                { title: "Lodge Adviser's Message", role: "Lodge Adviser", text: "For three-quarters of a century, the strength of Amangamek-Wipit Lodge has lived in the character of its youth and steady guidance of its scouters. Let us celebrate our past while building our next chapter together.", img: "" }
+              ]
+            },
+            {
+              id: "page-4",
+              type: "keynote",
+              title: "Keynote Speaker",
+              speakerName: "Max Mihalov",
+              speakerRole: "Eastern Region Chief",
+              bioText: "Eagle Scout and Vigil Honor member Max Mihalov (Paugassett Lodge, Section E20) studies finance at Fordham University. He previously served as Lodge Chief, Conclave Vice Chief, and two terms as Section Chief. As Eastern Region Chief, Max supports regional lodges and facilitates National Leadership Seminars.",
+              speakerImg: ""
+            },
+            {
+              id: "page-5",
+              type: "custom",
+              title: "Year in Review & Outlook",
+              content: "<strong>Journey to Excellence Gold:</strong> Lodge 470 achieved Gold Standard recognition through high-impact camping promotion, service hours, and quality brotherhood events.<br/><br/><strong>Looking Ahead to 2027:</strong> Join us May 14–16, 2027 at Goshen Scout Reservation for Spring Fellowship, and look for upcoming OA Corps summer camp service deployments across local camps."
+            },
+            {
+              id: "page-6",
+              type: "awards",
+              title: "Lodge & Special Honors",
+              awards: [
+                { name: "New Arrowman Award", desc: "Recognizes newly inducted Ordeal members who rapidly engage in lodge activities within their first year." },
+                { name: "Key Three Chapters", desc: "Recognizes outstanding chapter leadership, unit support, and collaborative program execution." },
+                { name: "PMP Award", desc: "Performance Measurement Program standard achieved through structured lodge operations." },
+                { name: "Unit of Excellence", desc: "Honors units maintaining high standards of camping, service, and youth leadership." },
+                { name: "Young Adviser's Award", desc: "Ian McCuistion Award honoring adult advisers (ages 21–25) for energetic peer mentorship." }
+              ],
+              featuredAwards: [
+                { name: "Servant Leadership Award", desc: "Honors Arrowmen who consistently prioritize the needs of others, laboring behind the scenes without expectation of applause.", medallion: "[Medallion]" },
+                { name: "Founder’s Award & History", desc: "Honors members patterning daily service after E. Urner Goodman and Carroll A. Edson. Recent: C. Frome, D. Smith, A. Clark, L. Martinez, S. Harris", medallion: "[Medallion]" }
+              ]
+            },
+            {
+              id: "page-7",
+              type: "vigilIntro",
+              title: "Vigil Honor",
+              honoreeName: "2027 Vigil Class Honoree",
+              honoreeTitle: "[ Recognition / Title ]",
+              honoreeBio: "[ Honoree information / biography ]",
+              honoreePhoto: ""
+            },
+            {
+              id: "page-8",
+              type: "roster",
+              title: "2027 Vigil Class",
+              members: [
+                { name: "Christopher Frome", totem: "Wachtge" },
+                { name: "Alexa Vetter", totem: "Kittan" },
+                { name: "Jordan Frome", totem: "Machk" },
+                { name: "David Smith", totem: "Attuck" },
+                { name: "Sarah Jenkins", totem: "Sipu" },
+                { name: "Michael Chang", totem: "Ahash" },
+                { name: "Emily Davis", totem: "Nitis" },
+                { name: "Robert Taylor", totem: "Hanne" },
+                { name: "Jessica Miller", totem: "Lenno" },
+                { name: "Brian Wilson", totem: "Popan" },
+                { name: "Amanda Clark", totem: "Wissal" },
+                { name: "Kevin White", totem: "Nimat" },
+                { name: "Thomas Moore", totem: "Sachen" },
+                { name: "Laura Martinez", totem: "Paupack" },
+                { name: "Steven Harris", totem: "Hackmat" },
+                { name: "Rachel Adams", totem: "Oque" },
+                { name: "Daniel Garcia", totem: "Tucan" },
+                { name: "Megan Baker", totem: "Waban" }
+              ]
+            },
+            {
+              id: "page-9",
+              type: "roster",
+              title: "2027 Vigil Class (continued)",
+              members: [
+                { name: "Joshua King", totem: "Natick" },
+                { name: "Nicole Scott", totem: "Moxley" },
+                { name: "Andrew Turner", totem: "Algon" },
+                { name: "Samantha Hill", totem: "Monoc" },
+                { name: "Matthew Cooper", totem: "Potop" },
+                { name: "Ashley Ward", totem: "Chesa" },
+                { name: "Justin Perez", totem: "Piscata" },
+                { name: "Hannah Reed", totem: "Susque" },
+                { name: "Brandon Cook", totem: "Patow" },
+                { name: "Victoria Morgan", totem: "Accoke" },
+                { name: "Tyler Bell", totem: "Matta" },
+                { name: "Zackary Murphy", totem: "Nanjem" },
+                { name: "Amber Bailey", totem: "Yocom" },
+                { name: "Ethan Rivera", totem: "Conow" },
+                { name: "Katelyn Cooper", totem: "Octor" },
+                { name: "Nathaniel Ward", totem: "Wicom" },
+                { name: "Grace Foster", totem: "Chopt" }
+              ]
+            },
+            {
+              id: "page-10",
+              type: "custom",
+              title: "Diamond Jubilee",
+              content: "<div style='text-align:center;'><h3>75 Years of Brotherhood</h3><p style='margin-top:10px;'>Thank you to every Arrowman, scouter, and alumni member who made this 75th Anniversary Banquet possible. Here’s to many more decades of cheerful service!</p></div>"
+            },
+            {
+              id: "page-11",
+              type: "backCover",
+              organization: "AMANGAMEK-WIPIT LODGE 470",
+              subOrganization: "National Capital Area Council, BSA",
+              qrText: "Scan to view online photo galleries, historical archives, and event rosters.",
+              qrImg: "",
+              sponsorsText: "Thank You To Our Banquet Sponsors:",
+              sponsors: ["NCAC Council", "Riggs Alumni Center", "Lodge Key Three", "Lodge Executive Committee"],
+              bottomBannerText: "CELEBRATING 75 YEARS OF SERVICE"
+            }
+          ]
+        },
+        generic: {
+          title: "Annual Conference Program Booklet",
+          theme: {
+            bgCream: "#ffffff",
+            navyDark: "#1a252f",
+            tealAccent: "#2980b9",
+            charcoal: "#333333",
+            bgImage: "",
+            titleFont: "'Merriweather', serif"
+          },
+          pages: [
+            {
+              id: "page-1",
+              type: "cover",
+              title: "ANNUAL LEADERSHIP SUMMIT",
+              subtitle: "Building the Future Together",
+              dateLocation: "October 15-17, 2027 • Convention Center",
+              tagline: "\"Innovate, Lead, Succeed\"",
+              emblemText: "[ Logo ]",
+              emblemImg: "",
+              topBarColor: "#2980b9",
+              bottomBannerText: "WELCOME DELEGATES & GUESTS",
+              bgImage: ""
+            },
+            {
+              id: "page-2",
+              type: "schedule",
+              title: "Program Schedule",
+              items: [
+                { time: "08:30 AM", title: "Registration & Breakfast", details: "Main Lobby" },
+                { time: "09:30 AM", title: "Keynote Address", details: "Auditorium A" },
+                { time: "11:30 AM", title: "Panel Discussion", details: "Hall B" },
+                { time: "01:00 PM", title: "Networking Lunch", details: "Dining Pavilion" }
+              ]
+            },
+            {
+              id: "page-3",
+              type: "custom",
+              title: "Welcome & Overview",
+              content: "Welcome to the 2027 Leadership Summit. This booklet provides full details for sessions, speakers, and events."
+            },
+            {
+              id: "page-4",
+              type: "backCover",
+              organization: "LEADERSHIP COUNCIL",
+              subOrganization: "Global Headquarters",
+              qrText: "Scan for live agenda updates.",
+              qrImg: "",
+              sponsorsText: "Sponsors:",
+              sponsors: ["Partner Corp", "Global Tech", "Innovate Inc"],
+              bottomBannerText: "THANK YOU FOR ATTENDING"
+            }
+          ]
+        }
+      };
+
+      // CURRENT BOOKLET STATE
+      let bookletData = JSON.parse(JSON.stringify(PRESETS.blank));
+
+      function initApp() {
+        populateSidebarControls();
+        renderAll();
+      }
+
+      function loadPreset(key) {
+        if (PRESETS[key]) {
+          bookletData = JSON.parse(JSON.stringify(PRESETS[key]));
+          populateSidebarControls();
+          renderAll();
+        }
+      }
+
+      function updateGlobalField(field, value) {
+        bookletData[field] = value;
+        renderAll();
+      }
+
+      function updateTheme(field, value) {
+        bookletData.theme[field] = value;
+        applyCSSVariables();
+        renderAll();
+      }
+
+      function applyCSSVariables() {
+        const root = document.documentElement;
+        root.style.setProperty('--bg-cream', bookletData.theme.bgCream || '#f4eedb');
+        root.style.setProperty('--navy-dark', bookletData.theme.navyDark || '#122230');
+        root.style.setProperty('--teal-accent', bookletData.theme.tealAccent || '#005f73');
+        root.style.setProperty('--charcoal', bookletData.theme.charcoal || '#2b2b2b');
+        root.style.setProperty('--font-title', bookletData.theme.titleFont || "'Cinzel', serif");
+      }
+
+      function populateSidebarControls() {
+        applyCSSVariables();
+        document.getElementById("global-title").value = bookletData.title || "";
+        document.getElementById("global-bg-image").value = bookletData.theme.bgImage || "";
+        document.getElementById("theme-bg").value = bookletData.theme.bgCream || "#f4eedb";
+        document.getElementById("theme-navy").value = bookletData.theme.navyDark || "#122230";
+        document.getElementById("theme-teal").value = bookletData.theme.tealAccent || "#005f73";
+        document.getElementById("theme-title-font").value = bookletData.theme.titleFont || "'Cinzel', serif";
+
+        renderSidebarPageCards();
+      }
+
+      function renderSidebarPageCards() {
+        const container = document.getElementById("editor-pages-list");
+        container.innerHTML = "";
+
+        bookletData.pages.forEach((page, index) => {
+          const card = document.createElement("div");
+          card.className = "editor-page-card";
+
+          let specificFieldsHTML = "";
+          if (page.type === "cover") {
+            specificFieldsHTML = `
+              <div class="form-group">
+                <label>Main Title</label>
+                <input type="text" value="${escapeAttr(page.title || '')}" onchange="updatePageField(${index}, 'title', this.value)" />
+              </div>
+              <div class="form-group">
+                <label>Subtitle</label>
+                <input type="text" value="${escapeAttr(page.subtitle || '')}" onchange="updatePageField(${index}, 'subtitle', this.value)" />
+              </div>
+              <div class="form-group">
+                <label>Date & Location</label>
+                <input type="text" value="${escapeAttr(page.dateLocation || '')}" onchange="updatePageField(${index}, 'dateLocation', this.value)" />
+              </div>
+              <div class="form-group">
+                <label>Tagline</label>
+                <input type="text" value="${escapeAttr(page.tagline || '')}" onchange="updatePageField(${index}, 'tagline', this.value)" />
+              </div>
+              <div class="form-group">
+                <label>Emblem Image URL or Text</label>
+                <input type="text" value="${escapeAttr(page.emblemImg || page.emblemText || '')}" placeholder="URL or text" onchange="updatePageField(${index}, 'emblemImg', this.value)" />
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'emblemImg', val))" />
+              </div>
+              <div class="form-group">
+                <label>Page Background Image (Optional)</label>
+                <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${index}, 'bgImage', this.value)" />
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'bgImage', val))" />
+              </div>
+              <div class="form-group">
+                <label>Bottom Parchment Banner Text</label>
+                <input type="text" value="${escapeAttr(page.bottomBannerText || '')}" onchange="updatePageField(${index}, 'bottomBannerText', this.value)" />
+              </div>
+            `;
+          } else if (page.type === "backCover") {
+            specificFieldsHTML = `
+              <div class="form-group">
+                <label>Organization Name</label>
+                <input type="text" value="${escapeAttr(page.organization || '')}" onchange="updatePageField(${index}, 'organization', this.value)" />
+              </div>
+              <div class="form-group">
+                <label>Sub Organization / Council</label>
+                <input type="text" value="${escapeAttr(page.subOrganization || '')}" onchange="updatePageField(${index}, 'subOrganization', this.value)" />
+              </div>
+              <div class="form-group">
+                <label>QR Code Image URL / Placeholder</label>
+                <input type="text" value="${escapeAttr(page.qrImg || '')}" placeholder="Image URL" onchange="updatePageField(${index}, 'qrImg', this.value)" />
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'qrImg', val))" />
+              </div>
+              <div class="form-group">
+                <label>Page Background Image (Optional)</label>
+                <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${index}, 'bgImage', this.value)" />
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'bgImage', val))" />
+              </div>
+              <div class="form-group">
+                <label>Sponsors / Partners (Comma separated)</label>
+                <input type="text" value="${escapeAttr((page.sponsors || []).join(', '))}" onchange="updatePageField(${index}, 'sponsors', this.value.split(',').map(s=>s.trim()))" />
+              </div>
+            `;
+          } else if (page.type === "custom") {
+            specificFieldsHTML = `
+              <div class="form-group">
+                <label>Page Title</label>
+                <input type="text" value="${escapeAttr(page.title || '')}" onchange="updatePageField(${index}, 'title', this.value)" />
+              </div>
+              <div class="form-group">
+                <label>Content (Supports HTML/Text)</label>
+                <textarea onchange="updatePageField(${index}, 'content', this.value)">${escapeAttr(page.content || '')}</textarea>
+              </div>
+              <div class="form-group">
+                <label>Page Background Image (Optional)</label>
+                <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${index}, 'bgImage', this.value)" />
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'bgImage', val))" />
+              </div>
+            `;
+          } else {
+            specificFieldsHTML = `
+              <div class="form-group">
+                <label>Page Title</label>
+                <input type="text" value="${escapeAttr(page.title || '')}" onchange="updatePageField(${index}, 'title', this.value)" />
+              </div>
+              <div class="form-group">
+                <label>Page Background Image (Optional)</label>
+                <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${index}, 'bgImage', this.value)" />
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'bgImage', val))" />
+              </div>
+            `;
+          }
+
+          card.innerHTML = `
+            <div class="editor-page-header">
+              <span>Page ${index + 1}: ${page.type.toUpperCase()}</span>
+              <div class="page-actions-btns">
+                <button onclick="movePage(${index}, -1)" title="Move Up">↑</button>
+                <button onclick="movePage(${index}, 1)" title="Move Down">↓</button>
+                <button class="danger-btn" onclick="deletePage(${index})" title="Delete Page">×</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Page Type</label>
+              <select onchange="changePageType(${index}, this.value)">
+                <option value="cover" ${page.type==='cover'?'selected':''}>Front Cover</option>
+                <option value="schedule" ${page.type==='schedule'?'selected':''}>Schedule / Agenda</option>
+                <option value="leadership" ${page.type==='leadership'?'selected':''}>Leadership Remarks</option>
+                <option value="keynote" ${page.type==='keynote'?'selected':''}>Keynote Speaker</option>
+                <option value="awards" ${page.type==='awards'?'selected':''}>Awards & Honors</option>
+                <option value="vigilIntro" ${page.type==='vigilIntro'?'selected':''}>Class Honoree / Vigil</option>
+                <option value="roster" ${page.type==='roster'?'selected':''}>Roster Grid</option>
+                <option value="custom" ${page.type==='custom'?'selected':''}>Custom Content</option>
+                <option value="backCover" ${page.type==='backCover'?'selected':''}>Back Cover</option>
+              </select>
+            </div>
+            ${specificFieldsHTML}
+          `;
+
+          container.appendChild(card);
+        });
+      }
+
+      function updatePageField(index, field, value) {
+        bookletData.pages[index][field] = value;
+        renderAll();
+      }
+
+      function changePageType(index, newType) {
+        const page = bookletData.pages[index];
+        page.type = newType;
+        if (!page.title) page.title = newType.charAt(0).toUpperCase() + newType.slice(1);
+        renderSidebarPageCards();
+        renderAll();
+      }
+
+      function movePage(index, delta) {
+        const newIndex = index + delta;
+        if (newIndex >= 0 && newIndex < bookletData.pages.length) {
+          const temp = bookletData.pages[index];
+          bookletData.pages[index] = bookletData.pages[newIndex];
+          bookletData.pages[newIndex] = temp;
+          renderSidebarPageCards();
+          renderAll();
+        }
+      }
+
+      function deletePage(index) {
+        if (confirm("Are you sure you want to delete Page " + (index + 1) + "?")) {
+          bookletData.pages.splice(index, 1);
+          renderSidebarPageCards();
+          renderAll();
+        }
+      }
+
+      function addNewPage() {
+        bookletData.pages.push({
+          id: "page-" + (bookletData.pages.length + 1),
+          type: "custom",
+          title: "New Page " + (bookletData.pages.length + 1),
+          content: "Enter your page content here..."
+        });
+        renderSidebarPageCards();
+        renderAll();
+      }
+
+      function uploadImage(event, targetInputId, callback) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const dataUrl = e.target.result;
+            if (targetInputId) {
+              document.getElementById(targetInputId).value = dataUrl;
+            }
+            if (callback) callback(dataUrl);
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function escapeAttr(str) {
+        return (str || '').toString().replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      }
+
+      // IMPOSITION & RENDERING ENGINE
+      function getPaddedPages() {
+        // Folded booklets must have total pages as a multiple of 4 (min 4)
+        const pages = [...bookletData.pages];
+        let totalNeeded = Math.ceil(pages.length / 4) * 4;
+        if (totalNeeded < 4) totalNeeded = 4;
+
+        while (pages.length < totalNeeded) {
+          pages.push({
+            id: `pad-page-${pages.length + 1}`,
+            type: "custom",
+            title: "Notes",
+            content: "<div style='color:#888; font-style:italic; padding-top:20px;'>This page intentionally left blank for notes.</div>"
+          });
+        }
+        return pages;
+      }
+
+      function renderPageHTML(page, pageNum, totalPages) {
+        const isLeft = pageNum % 2 !== 0; // Page 1 is right side of spread
+        const bgImgUrl = page.bgImage || bookletData.theme.bgImage;
+        const bgStyle = bgImgUrl ? `style="background-image: url('${bgImgUrl}')"` : '';
+
+        let contentHTML = "";
+
+        if (page.type === "cover") {
+          contentHTML = `
+            <div class="top-banner-bar" style="background:${page.topBarColor || bookletData.theme.tealAccent}"></div>
             <div class="patch-emblem-box">
-              <span
-                style="
-                  font-weight: 700;
-
-                  color: var(--navy-dark);
-
-                  font-size: 0.7rem;
-
-                  text-align: center;
-                "
-                >[ 75th Patch Logo ]</span
-              >
+              ${page.emblemImg ? `<img src="${page.emblemImg}" alt="Emblem" />` : `<span style="font-weight:700; color:var(--navy-dark); font-size:0.7rem; text-align:center;">${page.emblemText || '[ Emblem ]'}</span>`}
             </div>
             <div class="scroll-title-group">
-              <h2>CHOMPING THROUGH</h2>
-              <h3>HISTORY</h3>
-              <p>
-                Amangamek-Wipit Lodge Banquet 2027<br />January 9th @ UMD Samuel
-                Riggs IV Center
-              </p>
+              <h2>${page.title || ''}</h2>
+              <h3>${page.subtitle || ''}</h3>
+              <p>${page.dateLocation || ''}</p>
             </div>
-            <div
-              style="
-                font-size: 0.78rem;
-
-                font-style: italic;
-
-                color: var(--charcoal);
-
-                font-weight: 600;
-              "
-            >
-              "Celebrating 75 Years of Cheerful Service"
+            <div style="font-size: 0.78rem; font-style: italic; color: var(--charcoal); font-weight: 600;">
+              ${page.tagline || ''}
             </div>
-            <span class="page-number-tag left">Page 1</span>
-          </div>
-          <div
-            class="booklet-page cover-page"
-            style="justify-content: center; text-align: center"
-          >
-            <div
-              style="
-                font-family: &quot;Cinzel&quot;, serif;
+            ${page.bottomBannerText ? `<div class="bottom-parchment-banner">${page.bottomBannerText}</div>` : ''}
+          `;
+          return `<div class="booklet-page cover-page" ${bgStyle}>
+            ${contentHTML}
+            <span class="page-number-tag ${isLeft?'left':'right'}">Page ${pageNum}</span>
+          </div>`;
+        }
 
-                font-size: 1.1rem;
-
-                font-weight: 700;
-
-                color: var(--navy-dark);
-              "
-            >
-              AMANGAMEK-WIPIT LODGE 470
+        if (page.type === "backCover") {
+          const sponsorsList = page.sponsors || [];
+          contentHTML = `
+            <div style="font-family: var(--font-title); font-size: 1.1rem; font-weight: 700; color: var(--navy-dark);">
+              ${page.organization || ''}
             </div>
-            <div
-              style="
-                font-size: 0.76rem;
-
-                font-weight: 600;
-
-                color: var(--teal-accent);
-
-                margin: 6px 0 15px 0;
-              "
-            >
-              National Capital Area Council, BSA
+            <div style="font-size: 0.76rem; font-weight: 600; color: var(--teal-accent); margin: 4px 0 10px 0;">
+              ${page.subOrganization || ''}
             </div>
-            <div
-              style="
-                width: 65px;
-
-                height: 65px;
-
-                background: #fff;
-
-                border: 1px solid #bbb;
-
-                display: flex;
-
-                align-items: center;
-
-                justify-content: center;
-
-                font-size: 0.58rem;
-
-                color: #666;
-
-                margin: 10px auto;
-              "
-            >
-              [ QR CODE ]
+            <div style="width: 70px; height: 70px; background: #fff; border: 1px solid #bbb; display: flex; align-items: center; justify-content: center; font-size: 0.58rem; color: #666; margin: 8px auto; overflow:hidden;">
+              ${page.qrImg ? `<img src="${page.qrImg}" style="width:100%; height:100%; object-fit:cover;"/>` : '[ QR CODE ]'}
             </div>
-            <div style="font-size: 0.7rem; color: #555; margin-top: 8px">
-              Scan to view online photo galleries, historical archives, and
-              event rosters.
+            <div style="font-size: 0.7rem; color: #555; margin-bottom: 10px;">
+              ${page.qrText || ''}
             </div>
-            <span class="page-number-tag right">Page 12</span>
-          </div>
-        </div>
-        <div class="spread-row">
-          <div class="booklet-page">
+            ${sponsorsList.length > 0 ? `
+              <div style="font-size:0.72rem; font-weight:700; color:var(--navy-dark);">${page.sponsorsText || 'Sponsors:'}</div>
+              <div class="sponsors-grid">
+                ${sponsorsList.map(s => `<div class="sponsor-item">${s}</div>`).join('')}
+              </div>
+            ` : ''}
+            ${page.bottomBannerText ? `<div class="bottom-parchment-banner">${page.bottomBannerText}</div>` : ''}
+          `;
+          return `<div class="booklet-page cover-page" style="justify-content:center; text-align:center;" ${bgStyle}>
+            ${contentHTML}
+            <span class="page-number-tag ${isLeft?'left':'right'}">Page ${pageNum}</span>
+          </div>`;
+        }
+
+        if (page.type === "schedule") {
+          const items = page.items || [];
+          contentHTML = `
             <div>
-              <div class="page-title">Sequence of Events</div>
+              <div class="page-title">${page.title || 'Schedule'}</div>
               <div class="schedule-list">
-                <div class="schedule-row">
-                  <div class="schedule-time">5:00 PM</div>
-                  <div class="schedule-details">
-                    <h4>Doors Open &amp; Fellowship</h4>
-                    <p>Arrival &amp; historical exhibit viewing</p>
+                ${items.map(item => `
+                  <div class="schedule-row">
+                    <div class="schedule-time">${item.time}</div>
+                    <div class="schedule-details">
+                      <h4>${item.title}</h4>
+                      <p>${item.details}</p>
+                    </div>
                   </div>
-                </div>
-                <div class="schedule-row">
-                  <div class="schedule-time">6:00 PM</div>
-                  <div class="schedule-details">
-                    <h4>Opening Ceremonies</h4>
-                    <p>Colors &amp; Call to Order</p>
-                  </div>
-                </div>
-                <div class="schedule-row">
-                  <div class="schedule-time">6:30 PM</div>
-                  <div class="schedule-details">
-                    <h4>Banquet Dinner Service</h4>
-                    <p>Catered buffet by Riggs Alumni Center</p>
-                  </div>
-                </div>
-                <div class="schedule-row">
-                  <div class="schedule-time">7:30 PM</div>
-                  <div class="schedule-details">
-                    <h4>Keynote &amp; Anniversary Program</h4>
-                    <p>Historical retrospective</p>
-                  </div>
-                </div>
-                <div class="schedule-row">
-                  <div class="schedule-time">8:30 PM</div>
-                  <div class="schedule-details">
-                    <h4>Awards &amp; Recognitions</h4>
-                    <p>Presentation of honors</p>
-                  </div>
-                </div>
+                `).join('')}
               </div>
             </div>
-            <span class="page-number-tag left">Page 2</span>
-          </div>
-          <div class="booklet-page">
+          `;
+        } else if (page.type === "leadership") {
+          const leaders = page.leaders || [];
+          contentHTML = `
             <div>
-              <div class="page-title">Leadership Remarks</div>
+              <div class="page-title">${page.title || 'Leadership'}</div>
               <div class="page-content-area">
-                <div class="leader-container">
-                  <div class="leader-photo">[ Chief Photo ]</div>
-                  <div class="leader-content">
-                    <h4>Lodge Chief's Welcome</h4>
-                    <div class="leader-role">Lodge Chief</div>
-                    <p>
-                      Welcome, Arrowmen, families, and honored guests! Tonight
-                      marks an extraordinary milestone as we celebrate 75 years
-                      of fellowship and leadership. Thank you for your
-                      relentless dedication to our camps and chapters.
-                    </p>
+                ${leaders.map(l => `
+                  <div class="leader-container">
+                    <div class="leader-photo">${l.img ? `<img src="${l.img}"/>` : '[ Photo ]'}</div>
+                    <div class="leader-content">
+                      <h4>${l.title}</h4>
+                      <div class="leader-role">${l.role}</div>
+                      <p>${l.text}</p>
+                    </div>
                   </div>
-                </div>
-                <div class="leader-container">
-                  <div class="leader-photo">[ Adviser Photo ]</div>
-                  <div class="leader-content">
-                    <h4>Lodge Adviser's Message</h4>
-                    <div class="leader-role">Lodge Adviser</div>
-                    <p>
-                      For three-quarters of a century, the strength of
-                      Amangamek-Wipit Lodge has lived in the character of its
-                      youth and steady guidance of its scouters. Let us
-                      celebrate our past while building our next chapter
-                      together.
-                    </p>
-                  </div>
-                </div>
+                `).join('')}
               </div>
             </div>
-            <span class="page-number-tag right">Page 3</span>
-          </div>
-        </div>
-        <div class="spread-row">
-          <div class="booklet-page">
+          `;
+        } else if (page.type === "keynote") {
+          contentHTML = `
             <div>
-              <div class="page-title">Keynote Speaker</div>
+              <div class="page-title">${page.title || 'Keynote Speaker'}</div>
               <div class="page-content-area">
-                <div class="keynote-container">
-                  <div class="speaker-photo">[ Speaker Photo ]</div>
+                <div class="leader-container">
+                  <div class="speaker-photo">${page.speakerImg ? `<img src="${page.speakerImg}"/>` : '[ Speaker ]'}</div>
                   <div>
-                    <h4
-                      style="
-                        font-family: &quot;Cinzel&quot;, serif;
-
-                        font-size: 0.8rem;
-
-                        color: var(--navy-dark);
-
-                        margin-bottom: 2px;
-                      "
-                    >
-                      Max Mihalov
-                    </h4>
-                    <p
-                      style="
-                        font-size: 0.66rem;
-
-                        font-weight: 600;
-
-                        color: var(--teal-accent);
-
-                        margin-bottom: 3px;
-                      "
-                    >
-                      Eastern Region Chief
-                    </p>
-                    <p
-                      style="
-                        font-size: 0.68rem;
-
-                        line-height: 1.35;
-
-                        color: var(--charcoal);
-                      "
-                    >
-                      Eagle Scout and Vigil Honor member Max Mihalov (Paugassett
-                      Lodge, Section E20) studies finance at Fordham University.
-                      He previously served as Lodge Chief, Conclave Vice Chief,
-                      and two terms as Section Chief.
-                    </p>
+                    <h4 style="font-family: var(--font-title); font-size: 0.82rem; color: var(--navy-dark);">${page.speakerName || ''}</h4>
+                    <p style="font-size: 0.68rem; font-weight: 600; color: var(--teal-accent); margin-bottom: 3px;">${page.speakerRole || ''}</p>
+                    <p style="font-size: 0.68rem; line-height: 1.35; color: var(--charcoal);">${page.bioText || ''}</p>
                   </div>
                 </div>
-                <div
-                  style="
-                    font-size: 0.68rem;
-
-                    line-height: 1.35;
-
-                    color: var(--charcoal);
-                  "
-                >
-                  As Eastern Region Chief, Max supports regional lodges and
-                  facilitates National Leadership Seminars and Developing Youth
-                  Leadership Conferences. He is especially excited for Operation
-                  Arrow at the National Jamboree, eager to meet thousands of
-                  Scouts from across the country.
-                </div>
               </div>
             </div>
-            <span class="page-number-tag left">Page 4</span>
-          </div>
-          <div class="booklet-page">
+          `;
+        } else if (page.type === "awards") {
+          const awards = page.awards || [];
+          const featured = page.featuredAwards || [];
+          contentHTML = `
             <div>
-              <div class="page-title">Year in Review &amp; Outlook</div>
-              <div class="page-content-area">
-                <div class="award-card-compact" style="margin-bottom: 6px">
-                  <h4>Journey to Excellence Gold</h4>
-                  <p>
-                    Lodge 470 achieved Gold Standard recognition through
-                    high-impact camping promotion, service hours, and quality
-                    brotherhood events across council properties.
-                  </p>
-                </div>
-                <div class="award-card-compact">
-                  <h4>Looking Ahead to 2027</h4>
-                  <p>
-                    Join us May 14–16, 2027 at Goshen Scout Reservation for
-                    Spring Fellowship, and look for upcoming OA Corps summer
-                    camp service deployments across local camps.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <span class="page-number-tag right">Page 5</span>
-          </div>
-        </div>
-        <div class="spread-row">
-          <div class="booklet-page">
-            <div>
-              <div class="page-title">Lodge &amp; Special Honors</div>
+              <div class="page-title">${page.title || 'Awards'}</div>
               <div class="award-grid-compact">
-                <div class="award-card-compact">
-                  <h4>New Arrowman Award</h4>
-                  <p>
-                    Recognizes newly inducted Ordeal members who rapidly engage
-                    in lodge activities within their first year.
-                  </p>
-                </div>
-                <div class="award-card-compact">
-                  <h4>Key Three Chapters</h4>
-                  <p>
-                    Recognizes outstanding chapter leadership, unit support, and
-                    collaborative program execution.
-                  </p>
-                </div>
-                <div class="award-card-compact">
-                  <h4>PMP Award</h4>
-                  <p>
-                    Performance Measurement Program standard achieved through
-                    structured lodge operations.
-                  </p>
-                </div>
-                <div class="award-card-compact">
-                  <h4>Unit of Excellence</h4>
-                  <p>
-                    Honors units maintaining high standards of camping, service,
-                    and youth leadership.
-                  </p>
-                </div>
-                <div class="award-card-compact">
-                  <h4>Young Adviser's Award</h4>
-                  <p>
-                    Ian McCuistion Award honoring adult advisers (ages 21–25)
-                    for energetic peer mentorship.
-                  </p>
-                </div>
-                <!-- Featured Servant Leadership Award with Medallion Placeholder -->
-                <div class="award-card-featured">
-                  <div class="award-medallion-placeholder">[Medallion]</div>
-                  <div>
-                    <h4>Servant Leadership Award</h4>
-                    <p>
-                      Honors Arrowmen who consistently prioritize the needs of
-                      others, laboring behind the scenes without expectation of
-                      applause.
-                    </p>
+                ${awards.map(a => `
+                  <div class="award-card-compact">
+                    <h4>${a.name}</h4>
+                    <p>${a.desc}</p>
                   </div>
-                </div>
-                <!-- Featured Founder's Award with Medallion Placeholder & Historical Roster -->
-                <div class="award-card-featured">
-                  <div class="award-medallion-placeholder">[Medallion]</div>
-                  <div>
-                    <h4>Founder’s Award &amp; History</h4>
-                    <p>
-                      Honors members patterning daily service after E. Urner
-                      Goodman and Carroll A. Edson.<br /><strong
-                        >Recent:</strong
-                      >
-
-                      C. Frome, D. Smith, A. Clark, L. Martinez, S. Harris
-                    </p>
+                `).join('')}
+                ${featured.map(f => `
+                  <div class="award-card-featured">
+                    <div class="award-medallion-placeholder">${f.medallionImg ? `<img src="${f.medallionImg}"/>` : (f.medallion || '[Medallion]')}</div>
+                    <div>
+                      <h4>${f.name}</h4>
+                      <p>${f.desc}</p>
+                    </div>
                   </div>
-                </div>
+                `).join('')}
               </div>
             </div>
-            <span class="page-number-tag left">Page 6</span>
-          </div>
-          <div class="booklet-page">
-            <div class="page-title">Vigil Honor</div>
-            <div class="vigil-intro">
-              <div class="award-card-compact">
-                <h4>The Highest Brotherhood</h4>
-                <p>
-                  The Vigil Honor is the highest honorary membership in the
-                  Order of the Arrow, recognizing unselfish service well beyond
-                  normal expectations. Members are recognized by their unique
-                  totem and lifetime dedication.
-                </p>
-              </div>
-              <div class="vigil-quote">
-                “Recognizing those inducted into the highest brotherhood of
-                unselfish service across our lodge's history.”
-              </div>
-            </div>
-            <div class="class-honoree">
-              <div class="class-honoree-label">2027 Vigil Class Honoree</div>
-              <div class="honoree-photo">PHOTO</div>
-              <div class="honoree-name">[ Honoree Name ]</div>
-              <div class="honoree-title">[ Recognition / Title ]</div>
-              <div class="honoree-bio">[ Honoree information / biography ]</div>
-            </div>
-            <span class="page-number-tag right">Page 8</span>
-          </div>
-        </div>
-        <div class="spread-row">
-          <div class="booklet-page">
-            <div class="page-title">2027 Vigil Class</div>
-            <div class="vigil-grid">
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Christopher Frome</div>
-                <div class="vigil-totem">Wachtge</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Alexa Vetter</div>
-                <div class="vigil-totem">Kittan</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Jordan Frome</div>
-                <div class="vigil-totem">Machk</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">David Smith</div>
-                <div class="vigil-totem">Attuck</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Sarah Jenkins</div>
-                <div class="vigil-totem">Sipu</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Michael Chang</div>
-                <div class="vigil-totem">Ahash</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Emily Davis</div>
-                <div class="vigil-totem">Nitis</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Robert Taylor</div>
-                <div class="vigil-totem">Hanne</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Jessica Miller</div>
-                <div class="vigil-totem">Lenno</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Brian Wilson</div>
-                <div class="vigil-totem">Popan</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Amanda Clark</div>
-                <div class="vigil-totem">Wissal</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Kevin White</div>
-                <div class="vigil-totem">Nimat</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Thomas Moore</div>
-                <div class="vigil-totem">Sachen</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Laura Martinez</div>
-                <div class="vigil-totem">Paupack</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Steven Harris</div>
-                <div class="vigil-totem">Hackmat</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Rachel Adams</div>
-                <div class="vigil-totem">Oque</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Daniel Garcia</div>
-                <div class="vigil-totem">Tucan</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Megan Baker</div>
-                <div class="vigil-totem">Waban</div>
-              </div>
-            </div>
-            <span class="page-number-tag left">Page 9</span>
-          </div>
-          <div class="booklet-page">
-            <div class="page-title">2027 Vigil Class (continued)</div>
-            <div class="vigil-grid">
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Joshua King</div>
-                <div class="vigil-totem">Natick</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Nicole Scott</div>
-                <div class="vigil-totem">Moxley</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Andrew Turner</div>
-                <div class="vigil-totem">Algon</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Samantha Hill</div>
-                <div class="vigil-totem">Monoc</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Matthew Cooper</div>
-                <div class="vigil-totem">Potop</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Ashley Ward</div>
-                <div class="vigil-totem">Chesa</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Justin Perez</div>
-                <div class="vigil-totem">Piscata</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Hannah Reed</div>
-                <div class="vigil-totem">Susque</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Brandon Cook</div>
-                <div class="vigil-totem">Patow</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Victoria Morgan</div>
-                <div class="vigil-totem">Accoke</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Tyler Bell</div>
-                <div class="vigil-totem">Matta</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Zackary Murphy</div>
-                <div class="vigil-totem">Nanjem</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Amber Bailey</div>
-                <div class="vigil-totem">Yocom</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Ethan Rivera</div>
-                <div class="vigil-totem">Conow</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Katelyn Cooper</div>
-                <div class="vigil-totem">Octor</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Nathaniel Ward</div>
-                <div class="vigil-totem">Wicom</div>
-              </div>
-              <div class="vigil-card">
-                <div class="vigil-photo">PHOTO</div>
-                <div class="vigil-name">Grace Foster</div>
-                <div class="vigil-totem">Chopt</div>
-              </div>
-            </div>
-            <span class="page-number-tag right">Page 10</span>
-          </div>
-        </div>
-        <div class="spread-row">
-          <div
-            class="booklet-page"
-            style="justify-content: center; text-align: center"
-          >
+          `;
+        } else if (page.type === "vigilIntro") {
+          contentHTML = `
             <div>
-              <div class="page-title" style="margin-bottom: 20px">
-                Diamond Jubilee
+              <div class="page-title">${page.title || 'Vigil Honor'}</div>
+              <div class="award-card-compact" style="margin-bottom:10px;">
+                <h4>The Highest Brotherhood</h4>
+                <p>Recognizing Arrowmen inducted into the highest brotherhood of unselfish service across our lodge's history.</p>
               </div>
-              <div
-                style="
-                  font-family: &quot;Cinzel&quot;, serif;
-
-                  font-size: 1.15rem;
-
-                  font-weight: 700;
-
-                  color: var(--navy-dark);
-
-                  margin-bottom: 12px;
-                "
-              >
-                75 Years of Brotherhood
-              </div>
-              <p
-                style="
-                  font-size: 0.76rem;
-
-                  line-height: 1.5;
-
-                  color: var(--charcoal);
-
-                  max-width: 320px;
-
-                  margin: 0 auto;
-                "
-              >
-                Thank you to every Arrowman, scouter, and alumni member who made
-                this 75th Anniversary Banquet possible. Here’s to many more
-                decades of cheerful service!
-              </p>
-            </div>
-            <span class="page-number-tag left">Page 10</span>
-          </div>
-          <div
-            class="booklet-page cover-page"
-            style="justify-content: center; text-align: center"
-          >
-            <div
-              style="
-                font-family: &quot;Cinzel&quot;, serif;
-
-                font-size: 1.1rem;
-
-                font-weight: 700;
-
-                color: var(--navy-dark);
-              "
-            >
-              AMANGAMEK-WIPIT LODGE 470
-            </div>
-            <div
-              style="
-                font-size: 0.76rem;
-
-                font-weight: 600;
-
-                color: var(--teal-accent);
-
-                margin: 6px 0 15px 0;
-              "
-            >
-              National Capital Area Council, BSA
-            </div>
-            <div
-              style="
-                width: 65px;
-
-                height: 65px;
-
-                background: #fff;
-
-                border: 1px solid #bbb;
-
-                display: flex;
-
-                align-items: center;
-
-                justify-content: center;
-
-                font-size: 0.58rem;
-
-                color: #666;
-
-                margin: 10px auto;
-              "
-            >
-              [ QR CODE ]
-            </div>
-            <div style="font-size: 0.7rem; color: #555; margin-top: 8px">
-              Scan to view online photo galleries, historical archives, and
-              event rosters.
-            </div>
-            <span class="page-number-tag right">Page 12</span>
-          </div>
-        </div>
-      </div>
-      <!-- VIEW 2: PRINT IMPOSITION -->
-      <div class="view-section" id="view-imposition">
-        <div class="imposition-note">
-          <strong>Print imposition:</strong> Finished booklet pages are 5.5 ×
-          8.5 inches. Each physical sheet is 11 × 8.5 inches and folds at the
-          center.
-        </div>
-        <div class="imposition-sheet">
-          <div class="sheet-label">Sheet 1 — 12 | 1</div>
-          <div class="spread-row">
-            <div
-              class="booklet-page cover-page"
-              data-physical-page="12"
-              style="justify-content: center; text-align: center"
-            >
-              <div
-                style="
-                  font-family: &quot;Cinzel&quot;, serif;
-
-                  font-size: 1.1rem;
-
-                  font-weight: 700;
-
-                  color: var(--navy-dark);
-                "
-              >
-                AMANGAMEK-WIPIT LODGE 470
-              </div>
-              <div
-                style="
-                  font-size: 0.76rem;
-
-                  font-weight: 600;
-
-                  color: var(--teal-accent);
-
-                  margin: 6px 0 15px 0;
-                "
-              >
-                National Capital Area Council, BSA
-              </div>
-              <div
-                style="
-                  width: 65px;
-
-                  height: 65px;
-
-                  background: #fff;
-
-                  border: 1px solid #bbb;
-
-                  display: flex;
-
-                  align-items: center;
-
-                  justify-content: center;
-
-                  font-size: 0.58rem;
-
-                  color: #666;
-
-                  margin: 10px auto;
-                "
-              >
-                [ QR CODE ]
-              </div>
-              <div style="font-size: 0.7rem; color: #555; margin-top: 8px">
-                Scan to view online photo galleries, historical archives, and
-                event rosters.
-              </div>
-              <span class="page-number-tag right">Page 12</span>
-            </div>
-            <div class="booklet-page cover-page" data-physical-page="1">
-              <div class="patch-emblem-box">
-                <span
-                  style="
-                    font-weight: 700;
-
-                    color: var(--navy-dark);
-
-                    font-size: 0.7rem;
-
-                    text-align: center;
-                  "
-                  >[ 75th Patch Logo ]</span
-                >
-              </div>
-              <div class="scroll-title-group">
-                <h2>CHOMPING THROUGH</h2>
-                <h3>HISTORY</h3>
-                <p>
-                  Amangamek-Wipit Lodge Banquet 2027<br />January 9th @ UMD
-                  Samuel Riggs IV Center
-                </p>
-              </div>
-              <div
-                style="
-                  font-size: 0.78rem;
-
-                  font-style: italic;
-
-                  color: var(--charcoal);
-
-                  font-weight: 600;
-                "
-              >
-                "Celebrating 75 Years of Cheerful Service"
-              </div>
-              <span class="page-number-tag left">Page 1</span>
-            </div>
-          </div>
-        </div>
-        <div class="imposition-sheet">
-          <div class="sheet-label">Sheet 2 — 2 | 11</div>
-          <div class="spread-row">
-            <div
-              class="booklet-page cover-page"
-              data-physical-page="2"
-              style="justify-content: center; text-align: center"
-            >
-              <div
-                style="
-                  font-family: &quot;Cinzel&quot;, serif;
-
-                  font-size: 1.1rem;
-
-                  font-weight: 700;
-
-                  color: var(--navy-dark);
-                "
-              >
-                AMANGAMEK-WIPIT LODGE 470
-              </div>
-              <div
-                style="
-                  font-size: 0.76rem;
-
-                  font-weight: 600;
-
-                  color: var(--teal-accent);
-
-                  margin: 6px 0 15px 0;
-                "
-              >
-                National Capital Area Council, BSA
-              </div>
-              <div
-                style="
-                  width: 65px;
-
-                  height: 65px;
-
-                  background: #fff;
-
-                  border: 1px solid #bbb;
-
-                  display: flex;
-
-                  align-items: center;
-
-                  justify-content: center;
-
-                  font-size: 0.58rem;
-
-                  color: #666;
-
-                  margin: 10px auto;
-                "
-              >
-                [ QR CODE ]
-              </div>
-              <div style="font-size: 0.7rem; color: #555; margin-top: 8px">
-                Scan to view online photo galleries, historical archives, and
-                event rosters.
-              </div>
-              <span class="page-number-tag right">Page 12</span>
-            </div>
-            <div
-              class="booklet-page"
-              data-physical-page="11"
-              style="justify-content: center; text-align: center"
-            >
-              <div>
-                <div class="page-title" style="margin-bottom: 20px">
-                  Diamond Jubilee
+              <div style="border: 1px solid #c8bda8; background: #fbf8f0; padding: 10px; text-align: center;">
+                <div style="font-family: var(--font-title); font-size: 10pt; font-weight: 700; color: var(--navy-dark); text-transform: uppercase;">${page.honoreeName || 'Class Honoree'}</div>
+                <div style="width: 1in; height: 1in; margin: 6px auto; border: 1px solid #aaa; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 7pt; color: #777; overflow:hidden;">
+                  ${page.honoreePhoto ? `<img src="${page.honoreePhoto}" style="width:100%; height:100%; object-fit:cover;"/>` : 'PHOTO'}
                 </div>
-                <div
-                  style="
-                    font-family: &quot;Cinzel&quot;, serif;
-
-                    font-size: 1.15rem;
-
-                    font-weight: 700;
-
-                    color: var(--navy-dark);
-
-                    margin-bottom: 12px;
-                  "
-                >
-                  75 Years of Brotherhood
-                </div>
-                <p
-                  style="
-                    font-size: 0.76rem;
-
-                    line-height: 1.5;
-
-                    color: var(--charcoal);
-
-                    max-width: 320px;
-
-                    margin: 0 auto;
-                  "
-                >
-                  Thank you to every Arrowman, scouter, and alumni member who
-                  made this 75th Anniversary Banquet possible. Here’s to many
-                  more decades of cheerful service!
-                </p>
+                <div style="font-family: var(--font-title); font-size: 12pt; font-weight: 700; color: var(--navy-dark);">${page.honoreeTitle || ''}</div>
+                <div style="font-size: 8pt; line-height: 1.35; color: #555; margin-top: 4px;">${page.honoreeBio || ''}</div>
               </div>
-              <span class="page-number-tag left">Page 10</span>
             </div>
-          </div>
-        </div>
-        <div class="imposition-sheet">
-          <div class="sheet-label">Sheet 3 — 10 | 3</div>
-          <div class="spread-row">
-            <div class="booklet-page" data-physical-page="10">
-              <div class="page-title">2027 Vigil Class (continued)</div>
+          `;
+        } else if (page.type === "roster") {
+          const members = page.members || [];
+          contentHTML = `
+            <div>
+              <div class="page-title">${page.title || 'Roster'}</div>
               <div class="vigil-grid">
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Joshua King</div>
-                  <div class="vigil-totem">Natick</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Nicole Scott</div>
-                  <div class="vigil-totem">Moxley</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Andrew Turner</div>
-                  <div class="vigil-totem">Algon</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Samantha Hill</div>
-                  <div class="vigil-totem">Monoc</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Matthew Cooper</div>
-                  <div class="vigil-totem">Potop</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Ashley Ward</div>
-                  <div class="vigil-totem">Chesa</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Justin Perez</div>
-                  <div class="vigil-totem">Piscata</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Hannah Reed</div>
-                  <div class="vigil-totem">Susque</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Brandon Cook</div>
-                  <div class="vigil-totem">Patow</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Victoria Morgan</div>
-                  <div class="vigil-totem">Accoke</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Tyler Bell</div>
-                  <div class="vigil-totem">Matta</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Zackary Murphy</div>
-                  <div class="vigil-totem">Nanjem</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Amber Bailey</div>
-                  <div class="vigil-totem">Yocom</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Ethan Rivera</div>
-                  <div class="vigil-totem">Conow</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Katelyn Cooper</div>
-                  <div class="vigil-totem">Octor</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Nathaniel Ward</div>
-                  <div class="vigil-totem">Wicom</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Grace Foster</div>
-                  <div class="vigil-totem">Chopt</div>
-                </div>
+                ${members.map(m => `
+                  <div class="vigil-card">
+                    <div class="vigil-photo">${m.photo ? `<img src="${m.photo}"/>` : 'PHOTO'}</div>
+                    <div class="vigil-name">${m.name}</div>
+                    <div class="vigil-totem">${m.totem || ''}</div>
+                  </div>
+                `).join('')}
               </div>
-              <span class="page-number-tag right">Page 10</span>
             </div>
-            <div class="booklet-page" data-physical-page="3">
-              <div>
-                <div class="page-title">Sequence of Events</div>
-                <div class="schedule-list">
-                  <div class="schedule-row">
-                    <div class="schedule-time">5:00 PM</div>
-                    <div class="schedule-details">
-                      <h4>Doors Open &amp; Fellowship</h4>
-                      <p>Arrival &amp; historical exhibit viewing</p>
-                    </div>
-                  </div>
-                  <div class="schedule-row">
-                    <div class="schedule-time">6:00 PM</div>
-                    <div class="schedule-details">
-                      <h4>Opening Ceremonies</h4>
-                      <p>Colors &amp; Call to Order</p>
-                    </div>
-                  </div>
-                  <div class="schedule-row">
-                    <div class="schedule-time">6:30 PM</div>
-                    <div class="schedule-details">
-                      <h4>Banquet Dinner Service</h4>
-                      <p>Catered buffet by Riggs Alumni Center</p>
-                    </div>
-                  </div>
-                  <div class="schedule-row">
-                    <div class="schedule-time">7:30 PM</div>
-                    <div class="schedule-details">
-                      <h4>Keynote &amp; Anniversary Program</h4>
-                      <p>Historical retrospective</p>
-                    </div>
-                  </div>
-                  <div class="schedule-row">
-                    <div class="schedule-time">8:30 PM</div>
-                    <div class="schedule-details">
-                      <h4>Awards &amp; Recognitions</h4>
-                      <p>Presentation of honors</p>
-                    </div>
-                  </div>
-                </div>
+          `;
+        } else {
+          // Custom / default
+          contentHTML = `
+            <div>
+              <div class="page-title">${page.title || ''}</div>
+              <div class="page-content-area" style="font-size:0.75rem; line-height:1.45;">
+                ${page.content || ''}
               </div>
-              <span class="page-number-tag left">Page 2</span>
             </div>
+          `;
+        }
+
+        return `<div class="booklet-page" ${bgStyle}>
+          ${contentHTML}
+          <span class="page-number-tag ${isLeft?'left':'right'}">Page ${pageNum}</span>
+        </div>`;
+      }
+
+      function renderSpreads() {
+        const pages = getPaddedPages();
+        const container = document.getElementById("view-spreads");
+        container.innerHTML = "";
+
+        // Reader Spreads: Page 1 standalone or paired (Spread 1: Cover on right or 1 & 2 side by side)
+        // Standard reader view:
+        // Row 1: Page 1 | Page 2
+        // Row 2: Page 3 | Page 4 ...
+        for (let i = 0; i < pages.length; i += 2) {
+          const spreadRow = document.createElement("div");
+          spreadRow.className = "spread-row";
+
+          const p1 = pages[i];
+          const p2 = pages[i+1];
+
+          spreadRow.innerHTML = `
+            ${renderPageHTML(p1, i + 1, pages.length)}
+            ${p2 ? renderPageHTML(p2, i + 2, pages.length) : ''}
+          `;
+
+          container.appendChild(spreadRow);
+        }
+      }
+
+      function renderImposition() {
+        const pages = getPaddedPages();
+        const N = pages.length; // N is guaranteed multiple of 4
+        const totalSheets = N / 4;
+        const container = document.getElementById("view-imposition");
+        container.innerHTML = `
+          <div class="imposition-note">
+            <strong>Print Imposition Info:</strong> Total ${N} finished 5.5 × 8.5 in booklet pages arranged onto ${totalSheets} double-sided 11 × 8.5 in landscape sheets. Stack and fold in center.
           </div>
-        </div>
-        <div class="imposition-sheet">
-          <div class="sheet-label">Sheet 4 — 4 | 9</div>
-          <div class="spread-row">
-            <div class="booklet-page" data-physical-page="4">
-              <div>
-                <div class="page-title">Leadership Remarks</div>
-                <div class="page-content-area">
-                  <div class="leader-container">
-                    <div class="leader-photo">[ Chief Photo ]</div>
-                    <div class="leader-content">
-                      <h4>Lodge Chief's Welcome</h4>
-                      <div class="leader-role">Lodge Chief</div>
-                      <p>
-                        Welcome, Arrowmen, families, and honored guests! Tonight
-                        marks an extraordinary milestone as we celebrate 75
-                        years of fellowship and leadership. Thank you for your
-                        relentless dedication to our camps and chapters.
-                      </p>
-                    </div>
-                  </div>
-                  <div class="leader-container">
-                    <div class="leader-photo">[ Adviser Photo ]</div>
-                    <div class="leader-content">
-                      <h4>Lodge Adviser's Message</h4>
-                      <div class="leader-role">Lodge Adviser</div>
-                      <p>
-                        For three-quarters of a century, the strength of
-                        Amangamek-Wipit Lodge has lived in the character of its
-                        youth and steady guidance of its scouters. Let us
-                        celebrate our past while building our next chapter
-                        together.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <span class="page-number-tag right">Page 3</span>
+        `;
+
+        for (let s = 1; s <= totalSheets; s++) {
+          // Sheet s Front (Outer Side): Left = N - 2*(s-1), Right = 1 + 2*(s-1)
+          const frontLeftNum = N - 2 * (s - 1);
+          const frontRightNum = 1 + 2 * (s - 1);
+
+          // Sheet s Back (Inner Side): Left = 2*s, Right = N - 2*s + 1
+          const backLeftNum = 2 * s;
+          const backRightNum = N - 2 * s + 1;
+
+          // Render Sheet Front
+          const sheetFront = document.createElement("div");
+          sheetFront.className = "imposition-sheet";
+          sheetFront.innerHTML = `
+            <div class="sheet-label">Sheet ${s} Front (Outer) — Page ${frontLeftNum} | Page ${frontRightNum}</div>
+            <div class="spread-row">
+              ${renderPageHTML(pages[frontLeftNum - 1], frontLeftNum, N)}
+              ${renderPageHTML(pages[frontRightNum - 1], frontRightNum, N)}
             </div>
-            <div class="booklet-page" data-physical-page="9">
-              <div class="page-title">2027 Vigil Class</div>
-              <div class="vigil-grid">
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Christopher Frome</div>
-                  <div class="vigil-totem">Wachtge</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Alexa Vetter</div>
-                  <div class="vigil-totem">Kittan</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Jordan Frome</div>
-                  <div class="vigil-totem">Machk</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">David Smith</div>
-                  <div class="vigil-totem">Attuck</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Sarah Jenkins</div>
-                  <div class="vigil-totem">Sipu</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Michael Chang</div>
-                  <div class="vigil-totem">Ahash</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Emily Davis</div>
-                  <div class="vigil-totem">Nitis</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Robert Taylor</div>
-                  <div class="vigil-totem">Hanne</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Jessica Miller</div>
-                  <div class="vigil-totem">Lenno</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Brian Wilson</div>
-                  <div class="vigil-totem">Popan</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Amanda Clark</div>
-                  <div class="vigil-totem">Wissal</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Kevin White</div>
-                  <div class="vigil-totem">Nimat</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Thomas Moore</div>
-                  <div class="vigil-totem">Sachen</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Laura Martinez</div>
-                  <div class="vigil-totem">Paupack</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Steven Harris</div>
-                  <div class="vigil-totem">Hackmat</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Rachel Adams</div>
-                  <div class="vigil-totem">Oque</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Daniel Garcia</div>
-                  <div class="vigil-totem">Tucan</div>
-                </div>
-                <div class="vigil-card">
-                  <div class="vigil-photo">PHOTO</div>
-                  <div class="vigil-name">Megan Baker</div>
-                  <div class="vigil-totem">Waban</div>
-                </div>
-              </div>
-              <span class="page-number-tag left">Page 9</span>
+          `;
+
+          // Render Sheet Back
+          const sheetBack = document.createElement("div");
+          sheetBack.className = "imposition-sheet";
+          sheetBack.innerHTML = `
+            <div class="sheet-label">Sheet ${s} Back (Inner) — Page ${backLeftNum} | Page ${backRightNum}</div>
+            <div class="spread-row">
+              ${renderPageHTML(pages[backLeftNum - 1], backLeftNum, N)}
+              ${renderPageHTML(pages[backRightNum - 1], backRightNum, N)}
             </div>
-          </div>
-        </div>
-        <div class="imposition-sheet">
-          <div class="sheet-label">Sheet 5 — 8 | 5</div>
-          <div class="spread-row">
-            <div class="booklet-page" data-physical-page="8">
-              <div class="page-title">Vigil Honor</div>
-              <div class="vigil-intro">
-                <div class="award-card-compact">
-                  <h4>The Highest Brotherhood</h4>
-                  <p>
-                    The Vigil Honor is the highest honorary membership in the
-                    Order of the Arrow, recognizing unselfish service well
-                    beyond normal expectations. Members are recognized by their
-                    unique totem and lifetime dedication.
-                  </p>
-                </div>
-                <div class="vigil-quote">
-                  “Recognizing those inducted into the highest brotherhood of
-                  unselfish service across our lodge's history.”
-                </div>
-              </div>
-              <div class="class-honoree">
-                <div class="class-honoree-label">2027 Vigil Class Honoree</div>
-                <div class="honoree-photo">PHOTO</div>
-                <div class="honoree-name">[ Honoree Name ]</div>
-                <div class="honoree-title">[ Recognition / Title ]</div>
-                <div class="honoree-bio">
-                  [ Honoree information / biography ]
-                </div>
-              </div>
-              <span class="page-number-tag right">Page 8</span>
-            </div>
-            <div class="booklet-page" data-physical-page="5">
-              <div>
-                <div class="page-title">Keynote Speaker</div>
-                <div class="page-content-area">
-                  <div class="keynote-container">
-                    <div class="speaker-photo">[ Speaker Photo ]</div>
-                    <div>
-                      <h4
-                        style="
-                          font-family: &quot;Cinzel&quot;, serif;
+          `;
 
-                          font-size: 0.8rem;
+          container.appendChild(sheetFront);
+          container.appendChild(sheetBack);
+        }
+      }
 
-                          color: var(--navy-dark);
+      function renderAll() {
+        applyCSSVariables();
+        renderSpreads();
+        renderImposition();
+      }
 
-                          margin-bottom: 2px;
-                        "
-                      >
-                        Max Mihalov
-                      </h4>
-                      <p
-                        style="
-                          font-size: 0.66rem;
-
-                          font-weight: 600;
-
-                          color: var(--teal-accent);
-
-                          margin-bottom: 3px;
-                        "
-                      >
-                        Eastern Region Chief
-                      </p>
-                      <p
-                        style="
-                          font-size: 0.68rem;
-
-                          line-height: 1.35;
-
-                          color: var(--charcoal);
-                        "
-                      >
-                        Eagle Scout and Vigil Honor member Max Mihalov
-                        (Paugassett Lodge, Section E20) studies finance at
-                        Fordham University. He previously served as Lodge Chief,
-                        Conclave Vice Chief, and two terms as Section Chief.
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      font-size: 0.68rem;
-
-                      line-height: 1.35;
-
-                      color: var(--charcoal);
-                    "
-                  >
-                    As Eastern Region Chief, Max supports regional lodges and
-                    facilitates National Leadership Seminars and Developing
-                    Youth Leadership Conferences. He is especially excited for
-                    Operation Arrow at the National Jamboree, eager to meet
-                    thousands of Scouts from across the country.
-                  </div>
-                </div>
-              </div>
-              <span class="page-number-tag left">Page 4</span>
-            </div>
-          </div>
-        </div>
-        <div class="imposition-sheet">
-          <div class="sheet-label">Sheet 6 — 6 | 7</div>
-          <div class="spread-row">
-            <div class="booklet-page" data-physical-page="6">
-              <div>
-                <div class="page-title">Year in Review &amp; Outlook</div>
-                <div class="page-content-area">
-                  <div class="award-card-compact" style="margin-bottom: 6px">
-                    <h4>Journey to Excellence Gold</h4>
-                    <p>
-                      Lodge 470 achieved Gold Standard recognition through
-                      high-impact camping promotion, service hours, and quality
-                      brotherhood events across council properties.
-                    </p>
-                  </div>
-                  <div class="award-card-compact">
-                    <h4>Looking Ahead to 2027</h4>
-                    <p>
-                      Join us May 14–16, 2027 at Goshen Scout Reservation for
-                      Spring Fellowship, and look for upcoming OA Corps summer
-                      camp service deployments across local camps.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <span class="page-number-tag right">Page 5</span>
-            </div>
-            <div class="booklet-page" data-physical-page="7">
-              <div>
-                <div class="page-title">Lodge &amp; Special Honors</div>
-                <div class="award-grid-compact">
-                  <div class="award-card-compact">
-                    <h4>New Arrowman Award</h4>
-                    <p>
-                      Recognizes newly inducted Ordeal members who rapidly
-                      engage in lodge activities within their first year.
-                    </p>
-                  </div>
-                  <div class="award-card-compact">
-                    <h4>Key Three Chapters</h4>
-                    <p>
-                      Recognizes outstanding chapter leadership, unit support,
-                      and collaborative program execution.
-                    </p>
-                  </div>
-                  <div class="award-card-compact">
-                    <h4>PMP Award</h4>
-                    <p>
-                      Performance Measurement Program standard achieved through
-                      structured lodge operations.
-                    </p>
-                  </div>
-                  <div class="award-card-compact">
-                    <h4>Unit of Excellence</h4>
-                    <p>
-                      Honors units maintaining high standards of camping,
-                      service, and youth leadership.
-                    </p>
-                  </div>
-                  <div class="award-card-compact">
-                    <h4>Young Adviser's Award</h4>
-                    <p>
-                      Ian McCuistion Award honoring adult advisers (ages 21–25)
-                      for energetic peer mentorship.
-                    </p>
-                  </div>
-                  <!-- Featured Servant Leadership Award with Medallion Placeholder -->
-                  <div class="award-card-featured">
-                    <div class="award-medallion-placeholder">[Medallion]</div>
-                    <div>
-                      <h4>Servant Leadership Award</h4>
-                      <p>
-                        Honors Arrowmen who consistently prioritize the needs of
-                        others, laboring behind the scenes without expectation
-                        of applause.
-                      </p>
-                    </div>
-                  </div>
-                  <!-- Featured Founder's Award with Medallion Placeholder & Historical Roster -->
-                  <div class="award-card-featured">
-                    <div class="award-medallion-placeholder">[Medallion]</div>
-                    <div>
-                      <h4>Founder’s Award &amp; History</h4>
-                      <p>
-                        Honors members patterning daily service after E. Urner
-                        Goodman and Carroll A. Edson.<br /><strong
-                          >Recent:</strong
-                        >
-
-                        C. Frome, D. Smith, A. Clark, L. Martinez, S. Harris
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <span class="page-number-tag left">Page 6</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script>
       function switchView(mode) {
         const spreadsView = document.getElementById("view-spreads");
-
         const impositionView = document.getElementById("view-imposition");
-
         const btnSpreads = document.getElementById("btn-spreads");
-
         const btnImposition = document.getElementById("btn-imposition");
 
         if (mode === "spreads") {
           spreadsView.classList.add("active");
-
           impositionView.classList.remove("active");
-
           btnSpreads.classList.add("active");
-
           btnImposition.classList.remove("active");
         } else {
           spreadsView.classList.remove("active");
-
           impositionView.classList.add("active");
-
           btnSpreads.classList.remove("active");
-
           btnImposition.classList.add("active");
         }
       }
+
+      function exportJSON() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(bookletData, null, 2));
+        const downloadAnchor = document.createElement("a");
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `${(bookletData.title || 'booklet').toLowerCase().replace(/[^a-z0-9]/g, '_')}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+      }
+
+      function importJSON(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            try {
+              const imported = JSON.parse(e.target.result);
+              if (imported && imported.pages) {
+                bookletData = imported;
+                populateSidebarControls();
+                renderAll();
+                alert("Booklet project loaded successfully!");
+              } else {
+                alert("Invalid booklet JSON file structure.");
+              }
+            } catch (err) {
+              alert("Error parsing JSON file: " + err.message);
+            }
+          };
+          reader.readAsText(file);
+        }
+      }
+
+      window.onload = initApp;
     </script>
   </body>
 </html>
