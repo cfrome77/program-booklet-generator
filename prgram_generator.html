@@ -1,0 +1,2361 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Amangamek-Wipit Lodge 470 — 75th Anniversary Banquet Booklet</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght\@600;700;800&amp;family=Open+Sans:ital,wght\@0,400;0,600;0,700;1,400&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-cream: #f4eedb;
+
+        --parchment-subtle: #efe5d0;
+
+        --navy-dark: #122230;
+
+        --teal-accent: #005f73;
+
+        --charcoal: #2b2b2b;
+
+        --silver: #d9d9d9;
+      }
+
+      * {
+        box-sizing: border-box;
+
+        margin: 0;
+
+        padding: 0;
+      }
+
+      body {
+        font-family: "Open Sans", sans-serif;
+
+        background-color: #222;
+
+        color: var(--charcoal);
+
+        padding: 20px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        min-height: 100vh;
+      }
+
+      header.app-header {
+        text-align: center;
+
+        color: #fff;
+
+        margin-bottom: 20px;
+      }
+
+      header.app-header h1 {
+        font-family: "Cinzel", serif;
+
+        font-size: 1.8rem;
+
+        margin-bottom: 5px;
+
+        letter-spacing: 1px;
+      }
+
+      header.app-header p {
+        font-size: 0.9rem;
+
+        color: var(--silver);
+      }
+
+      .controls {
+        margin-bottom: 25px;
+
+        display: flex;
+
+        gap: 12px;
+
+        background: #333;
+
+        padding: 8px 16px;
+
+        border-radius: 8px;
+
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      .controls button {
+        background: var(--teal-accent);
+
+        color: white;
+
+        border: none;
+
+        padding: 8px 16px;
+
+        font-weight: 600;
+
+        border-radius: 4px;
+
+        cursor: pointer;
+
+        transition:
+          background 0.2s,
+          transform 0.1s;
+      }
+
+      .controls button:hover {
+        background: #00424f;
+
+        transform: translateY(-1px);
+      }
+
+      .controls button.active {
+        background: var(--navy-dark);
+
+        border: 1px solid var(--silver);
+      }
+
+      .booklet-container {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 40px;
+
+        width: 100%;
+
+        max-width: 1100px;
+
+        align-items: center;
+
+        padding-bottom: 50px;
+      }
+
+      .view-section {
+        display: none;
+
+        width: 100%;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 30px;
+      }
+
+      .view-section.active {
+        display: flex;
+      }
+
+      .sheet-wrapper {
+        background: #191919;
+
+        border: 2px dashed #555;
+
+        padding: 25px;
+
+        border-radius: 10px;
+
+        width: 100%;
+
+        max-width: 980px;
+
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+        position: relative;
+      }
+
+      .sheet-info {
+        color: var(--silver);
+
+        font-size: 0.9rem;
+
+        margin-bottom: 12px;
+
+        font-weight: 600;
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+      }
+
+      /* Spread Layout */
+
+      .spread-row {
+        display: flex;
+
+        width: 900px;
+
+        height: 698px;
+
+        background: var(--bg-cream);
+
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+        position: relative;
+
+        overflow: hidden;
+
+        margin: 0 auto;
+      }
+
+      .spread-row::after {
+        content: "";
+
+        position: absolute;
+
+        left: 50%;
+
+        top: 0;
+
+        bottom: 0;
+
+        width: 2px;
+
+        background: repeating-linear-gradient(
+          to bottom,
+
+          #d5c8b0,
+          #d5c8b0 6px,
+
+          transparent 6px,
+
+          transparent 12px
+        );
+
+        z-index: 10;
+      }
+
+      .booklet-page {
+        width: 50%;
+
+        height: 100%;
+
+        padding: 28px 32px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        position: relative;
+
+        background-color: var(--bg-cream);
+
+        overflow: hidden;
+
+        justify-content: space-between;
+      }
+
+      .page-content-area {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 8px;
+      }
+
+      .page-number-tag {
+        position: absolute;
+
+        bottom: 12px;
+
+        font-size: 0.75rem;
+
+        color: #777;
+
+        font-weight: 600;
+      }
+
+      .page-number-tag.left {
+        left: 32px;
+      }
+
+      .page-number-tag.right {
+        right: 32px;
+      }
+
+      .page-title {
+        font-family: "Cinzel", serif;
+
+        font-size: 1rem;
+
+        font-weight: 700;
+
+        color: var(--navy-dark);
+
+        text-transform: uppercase;
+
+        letter-spacing: 1px;
+
+        margin-bottom: 6px;
+
+        padding-bottom: 3px;
+
+        border-bottom: 1px solid var(--teal-accent);
+
+        display: inline-block;
+      }
+
+      /* Front & Back Cover */
+
+      .cover-page {
+        align-items: center;
+
+        text-align: center;
+
+        justify-content: space-between;
+
+        padding: 40px 35px;
+      }
+
+      .patch-emblem-box {
+        width: 110px;
+
+        height: 110px;
+
+        border-radius: 50%;
+
+        background: #bce1f2;
+
+        border: 3px solid var(--navy-dark);
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      .scroll-title-group h2 {
+        font-family: "Cinzel", serif;
+
+        font-size: 1.3rem;
+
+        font-weight: 800;
+
+        color: var(--navy-dark);
+      }
+
+      .scroll-title-group h3 {
+        font-family: "Cinzel", serif;
+
+        font-size: 1.75rem;
+
+        font-weight: 800;
+
+        color: var(--navy-dark);
+
+        margin: 4px 0;
+      }
+
+      .scroll-title-group p {
+        font-size: 0.78rem;
+
+        font-weight: 700;
+
+        color: var(--teal-accent);
+
+        text-transform: uppercase;
+
+        letter-spacing: 1.5px;
+
+        margin-top: 6px;
+      }
+
+      /* Illustrated Leadership Blocks */
+
+      .leader-container {
+        display: flex;
+
+        gap: 10px;
+
+        align-items: flex-start;
+      }
+
+      .leader-photo {
+        width: 70px;
+
+        height: 85px;
+
+        background: #d8cdb8;
+
+        border: 1px solid var(--navy-dark);
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 0.55rem;
+
+        text-align: center;
+
+        color: #555;
+
+        flex-shrink: 0;
+      }
+
+      .leader-content h4 {
+        font-family: "Cinzel", serif;
+
+        font-size: 0.78rem;
+
+        color: var(--navy-dark);
+
+        margin-bottom: 1px;
+      }
+
+      .leader-role {
+        font-size: 0.64rem;
+
+        font-weight: 700;
+
+        color: var(--teal-accent);
+
+        margin-bottom: 3px;
+      }
+
+      .leader-content p {
+        font-size: 0.67rem;
+
+        line-height: 1.32;
+
+        color: var(--charcoal);
+      }
+
+      /* Keynote */
+
+      .keynote-container {
+        display: flex;
+
+        gap: 12px;
+
+        align-items: flex-start;
+      }
+
+      .speaker-photo {
+        width: 80px;
+
+        height: 100px;
+
+        background: #d8cdb8;
+
+        border: 1px solid var(--navy-dark);
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 0.6rem;
+
+        text-align: center;
+
+        color: #555;
+
+        flex-shrink: 0;
+      }
+
+      /* Vigil Honor Roster Columns */
+
+      .vigil-roster-columns {
+        display: grid;
+
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 3px 15px;
+
+        font-size: 0.65rem;
+
+        line-height: 1.3;
+      }
+
+      .vigil-roster-item {
+        display: flex;
+
+        justify-content: space-between;
+
+        border-bottom: 1px dotted #dcd1be;
+
+        padding-bottom: 1px;
+      }
+
+      .vigil-name {
+        font-weight: 700;
+
+        color: var(--navy-dark);
+      }
+
+      .vigil-totem {
+        color: var(--teal-accent);
+
+        font-style: italic;
+      }
+
+      /* Compact Award Section Blocks with Featured Medallions */
+
+      .award-grid-compact {
+        display: grid;
+
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 6px 10px;
+      }
+
+      .award-card-compact {
+        background: rgba(255, 255, 255, 0.4);
+
+        padding: 6px 8px;
+
+        border-radius: 4px;
+
+        border: 1px solid #e2d5bd;
+      }
+
+      .award-card-compact h4 {
+        font-family: "Cinzel", serif;
+
+        font-size: 0.7rem;
+
+        color: var(--navy-dark);
+
+        margin-bottom: 1px;
+      }
+
+      .award-card-compact p {
+        font-size: 0.58rem;
+
+        line-height: 1.25;
+
+        color: var(--charcoal);
+      }
+
+      /* Featured Flagship Award Cards */
+
+      .award-card-featured {
+        grid-column: span 2;
+
+        display: flex;
+
+        gap: 10px;
+
+        align-items: center;
+
+        background: rgba(239, 229, 208, 0.6);
+
+        border: 1px solid var(--teal-accent);
+
+        padding: 6px 10px;
+
+        border-radius: 4px;
+      }
+
+      .award-medallion-placeholder {
+        width: 48px;
+
+        height: 48px;
+
+        background: #d8cdb8;
+
+        border: 1px solid var(--navy-dark);
+
+        border-radius: 50%;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 0.48rem;
+
+        text-align: center;
+
+        color: var(--navy-dark);
+
+        font-weight: 700;
+
+        flex-shrink: 0;
+      }
+
+      /* Schedule */
+
+      .schedule-list {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 6px;
+      }
+
+      .schedule-row {
+        display: flex;
+
+        align-items: baseline;
+
+        gap: 12px;
+
+        border-bottom: 1px dotted #ccc;
+
+        padding-bottom: 4px;
+      }
+
+      .schedule-time {
+        font-family: "Cinzel", serif;
+
+        font-size: 0.72rem;
+
+        font-weight: 700;
+
+        color: var(--teal-accent);
+
+        min-width: 60px;
+      }
+
+      .schedule-details h4 {
+        font-size: 0.75rem;
+
+        font-weight: 700;
+
+        color: var(--navy-dark);
+      }
+
+      .schedule-details p {
+        font-size: 0.65rem;
+
+        color: #555;
+      }
+
+      @media print {
+        @page {
+          size: letter landscape;
+
+          margin: 0;
+        }
+
+        body {
+          background: white;
+
+          padding: 0;
+        }
+
+        header.app-header,
+        .controls {
+          display: none;
+        }
+
+        .sheet-wrapper {
+          border: none;
+
+          box-shadow: none;
+
+          padding: 0;
+
+          margin: 0 auto;
+
+          page-break-after: always;
+
+          width: 11in;
+
+          height: 8.5in;
+        }
+
+        .spread-row {
+          border: none;
+
+          box-shadow: none;
+
+          width: 11in;
+
+          height: 8.5in;
+        }
+      }
+    </style>
+    <style>
+      /* Final print/layout corrections */
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: #d9d2c4;
+        color: var(--charcoal, #292b2d);
+        font-family: "Open Sans", Arial, sans-serif;
+      }
+      .view-section {
+        display: none;
+      }
+      .view-section.active {
+        display: block;
+      }
+      .booklet-container {
+        width: 100%;
+      }
+      .spread-row {
+        width: 11in !important;
+        height: 8.5in !important;
+        min-width: 11in;
+        min-height: 8.5in;
+        display: flex;
+        position: relative;
+        overflow: hidden;
+        margin: 24px auto;
+        background: var(--bg-cream, #f5f0e6);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      }
+      .spread-row::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: #c9bea9;
+        border-left: 1px dashed #c9bea9;
+        z-index: 20;
+      }
+      .booklet-page {
+        flex: 0 0 5.5in !important;
+        width: 5.5in !important;
+        height: 8.5in !important;
+        padding: 0.42in 0.48in 0.4in !important;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-cream, #f5f0e6);
+        justify-content: space-between;
+      }
+      .page-title {
+        font-size: 18pt !important;
+        line-height: 1.12 !important;
+        margin-bottom: 12pt !important;
+      }
+      .page-content-area,
+      .schedule-list,
+      .award-grid-compact {
+        gap: 9pt !important;
+      }
+      p {
+        font-size: 9.5pt;
+        line-height: 1.42;
+      }
+      h4 {
+        font-size: 11pt;
+        line-height: 1.2;
+      }
+      .schedule-time {
+        font-size: 10.5pt !important;
+      }
+      .schedule-details h4 {
+        margin: 0 0 2pt;
+      }
+      .schedule-details p {
+        margin: 0;
+      }
+      .award-card-compact,
+      .award-card-featured {
+        padding: 8pt !important;
+      }
+      .vigil-intro {
+        display: flex;
+        flex-direction: column;
+        gap: 8pt;
+      }
+      .vigil-quote {
+        font-size: 8.5pt;
+        font-style: italic;
+        line-height: 1.35;
+      }
+      .class-honoree {
+        margin-top: 9pt;
+        padding: 10pt;
+        border: 1px solid #c8bda8;
+        background: #fbf8f0;
+        text-align: center;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .class-honoree-label {
+        font-family: "Cinzel", serif;
+        font-size: 11pt;
+        font-weight: 700;
+        color: var(--navy-dark, #18344a);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .honoree-photo {
+        width: 1.25in;
+        height: 1.25in;
+        margin: 8pt auto;
+        border: 1px solid #aaa;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 7pt;
+        color: #777;
+      }
+      .honoree-name {
+        font-family: "Cinzel", serif;
+        font-size: 16pt;
+        font-weight: 700;
+        color: var(--navy-dark, #18344a);
+      }
+      .honoree-title {
+        margin-top: 3pt;
+        font-size: 9.5pt;
+        font-weight: 700;
+        color: var(--teal-accent, #287f82);
+      }
+      .honoree-bio {
+        max-width: 3.8in;
+        margin-top: 7pt;
+        font-size: 9pt;
+        line-height: 1.4;
+        color: #555;
+      }
+      .vigil-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(6, 1fr);
+        gap: 6pt;
+        flex: 1;
+        min-height: 0;
+      }
+      .vigil-card {
+        min-height: 0;
+        border: 1px solid #cfc5b4;
+        background: #fbf9f3;
+        padding: 4pt;
+        display: grid;
+        grid-template-columns: 0.62in 1fr;
+        grid-template-rows: auto auto;
+        column-gap: 5pt;
+        align-items: center;
+      }
+      .vigil-photo {
+        grid-row: 1 / span 2;
+        width: 0.62in;
+        height: 0.62in;
+        border: 1px solid #aaa;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 6.5pt;
+        color: #777;
+      }
+      .vigil-card .vigil-name {
+        font-size: 8.7pt;
+        line-height: 1.05;
+        font-weight: 700;
+        align-self: end;
+      }
+      .vigil-card .vigil-totem {
+        font-size: 8pt;
+        line-height: 1.05;
+        color: var(--teal-accent, #287f82);
+        font-style: italic;
+        align-self: start;
+      }
+      .page-number-tag {
+        font-size: 7.5pt !important;
+      }
+      .imposition-note {
+        width: 11in;
+        margin: 18px auto 10px;
+        padding: 10px 14px;
+        background: #f5f0e6;
+        border-left: 4px solid var(--navy-dark, #18344a);
+        font-size: 9pt;
+      }
+      .imposition-sheet {
+        width: 11in;
+        margin: 0 auto 28px;
+      }
+      .sheet-label {
+        font-weight: 700;
+        font-size: 10pt;
+        margin: 0 0 5px;
+      }
+      .imposition-sheet .spread-row {
+        margin: 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .controls {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+      @media screen and (max-width: 1100px) {
+        .spread-row,
+        .imposition-sheet,
+        .imposition-note {
+          transform-origin: top center;
+        }
+      }
+      @media print {
+        @page {
+          size: 11in 8.5in landscape;
+          margin: 0;
+        }
+        body {
+          background: #fff;
+        }
+        .controls,
+        header,
+        .view-section:not(.active) {
+          display: none !important;
+        }
+        .spread-row {
+          margin: 0 !important;
+          box-shadow: none !important;
+          page-break-after: always;
+          break-after: page;
+        }
+        #view-spreads .spread-row {
+          display: flex !important;
+        }
+        #view-spreads {
+          display: block !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Amangamek-Wipit Lodge 470</h1>
+      <p>75th Anniversary Banquet Booklet — Consolidated Awards Edition</p>
+    </header>
+    <div class="controls">
+      <button class="active" id="btn-spreads" onclick="switchView('spreads')">
+        Booklet Reader — 5.5 × 8.5 in Pages
+      </button>
+      <button id="btn-imposition" onclick="switchView('imposition')">
+        Print Imposition — 11 × 8.5 in Sheets
+      </button>
+    </div>
+    <div class="booklet-container">
+      <!-- VIEW 1: BOOKLET SPREADS (12 Pages Total) -->
+      <div class="view-section active" id="view-spreads">
+        <div class="spread-row">
+          <div class="booklet-page cover-page">
+            <div class="patch-emblem-box">
+              <span
+                style="
+                  font-weight: 700;
+
+                  color: var(--navy-dark);
+
+                  font-size: 0.7rem;
+
+                  text-align: center;
+                "
+                >[ 75th Patch Logo ]</span
+              >
+            </div>
+            <div class="scroll-title-group">
+              <h2>CHOMPING THROUGH</h2>
+              <h3>HISTORY</h3>
+              <p>
+                Amangamek-Wipit Lodge Banquet 2027<br />January 9th @ UMD Samuel
+                Riggs IV Center
+              </p>
+            </div>
+            <div
+              style="
+                font-size: 0.78rem;
+
+                font-style: italic;
+
+                color: var(--charcoal);
+
+                font-weight: 600;
+              "
+            >
+              "Celebrating 75 Years of Cheerful Service"
+            </div>
+            <span class="page-number-tag left">Page 1</span>
+          </div>
+          <div
+            class="booklet-page cover-page"
+            style="justify-content: center; text-align: center"
+          >
+            <div
+              style="
+                font-family: &quot;Cinzel&quot;, serif;
+
+                font-size: 1.1rem;
+
+                font-weight: 700;
+
+                color: var(--navy-dark);
+              "
+            >
+              AMANGAMEK-WIPIT LODGE 470
+            </div>
+            <div
+              style="
+                font-size: 0.76rem;
+
+                font-weight: 600;
+
+                color: var(--teal-accent);
+
+                margin: 6px 0 15px 0;
+              "
+            >
+              National Capital Area Council, BSA
+            </div>
+            <div
+              style="
+                width: 65px;
+
+                height: 65px;
+
+                background: #fff;
+
+                border: 1px solid #bbb;
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: center;
+
+                font-size: 0.58rem;
+
+                color: #666;
+
+                margin: 10px auto;
+              "
+            >
+              [ QR CODE ]
+            </div>
+            <div style="font-size: 0.7rem; color: #555; margin-top: 8px">
+              Scan to view online photo galleries, historical archives, and
+              event rosters.
+            </div>
+            <span class="page-number-tag right">Page 12</span>
+          </div>
+        </div>
+        <div class="spread-row">
+          <div class="booklet-page">
+            <div>
+              <div class="page-title">Sequence of Events</div>
+              <div class="schedule-list">
+                <div class="schedule-row">
+                  <div class="schedule-time">5:00 PM</div>
+                  <div class="schedule-details">
+                    <h4>Doors Open &amp; Fellowship</h4>
+                    <p>Arrival &amp; historical exhibit viewing</p>
+                  </div>
+                </div>
+                <div class="schedule-row">
+                  <div class="schedule-time">6:00 PM</div>
+                  <div class="schedule-details">
+                    <h4>Opening Ceremonies</h4>
+                    <p>Colors &amp; Call to Order</p>
+                  </div>
+                </div>
+                <div class="schedule-row">
+                  <div class="schedule-time">6:30 PM</div>
+                  <div class="schedule-details">
+                    <h4>Banquet Dinner Service</h4>
+                    <p>Catered buffet by Riggs Alumni Center</p>
+                  </div>
+                </div>
+                <div class="schedule-row">
+                  <div class="schedule-time">7:30 PM</div>
+                  <div class="schedule-details">
+                    <h4>Keynote &amp; Anniversary Program</h4>
+                    <p>Historical retrospective</p>
+                  </div>
+                </div>
+                <div class="schedule-row">
+                  <div class="schedule-time">8:30 PM</div>
+                  <div class="schedule-details">
+                    <h4>Awards &amp; Recognitions</h4>
+                    <p>Presentation of honors</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <span class="page-number-tag left">Page 2</span>
+          </div>
+          <div class="booklet-page">
+            <div>
+              <div class="page-title">Leadership Remarks</div>
+              <div class="page-content-area">
+                <div class="leader-container">
+                  <div class="leader-photo">[ Chief Photo ]</div>
+                  <div class="leader-content">
+                    <h4>Lodge Chief's Welcome</h4>
+                    <div class="leader-role">Lodge Chief</div>
+                    <p>
+                      Welcome, Arrowmen, families, and honored guests! Tonight
+                      marks an extraordinary milestone as we celebrate 75 years
+                      of fellowship and leadership. Thank you for your
+                      relentless dedication to our camps and chapters.
+                    </p>
+                  </div>
+                </div>
+                <div class="leader-container">
+                  <div class="leader-photo">[ Adviser Photo ]</div>
+                  <div class="leader-content">
+                    <h4>Lodge Adviser's Message</h4>
+                    <div class="leader-role">Lodge Adviser</div>
+                    <p>
+                      For three-quarters of a century, the strength of
+                      Amangamek-Wipit Lodge has lived in the character of its
+                      youth and steady guidance of its scouters. Let us
+                      celebrate our past while building our next chapter
+                      together.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <span class="page-number-tag right">Page 3</span>
+          </div>
+        </div>
+        <div class="spread-row">
+          <div class="booklet-page">
+            <div>
+              <div class="page-title">Keynote Speaker</div>
+              <div class="page-content-area">
+                <div class="keynote-container">
+                  <div class="speaker-photo">[ Speaker Photo ]</div>
+                  <div>
+                    <h4
+                      style="
+                        font-family: &quot;Cinzel&quot;, serif;
+
+                        font-size: 0.8rem;
+
+                        color: var(--navy-dark);
+
+                        margin-bottom: 2px;
+                      "
+                    >
+                      Max Mihalov
+                    </h4>
+                    <p
+                      style="
+                        font-size: 0.66rem;
+
+                        font-weight: 600;
+
+                        color: var(--teal-accent);
+
+                        margin-bottom: 3px;
+                      "
+                    >
+                      Eastern Region Chief
+                    </p>
+                    <p
+                      style="
+                        font-size: 0.68rem;
+
+                        line-height: 1.35;
+
+                        color: var(--charcoal);
+                      "
+                    >
+                      Eagle Scout and Vigil Honor member Max Mihalov (Paugassett
+                      Lodge, Section E20) studies finance at Fordham University.
+                      He previously served as Lodge Chief, Conclave Vice Chief,
+                      and two terms as Section Chief.
+                    </p>
+                  </div>
+                </div>
+                <div
+                  style="
+                    font-size: 0.68rem;
+
+                    line-height: 1.35;
+
+                    color: var(--charcoal);
+                  "
+                >
+                  As Eastern Region Chief, Max supports regional lodges and
+                  facilitates National Leadership Seminars and Developing Youth
+                  Leadership Conferences. He is especially excited for Operation
+                  Arrow at the National Jamboree, eager to meet thousands of
+                  Scouts from across the country.
+                </div>
+              </div>
+            </div>
+            <span class="page-number-tag left">Page 4</span>
+          </div>
+          <div class="booklet-page">
+            <div>
+              <div class="page-title">Year in Review &amp; Outlook</div>
+              <div class="page-content-area">
+                <div class="award-card-compact" style="margin-bottom: 6px">
+                  <h4>Journey to Excellence Gold</h4>
+                  <p>
+                    Lodge 470 achieved Gold Standard recognition through
+                    high-impact camping promotion, service hours, and quality
+                    brotherhood events across council properties.
+                  </p>
+                </div>
+                <div class="award-card-compact">
+                  <h4>Looking Ahead to 2027</h4>
+                  <p>
+                    Join us May 14–16, 2027 at Goshen Scout Reservation for
+                    Spring Fellowship, and look for upcoming OA Corps summer
+                    camp service deployments across local camps.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <span class="page-number-tag right">Page 5</span>
+          </div>
+        </div>
+        <div class="spread-row">
+          <div class="booklet-page">
+            <div>
+              <div class="page-title">Lodge &amp; Special Honors</div>
+              <div class="award-grid-compact">
+                <div class="award-card-compact">
+                  <h4>New Arrowman Award</h4>
+                  <p>
+                    Recognizes newly inducted Ordeal members who rapidly engage
+                    in lodge activities within their first year.
+                  </p>
+                </div>
+                <div class="award-card-compact">
+                  <h4>Key Three Chapters</h4>
+                  <p>
+                    Recognizes outstanding chapter leadership, unit support, and
+                    collaborative program execution.
+                  </p>
+                </div>
+                <div class="award-card-compact">
+                  <h4>PMP Award</h4>
+                  <p>
+                    Performance Measurement Program standard achieved through
+                    structured lodge operations.
+                  </p>
+                </div>
+                <div class="award-card-compact">
+                  <h4>Unit of Excellence</h4>
+                  <p>
+                    Honors units maintaining high standards of camping, service,
+                    and youth leadership.
+                  </p>
+                </div>
+                <div class="award-card-compact">
+                  <h4>Young Adviser's Award</h4>
+                  <p>
+                    Ian McCuistion Award honoring adult advisers (ages 21–25)
+                    for energetic peer mentorship.
+                  </p>
+                </div>
+                <!-- Featured Servant Leadership Award with Medallion Placeholder -->
+                <div class="award-card-featured">
+                  <div class="award-medallion-placeholder">[Medallion]</div>
+                  <div>
+                    <h4>Servant Leadership Award</h4>
+                    <p>
+                      Honors Arrowmen who consistently prioritize the needs of
+                      others, laboring behind the scenes without expectation of
+                      applause.
+                    </p>
+                  </div>
+                </div>
+                <!-- Featured Founder's Award with Medallion Placeholder & Historical Roster -->
+                <div class="award-card-featured">
+                  <div class="award-medallion-placeholder">[Medallion]</div>
+                  <div>
+                    <h4>Founder’s Award &amp; History</h4>
+                    <p>
+                      Honors members patterning daily service after E. Urner
+                      Goodman and Carroll A. Edson.<br /><strong
+                        >Recent:</strong
+                      >
+
+                      C. Frome, D. Smith, A. Clark, L. Martinez, S. Harris
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <span class="page-number-tag left">Page 6</span>
+          </div>
+          <div class="booklet-page">
+            <div class="page-title">Vigil Honor</div>
+            <div class="vigil-intro">
+              <div class="award-card-compact">
+                <h4>The Highest Brotherhood</h4>
+                <p>
+                  The Vigil Honor is the highest honorary membership in the
+                  Order of the Arrow, recognizing unselfish service well beyond
+                  normal expectations. Members are recognized by their unique
+                  totem and lifetime dedication.
+                </p>
+              </div>
+              <div class="vigil-quote">
+                “Recognizing those inducted into the highest brotherhood of
+                unselfish service across our lodge's history.”
+              </div>
+            </div>
+            <div class="class-honoree">
+              <div class="class-honoree-label">2027 Vigil Class Honoree</div>
+              <div class="honoree-photo">PHOTO</div>
+              <div class="honoree-name">[ Honoree Name ]</div>
+              <div class="honoree-title">[ Recognition / Title ]</div>
+              <div class="honoree-bio">[ Honoree information / biography ]</div>
+            </div>
+            <span class="page-number-tag right">Page 8</span>
+          </div>
+        </div>
+        <div class="spread-row">
+          <div class="booklet-page">
+            <div class="page-title">2027 Vigil Class</div>
+            <div class="vigil-grid">
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Christopher Frome</div>
+                <div class="vigil-totem">Wachtge</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Alexa Vetter</div>
+                <div class="vigil-totem">Kittan</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Jordan Frome</div>
+                <div class="vigil-totem">Machk</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">David Smith</div>
+                <div class="vigil-totem">Attuck</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Sarah Jenkins</div>
+                <div class="vigil-totem">Sipu</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Michael Chang</div>
+                <div class="vigil-totem">Ahash</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Emily Davis</div>
+                <div class="vigil-totem">Nitis</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Robert Taylor</div>
+                <div class="vigil-totem">Hanne</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Jessica Miller</div>
+                <div class="vigil-totem">Lenno</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Brian Wilson</div>
+                <div class="vigil-totem">Popan</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Amanda Clark</div>
+                <div class="vigil-totem">Wissal</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Kevin White</div>
+                <div class="vigil-totem">Nimat</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Thomas Moore</div>
+                <div class="vigil-totem">Sachen</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Laura Martinez</div>
+                <div class="vigil-totem">Paupack</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Steven Harris</div>
+                <div class="vigil-totem">Hackmat</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Rachel Adams</div>
+                <div class="vigil-totem">Oque</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Daniel Garcia</div>
+                <div class="vigil-totem">Tucan</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Megan Baker</div>
+                <div class="vigil-totem">Waban</div>
+              </div>
+            </div>
+            <span class="page-number-tag left">Page 9</span>
+          </div>
+          <div class="booklet-page">
+            <div class="page-title">2027 Vigil Class (continued)</div>
+            <div class="vigil-grid">
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Joshua King</div>
+                <div class="vigil-totem">Natick</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Nicole Scott</div>
+                <div class="vigil-totem">Moxley</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Andrew Turner</div>
+                <div class="vigil-totem">Algon</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Samantha Hill</div>
+                <div class="vigil-totem">Monoc</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Matthew Cooper</div>
+                <div class="vigil-totem">Potop</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Ashley Ward</div>
+                <div class="vigil-totem">Chesa</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Justin Perez</div>
+                <div class="vigil-totem">Piscata</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Hannah Reed</div>
+                <div class="vigil-totem">Susque</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Brandon Cook</div>
+                <div class="vigil-totem">Patow</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Victoria Morgan</div>
+                <div class="vigil-totem">Accoke</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Tyler Bell</div>
+                <div class="vigil-totem">Matta</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Zackary Murphy</div>
+                <div class="vigil-totem">Nanjem</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Amber Bailey</div>
+                <div class="vigil-totem">Yocom</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Ethan Rivera</div>
+                <div class="vigil-totem">Conow</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Katelyn Cooper</div>
+                <div class="vigil-totem">Octor</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Nathaniel Ward</div>
+                <div class="vigil-totem">Wicom</div>
+              </div>
+              <div class="vigil-card">
+                <div class="vigil-photo">PHOTO</div>
+                <div class="vigil-name">Grace Foster</div>
+                <div class="vigil-totem">Chopt</div>
+              </div>
+            </div>
+            <span class="page-number-tag right">Page 10</span>
+          </div>
+        </div>
+        <div class="spread-row">
+          <div
+            class="booklet-page"
+            style="justify-content: center; text-align: center"
+          >
+            <div>
+              <div class="page-title" style="margin-bottom: 20px">
+                Diamond Jubilee
+              </div>
+              <div
+                style="
+                  font-family: &quot;Cinzel&quot;, serif;
+
+                  font-size: 1.15rem;
+
+                  font-weight: 700;
+
+                  color: var(--navy-dark);
+
+                  margin-bottom: 12px;
+                "
+              >
+                75 Years of Brotherhood
+              </div>
+              <p
+                style="
+                  font-size: 0.76rem;
+
+                  line-height: 1.5;
+
+                  color: var(--charcoal);
+
+                  max-width: 320px;
+
+                  margin: 0 auto;
+                "
+              >
+                Thank you to every Arrowman, scouter, and alumni member who made
+                this 75th Anniversary Banquet possible. Here’s to many more
+                decades of cheerful service!
+              </p>
+            </div>
+            <span class="page-number-tag left">Page 10</span>
+          </div>
+          <div
+            class="booklet-page cover-page"
+            style="justify-content: center; text-align: center"
+          >
+            <div
+              style="
+                font-family: &quot;Cinzel&quot;, serif;
+
+                font-size: 1.1rem;
+
+                font-weight: 700;
+
+                color: var(--navy-dark);
+              "
+            >
+              AMANGAMEK-WIPIT LODGE 470
+            </div>
+            <div
+              style="
+                font-size: 0.76rem;
+
+                font-weight: 600;
+
+                color: var(--teal-accent);
+
+                margin: 6px 0 15px 0;
+              "
+            >
+              National Capital Area Council, BSA
+            </div>
+            <div
+              style="
+                width: 65px;
+
+                height: 65px;
+
+                background: #fff;
+
+                border: 1px solid #bbb;
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: center;
+
+                font-size: 0.58rem;
+
+                color: #666;
+
+                margin: 10px auto;
+              "
+            >
+              [ QR CODE ]
+            </div>
+            <div style="font-size: 0.7rem; color: #555; margin-top: 8px">
+              Scan to view online photo galleries, historical archives, and
+              event rosters.
+            </div>
+            <span class="page-number-tag right">Page 12</span>
+          </div>
+        </div>
+      </div>
+      <!-- VIEW 2: PRINT IMPOSITION -->
+      <div class="view-section" id="view-imposition">
+        <div class="imposition-note">
+          <strong>Print imposition:</strong> Finished booklet pages are 5.5 ×
+          8.5 inches. Each physical sheet is 11 × 8.5 inches and folds at the
+          center.
+        </div>
+        <div class="imposition-sheet">
+          <div class="sheet-label">Sheet 1 — 12 | 1</div>
+          <div class="spread-row">
+            <div
+              class="booklet-page cover-page"
+              data-physical-page="12"
+              style="justify-content: center; text-align: center"
+            >
+              <div
+                style="
+                  font-family: &quot;Cinzel&quot;, serif;
+
+                  font-size: 1.1rem;
+
+                  font-weight: 700;
+
+                  color: var(--navy-dark);
+                "
+              >
+                AMANGAMEK-WIPIT LODGE 470
+              </div>
+              <div
+                style="
+                  font-size: 0.76rem;
+
+                  font-weight: 600;
+
+                  color: var(--teal-accent);
+
+                  margin: 6px 0 15px 0;
+                "
+              >
+                National Capital Area Council, BSA
+              </div>
+              <div
+                style="
+                  width: 65px;
+
+                  height: 65px;
+
+                  background: #fff;
+
+                  border: 1px solid #bbb;
+
+                  display: flex;
+
+                  align-items: center;
+
+                  justify-content: center;
+
+                  font-size: 0.58rem;
+
+                  color: #666;
+
+                  margin: 10px auto;
+                "
+              >
+                [ QR CODE ]
+              </div>
+              <div style="font-size: 0.7rem; color: #555; margin-top: 8px">
+                Scan to view online photo galleries, historical archives, and
+                event rosters.
+              </div>
+              <span class="page-number-tag right">Page 12</span>
+            </div>
+            <div class="booklet-page cover-page" data-physical-page="1">
+              <div class="patch-emblem-box">
+                <span
+                  style="
+                    font-weight: 700;
+
+                    color: var(--navy-dark);
+
+                    font-size: 0.7rem;
+
+                    text-align: center;
+                  "
+                  >[ 75th Patch Logo ]</span
+                >
+              </div>
+              <div class="scroll-title-group">
+                <h2>CHOMPING THROUGH</h2>
+                <h3>HISTORY</h3>
+                <p>
+                  Amangamek-Wipit Lodge Banquet 2027<br />January 9th @ UMD
+                  Samuel Riggs IV Center
+                </p>
+              </div>
+              <div
+                style="
+                  font-size: 0.78rem;
+
+                  font-style: italic;
+
+                  color: var(--charcoal);
+
+                  font-weight: 600;
+                "
+              >
+                "Celebrating 75 Years of Cheerful Service"
+              </div>
+              <span class="page-number-tag left">Page 1</span>
+            </div>
+          </div>
+        </div>
+        <div class="imposition-sheet">
+          <div class="sheet-label">Sheet 2 — 2 | 11</div>
+          <div class="spread-row">
+            <div
+              class="booklet-page cover-page"
+              data-physical-page="2"
+              style="justify-content: center; text-align: center"
+            >
+              <div
+                style="
+                  font-family: &quot;Cinzel&quot;, serif;
+
+                  font-size: 1.1rem;
+
+                  font-weight: 700;
+
+                  color: var(--navy-dark);
+                "
+              >
+                AMANGAMEK-WIPIT LODGE 470
+              </div>
+              <div
+                style="
+                  font-size: 0.76rem;
+
+                  font-weight: 600;
+
+                  color: var(--teal-accent);
+
+                  margin: 6px 0 15px 0;
+                "
+              >
+                National Capital Area Council, BSA
+              </div>
+              <div
+                style="
+                  width: 65px;
+
+                  height: 65px;
+
+                  background: #fff;
+
+                  border: 1px solid #bbb;
+
+                  display: flex;
+
+                  align-items: center;
+
+                  justify-content: center;
+
+                  font-size: 0.58rem;
+
+                  color: #666;
+
+                  margin: 10px auto;
+                "
+              >
+                [ QR CODE ]
+              </div>
+              <div style="font-size: 0.7rem; color: #555; margin-top: 8px">
+                Scan to view online photo galleries, historical archives, and
+                event rosters.
+              </div>
+              <span class="page-number-tag right">Page 12</span>
+            </div>
+            <div
+              class="booklet-page"
+              data-physical-page="11"
+              style="justify-content: center; text-align: center"
+            >
+              <div>
+                <div class="page-title" style="margin-bottom: 20px">
+                  Diamond Jubilee
+                </div>
+                <div
+                  style="
+                    font-family: &quot;Cinzel&quot;, serif;
+
+                    font-size: 1.15rem;
+
+                    font-weight: 700;
+
+                    color: var(--navy-dark);
+
+                    margin-bottom: 12px;
+                  "
+                >
+                  75 Years of Brotherhood
+                </div>
+                <p
+                  style="
+                    font-size: 0.76rem;
+
+                    line-height: 1.5;
+
+                    color: var(--charcoal);
+
+                    max-width: 320px;
+
+                    margin: 0 auto;
+                  "
+                >
+                  Thank you to every Arrowman, scouter, and alumni member who
+                  made this 75th Anniversary Banquet possible. Here’s to many
+                  more decades of cheerful service!
+                </p>
+              </div>
+              <span class="page-number-tag left">Page 10</span>
+            </div>
+          </div>
+        </div>
+        <div class="imposition-sheet">
+          <div class="sheet-label">Sheet 3 — 10 | 3</div>
+          <div class="spread-row">
+            <div class="booklet-page" data-physical-page="10">
+              <div class="page-title">2027 Vigil Class (continued)</div>
+              <div class="vigil-grid">
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Joshua King</div>
+                  <div class="vigil-totem">Natick</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Nicole Scott</div>
+                  <div class="vigil-totem">Moxley</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Andrew Turner</div>
+                  <div class="vigil-totem">Algon</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Samantha Hill</div>
+                  <div class="vigil-totem">Monoc</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Matthew Cooper</div>
+                  <div class="vigil-totem">Potop</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Ashley Ward</div>
+                  <div class="vigil-totem">Chesa</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Justin Perez</div>
+                  <div class="vigil-totem">Piscata</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Hannah Reed</div>
+                  <div class="vigil-totem">Susque</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Brandon Cook</div>
+                  <div class="vigil-totem">Patow</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Victoria Morgan</div>
+                  <div class="vigil-totem">Accoke</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Tyler Bell</div>
+                  <div class="vigil-totem">Matta</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Zackary Murphy</div>
+                  <div class="vigil-totem">Nanjem</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Amber Bailey</div>
+                  <div class="vigil-totem">Yocom</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Ethan Rivera</div>
+                  <div class="vigil-totem">Conow</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Katelyn Cooper</div>
+                  <div class="vigil-totem">Octor</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Nathaniel Ward</div>
+                  <div class="vigil-totem">Wicom</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Grace Foster</div>
+                  <div class="vigil-totem">Chopt</div>
+                </div>
+              </div>
+              <span class="page-number-tag right">Page 10</span>
+            </div>
+            <div class="booklet-page" data-physical-page="3">
+              <div>
+                <div class="page-title">Sequence of Events</div>
+                <div class="schedule-list">
+                  <div class="schedule-row">
+                    <div class="schedule-time">5:00 PM</div>
+                    <div class="schedule-details">
+                      <h4>Doors Open &amp; Fellowship</h4>
+                      <p>Arrival &amp; historical exhibit viewing</p>
+                    </div>
+                  </div>
+                  <div class="schedule-row">
+                    <div class="schedule-time">6:00 PM</div>
+                    <div class="schedule-details">
+                      <h4>Opening Ceremonies</h4>
+                      <p>Colors &amp; Call to Order</p>
+                    </div>
+                  </div>
+                  <div class="schedule-row">
+                    <div class="schedule-time">6:30 PM</div>
+                    <div class="schedule-details">
+                      <h4>Banquet Dinner Service</h4>
+                      <p>Catered buffet by Riggs Alumni Center</p>
+                    </div>
+                  </div>
+                  <div class="schedule-row">
+                    <div class="schedule-time">7:30 PM</div>
+                    <div class="schedule-details">
+                      <h4>Keynote &amp; Anniversary Program</h4>
+                      <p>Historical retrospective</p>
+                    </div>
+                  </div>
+                  <div class="schedule-row">
+                    <div class="schedule-time">8:30 PM</div>
+                    <div class="schedule-details">
+                      <h4>Awards &amp; Recognitions</h4>
+                      <p>Presentation of honors</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <span class="page-number-tag left">Page 2</span>
+            </div>
+          </div>
+        </div>
+        <div class="imposition-sheet">
+          <div class="sheet-label">Sheet 4 — 4 | 9</div>
+          <div class="spread-row">
+            <div class="booklet-page" data-physical-page="4">
+              <div>
+                <div class="page-title">Leadership Remarks</div>
+                <div class="page-content-area">
+                  <div class="leader-container">
+                    <div class="leader-photo">[ Chief Photo ]</div>
+                    <div class="leader-content">
+                      <h4>Lodge Chief's Welcome</h4>
+                      <div class="leader-role">Lodge Chief</div>
+                      <p>
+                        Welcome, Arrowmen, families, and honored guests! Tonight
+                        marks an extraordinary milestone as we celebrate 75
+                        years of fellowship and leadership. Thank you for your
+                        relentless dedication to our camps and chapters.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="leader-container">
+                    <div class="leader-photo">[ Adviser Photo ]</div>
+                    <div class="leader-content">
+                      <h4>Lodge Adviser's Message</h4>
+                      <div class="leader-role">Lodge Adviser</div>
+                      <p>
+                        For three-quarters of a century, the strength of
+                        Amangamek-Wipit Lodge has lived in the character of its
+                        youth and steady guidance of its scouters. Let us
+                        celebrate our past while building our next chapter
+                        together.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <span class="page-number-tag right">Page 3</span>
+            </div>
+            <div class="booklet-page" data-physical-page="9">
+              <div class="page-title">2027 Vigil Class</div>
+              <div class="vigil-grid">
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Christopher Frome</div>
+                  <div class="vigil-totem">Wachtge</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Alexa Vetter</div>
+                  <div class="vigil-totem">Kittan</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Jordan Frome</div>
+                  <div class="vigil-totem">Machk</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">David Smith</div>
+                  <div class="vigil-totem">Attuck</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Sarah Jenkins</div>
+                  <div class="vigil-totem">Sipu</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Michael Chang</div>
+                  <div class="vigil-totem">Ahash</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Emily Davis</div>
+                  <div class="vigil-totem">Nitis</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Robert Taylor</div>
+                  <div class="vigil-totem">Hanne</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Jessica Miller</div>
+                  <div class="vigil-totem">Lenno</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Brian Wilson</div>
+                  <div class="vigil-totem">Popan</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Amanda Clark</div>
+                  <div class="vigil-totem">Wissal</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Kevin White</div>
+                  <div class="vigil-totem">Nimat</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Thomas Moore</div>
+                  <div class="vigil-totem">Sachen</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Laura Martinez</div>
+                  <div class="vigil-totem">Paupack</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Steven Harris</div>
+                  <div class="vigil-totem">Hackmat</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Rachel Adams</div>
+                  <div class="vigil-totem">Oque</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Daniel Garcia</div>
+                  <div class="vigil-totem">Tucan</div>
+                </div>
+                <div class="vigil-card">
+                  <div class="vigil-photo">PHOTO</div>
+                  <div class="vigil-name">Megan Baker</div>
+                  <div class="vigil-totem">Waban</div>
+                </div>
+              </div>
+              <span class="page-number-tag left">Page 9</span>
+            </div>
+          </div>
+        </div>
+        <div class="imposition-sheet">
+          <div class="sheet-label">Sheet 5 — 8 | 5</div>
+          <div class="spread-row">
+            <div class="booklet-page" data-physical-page="8">
+              <div class="page-title">Vigil Honor</div>
+              <div class="vigil-intro">
+                <div class="award-card-compact">
+                  <h4>The Highest Brotherhood</h4>
+                  <p>
+                    The Vigil Honor is the highest honorary membership in the
+                    Order of the Arrow, recognizing unselfish service well
+                    beyond normal expectations. Members are recognized by their
+                    unique totem and lifetime dedication.
+                  </p>
+                </div>
+                <div class="vigil-quote">
+                  “Recognizing those inducted into the highest brotherhood of
+                  unselfish service across our lodge's history.”
+                </div>
+              </div>
+              <div class="class-honoree">
+                <div class="class-honoree-label">2027 Vigil Class Honoree</div>
+                <div class="honoree-photo">PHOTO</div>
+                <div class="honoree-name">[ Honoree Name ]</div>
+                <div class="honoree-title">[ Recognition / Title ]</div>
+                <div class="honoree-bio">
+                  [ Honoree information / biography ]
+                </div>
+              </div>
+              <span class="page-number-tag right">Page 8</span>
+            </div>
+            <div class="booklet-page" data-physical-page="5">
+              <div>
+                <div class="page-title">Keynote Speaker</div>
+                <div class="page-content-area">
+                  <div class="keynote-container">
+                    <div class="speaker-photo">[ Speaker Photo ]</div>
+                    <div>
+                      <h4
+                        style="
+                          font-family: &quot;Cinzel&quot;, serif;
+
+                          font-size: 0.8rem;
+
+                          color: var(--navy-dark);
+
+                          margin-bottom: 2px;
+                        "
+                      >
+                        Max Mihalov
+                      </h4>
+                      <p
+                        style="
+                          font-size: 0.66rem;
+
+                          font-weight: 600;
+
+                          color: var(--teal-accent);
+
+                          margin-bottom: 3px;
+                        "
+                      >
+                        Eastern Region Chief
+                      </p>
+                      <p
+                        style="
+                          font-size: 0.68rem;
+
+                          line-height: 1.35;
+
+                          color: var(--charcoal);
+                        "
+                      >
+                        Eagle Scout and Vigil Honor member Max Mihalov
+                        (Paugassett Lodge, Section E20) studies finance at
+                        Fordham University. He previously served as Lodge Chief,
+                        Conclave Vice Chief, and two terms as Section Chief.
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      font-size: 0.68rem;
+
+                      line-height: 1.35;
+
+                      color: var(--charcoal);
+                    "
+                  >
+                    As Eastern Region Chief, Max supports regional lodges and
+                    facilitates National Leadership Seminars and Developing
+                    Youth Leadership Conferences. He is especially excited for
+                    Operation Arrow at the National Jamboree, eager to meet
+                    thousands of Scouts from across the country.
+                  </div>
+                </div>
+              </div>
+              <span class="page-number-tag left">Page 4</span>
+            </div>
+          </div>
+        </div>
+        <div class="imposition-sheet">
+          <div class="sheet-label">Sheet 6 — 6 | 7</div>
+          <div class="spread-row">
+            <div class="booklet-page" data-physical-page="6">
+              <div>
+                <div class="page-title">Year in Review &amp; Outlook</div>
+                <div class="page-content-area">
+                  <div class="award-card-compact" style="margin-bottom: 6px">
+                    <h4>Journey to Excellence Gold</h4>
+                    <p>
+                      Lodge 470 achieved Gold Standard recognition through
+                      high-impact camping promotion, service hours, and quality
+                      brotherhood events across council properties.
+                    </p>
+                  </div>
+                  <div class="award-card-compact">
+                    <h4>Looking Ahead to 2027</h4>
+                    <p>
+                      Join us May 14–16, 2027 at Goshen Scout Reservation for
+                      Spring Fellowship, and look for upcoming OA Corps summer
+                      camp service deployments across local camps.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <span class="page-number-tag right">Page 5</span>
+            </div>
+            <div class="booklet-page" data-physical-page="7">
+              <div>
+                <div class="page-title">Lodge &amp; Special Honors</div>
+                <div class="award-grid-compact">
+                  <div class="award-card-compact">
+                    <h4>New Arrowman Award</h4>
+                    <p>
+                      Recognizes newly inducted Ordeal members who rapidly
+                      engage in lodge activities within their first year.
+                    </p>
+                  </div>
+                  <div class="award-card-compact">
+                    <h4>Key Three Chapters</h4>
+                    <p>
+                      Recognizes outstanding chapter leadership, unit support,
+                      and collaborative program execution.
+                    </p>
+                  </div>
+                  <div class="award-card-compact">
+                    <h4>PMP Award</h4>
+                    <p>
+                      Performance Measurement Program standard achieved through
+                      structured lodge operations.
+                    </p>
+                  </div>
+                  <div class="award-card-compact">
+                    <h4>Unit of Excellence</h4>
+                    <p>
+                      Honors units maintaining high standards of camping,
+                      service, and youth leadership.
+                    </p>
+                  </div>
+                  <div class="award-card-compact">
+                    <h4>Young Adviser's Award</h4>
+                    <p>
+                      Ian McCuistion Award honoring adult advisers (ages 21–25)
+                      for energetic peer mentorship.
+                    </p>
+                  </div>
+                  <!-- Featured Servant Leadership Award with Medallion Placeholder -->
+                  <div class="award-card-featured">
+                    <div class="award-medallion-placeholder">[Medallion]</div>
+                    <div>
+                      <h4>Servant Leadership Award</h4>
+                      <p>
+                        Honors Arrowmen who consistently prioritize the needs of
+                        others, laboring behind the scenes without expectation
+                        of applause.
+                      </p>
+                    </div>
+                  </div>
+                  <!-- Featured Founder's Award with Medallion Placeholder & Historical Roster -->
+                  <div class="award-card-featured">
+                    <div class="award-medallion-placeholder">[Medallion]</div>
+                    <div>
+                      <h4>Founder’s Award &amp; History</h4>
+                      <p>
+                        Honors members patterning daily service after E. Urner
+                        Goodman and Carroll A. Edson.<br /><strong
+                          >Recent:</strong
+                        >
+
+                        C. Frome, D. Smith, A. Clark, L. Martinez, S. Harris
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <span class="page-number-tag left">Page 6</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function switchView(mode) {
+        const spreadsView = document.getElementById("view-spreads");
+
+        const impositionView = document.getElementById("view-imposition");
+
+        const btnSpreads = document.getElementById("btn-spreads");
+
+        const btnImposition = document.getElementById("btn-imposition");
+
+        if (mode === "spreads") {
+          spreadsView.classList.add("active");
+
+          impositionView.classList.remove("active");
+
+          btnSpreads.classList.add("active");
+
+          btnImposition.classList.remove("active");
+        } else {
+          spreadsView.classList.remove("active");
+
+          impositionView.classList.add("active");
+
+          btnSpreads.classList.remove("active");
+
+          btnImposition.classList.add("active");
+        }
+      }
+    </script>
+  </body>
+</html>
