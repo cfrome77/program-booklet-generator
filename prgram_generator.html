@@ -101,7 +101,7 @@
 
       /* Sidebar Editor Controls */
       .sidebar-editor {
-        width: 390px;
+        width: 410px;
         background: #282830;
         color: #e0e0e0;
         border-right: 1px solid #3a3a44;
@@ -181,13 +181,13 @@
         font-size: 0.75rem;
       }
 
-      /* Page Cards List in Editor */
+      /* Page Cards & Block List in Editor */
       .editor-page-card {
         background: #1e1e24;
         border: 1px solid #444;
         border-radius: 6px;
-        padding: 10px;
-        margin-bottom: 10px;
+        padding: 12px;
+        margin-bottom: 12px;
       }
 
       .editor-page-header {
@@ -196,8 +196,26 @@
         align-items: center;
         margin-bottom: 8px;
         font-weight: 700;
-        font-size: 0.82rem;
+        font-size: 0.85rem;
         color: #70c0d0;
+      }
+
+      .block-editor-card {
+        background: #2a2a34;
+        border: 1px dashed #555;
+        border-radius: 4px;
+        padding: 8px;
+        margin-top: 8px;
+      }
+
+      .block-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #f0c070;
+        margin-bottom: 6px;
       }
 
       .page-actions-btns {
@@ -529,6 +547,16 @@
         font-size: 0.68rem;
         line-height: 1.32;
         color: var(--charcoal);
+      }
+
+      /* Image Block */
+      .image-block {
+        width: 100%;
+        max-height: 180px;
+        object-fit: contain;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        margin: 4px 0;
       }
 
       /* Awards */
@@ -885,7 +913,8 @@
               bottomBannerText: "JOIN US FOR AN UNFORGETTABLE PROGRAM",
               bgImage: "",
               scrollworkFrame: true,
-              vAlign: "space-between"
+              vAlign: "space-between",
+              blocks: []
             },
             {
               id: "page-2",
@@ -896,13 +925,18 @@
                 { time: "6:00 PM", title: "Opening Program", details: "Welcome Ceremony" },
                 { time: "7:00 PM", title: "Dinner Service", details: "Main Event" },
                 { time: "8:30 PM", title: "Closing Remarks", details: "Farewell" }
-              ]
+              ],
+              blocks: []
             },
             {
               id: "page-3",
               type: "custom",
               title: "About Our Organization",
-              content: "Add your customized content, story, background history, or announcements here. This engine supports dynamic page generation and center-fold print imposition."
+              content: "Add your customized content, story, background history, or announcements here. This engine supports dynamic page generation, content block layers, and center-fold print imposition.",
+              blocks: [
+                { id: "b1", type: "heading", text: "Custom Subheading Block" },
+                { id: "b2", type: "paragraph", text: "You can freely add, remove, and reorder text blocks, image blocks, and dividers on any page!" }
+              ]
             },
             {
               id: "page-4",
@@ -914,7 +948,8 @@
               sponsorsText: "Thank You To Our Sponsors:",
               sponsors: ["Sponsor Alpha", "Sponsor Beta", "Sponsor Gamma", "Sponsor Delta"],
               bottomBannerStyle: "torn",
-              bottomBannerText: "THANK YOU FOR YOUR SUPPORT"
+              bottomBannerText: "THANK YOU FOR YOUR SUPPORT",
+              blocks: []
             }
           ]
         },
@@ -943,7 +978,8 @@
               bottomBannerText: "JOIN US IN CELEBRATING 75 YEARS OF CHEERFUL SERVICE!",
               bgImage: "",
               scrollworkFrame: true,
-              vAlign: "space-between"
+              vAlign: "space-between",
+              blocks: []
             },
             {
               id: "page-2",
@@ -955,7 +991,8 @@
                 { time: "6:30 PM", title: "Banquet Dinner Service", details: "Catered buffet by Riggs Alumni Center" },
                 { time: "7:30 PM", title: "Keynote & Anniversary Program", details: "Historical retrospective" },
                 { time: "8:30 PM", title: "Awards & Recognitions", details: "Presentation of honors" }
-              ]
+              ],
+              blocks: []
             },
             {
               id: "page-3",
@@ -964,7 +1001,8 @@
               leaders: [
                 { title: "Lodge Chief's Welcome", role: "Lodge Chief", text: "Welcome, Arrowmen, families, and honored guests! Tonight marks an extraordinary milestone as we celebrate 75 years of fellowship and leadership. Thank you for your relentless dedication to our camps and chapters.", img: "" },
                 { title: "Lodge Adviser's Message", role: "Lodge Adviser", text: "For three-quarters of a century, the strength of Amangamek-Wipit Lodge has lived in the character of its youth and steady guidance of its scouters. Let us celebrate our past while building our next chapter together.", img: "" }
-              ]
+              ],
+              blocks: []
             },
             {
               id: "page-4",
@@ -973,13 +1011,15 @@
               speakerName: "Max Mihalov",
               speakerRole: "Eastern Region Chief",
               bioText: "Eagle Scout and Vigil Honor member Max Mihalov (Paugassett Lodge, Section E20) studies finance at Fordham University. He previously served as Lodge Chief, Conclave Vice Chief, and two terms as Section Chief. As Eastern Region Chief, Max supports regional lodges and facilitates National Leadership Seminars.",
-              speakerImg: ""
+              speakerImg: "",
+              blocks: []
             },
             {
               id: "page-5",
               type: "custom",
               title: "Year in Review & Outlook",
-              content: "<strong>Journey to Excellence Gold:</strong> Lodge 470 achieved Gold Standard recognition through high-impact camping promotion, service hours, and quality brotherhood events.<br/><br/><strong>Looking Ahead to 2027:</strong> Join us May 14–16, 2027 at Goshen Scout Reservation for Spring Fellowship, and look for upcoming OA Corps summer camp service deployments across local camps."
+              content: "<strong>Journey to Excellence Gold:</strong> Lodge 470 achieved Gold Standard recognition through high-impact camping promotion, service hours, and quality brotherhood events.<br/><br/><strong>Looking Ahead to 2027:</strong> Join us May 14–16, 2027 at Goshen Scout Reservation for Spring Fellowship, and look for upcoming OA Corps summer camp service deployments across local camps.",
+              blocks: []
             },
             {
               id: "page-6",
@@ -995,7 +1035,8 @@
               featuredAwards: [
                 { name: "Servant Leadership Award", desc: "Honors Arrowmen who consistently prioritize the needs of others, laboring behind the scenes without expectation of applause.", medallion: "[Medallion]" },
                 { name: "Founder’s Award & History", desc: "Honors members patterning daily service after E. Urner Goodman and Carroll A. Edson. Recent: C. Frome, D. Smith, A. Clark, L. Martinez, S. Harris", medallion: "[Medallion]" }
-              ]
+              ],
+              blocks: []
             },
             {
               id: "page-7",
@@ -1004,7 +1045,8 @@
               honoreeName: "2027 Vigil Class Honoree",
               honoreeTitle: "[ Recognition / Title ]",
               honoreeBio: "[ Honoree information / biography ]",
-              honoreePhoto: ""
+              honoreePhoto: "",
+              blocks: []
             },
             {
               id: "page-8",
@@ -1029,7 +1071,8 @@
                 { name: "Rachel Adams", totem: "Oque" },
                 { name: "Daniel Garcia", totem: "Tucan" },
                 { name: "Megan Baker", totem: "Waban" }
-              ]
+              ],
+              blocks: []
             },
             {
               id: "page-9",
@@ -1053,13 +1096,15 @@
                 { name: "Katelyn Cooper", totem: "Octor" },
                 { name: "Nathaniel Ward", totem: "Wicom" },
                 { name: "Grace Foster", totem: "Chopt" }
-              ]
+              ],
+              blocks: []
             },
             {
               id: "page-10",
               type: "custom",
               title: "Diamond Jubilee",
-              content: "<div style='text-align:center;'><h3>75 Years of Brotherhood</h3><p style='margin-top:10px;'>Thank you to every Arrowman, scouter, and alumni member who made this 75th Anniversary Banquet possible. Here’s to many more decades of cheerful service!</p></div>"
+              content: "<div style='text-align:center;'><h3>75 Years of Brotherhood</h3><p style='margin-top:10px;'>Thank you to every Arrowman, scouter, and alumni member who made this 75th Anniversary Banquet possible. Here’s to many more decades of cheerful service!</p></div>",
+              blocks: []
             },
             {
               id: "page-11",
@@ -1071,7 +1116,8 @@
               sponsorsText: "Thank You To Our Banquet Sponsors:",
               sponsors: ["NCAC Council", "Riggs Alumni Center", "Lodge Key Three", "Lodge Executive Committee"],
               bottomBannerStyle: "torn",
-              bottomBannerText: "CELEBRATING 75 YEARS OF SERVICE"
+              bottomBannerText: "CELEBRATING 75 YEARS OF SERVICE",
+              blocks: []
             }
           ]
         },
@@ -1098,7 +1144,8 @@
               topBarColor: "#2980b9",
               bottomBannerStyle: "gold",
               bottomBannerText: "WELCOME DELEGATES & GUESTS",
-              bgImage: ""
+              bgImage: "",
+              blocks: []
             },
             {
               id: "page-2",
@@ -1109,13 +1156,15 @@
                 { time: "09:30 AM", title: "Keynote Address", details: "Auditorium A" },
                 { time: "11:30 AM", title: "Panel Discussion", details: "Hall B" },
                 { time: "01:00 PM", title: "Networking Lunch", details: "Dining Pavilion" }
-              ]
+              ],
+              blocks: []
             },
             {
               id: "page-3",
               type: "custom",
               title: "Welcome & Overview",
-              content: "Welcome to the 2027 Leadership Summit. This booklet provides full details for sessions, speakers, and events."
+              content: "Welcome to the 2027 Leadership Summit. This booklet provides full details for sessions, speakers, and events.",
+              blocks: []
             },
             {
               id: "page-4",
@@ -1127,7 +1176,8 @@
               sponsorsText: "Sponsors:",
               sponsors: ["Partner Corp", "Global Tech", "Innovate Inc"],
               bottomBannerStyle: "gold",
-              bottomBannerText: "THANK YOU FOR ATTENDING"
+              bottomBannerText: "THANK YOU FOR ATTENDING",
+              blocks: []
             }
           ]
         }
@@ -1185,7 +1235,8 @@
         const container = document.getElementById("editor-pages-list");
         container.innerHTML = "";
 
-        bookletData.pages.forEach((page, index) => {
+        bookletData.pages.forEach((page, pageIndex) => {
+          if (!page.blocks) page.blocks = [];
           const card = document.createElement("div");
           card.className = "editor-page-card";
 
@@ -1194,40 +1245,40 @@
             specificFieldsHTML = `
               <div class="form-group">
                 <label>Main Title</label>
-                <input type="text" value="${escapeAttr(page.title || '')}" onchange="updatePageField(${index}, 'title', this.value)" />
+                <input type="text" value="${escapeAttr(page.title || '')}" onchange="updatePageField(${pageIndex}, 'title', this.value)" />
               </div>
               <div class="form-group">
                 <label>Subtitle</label>
-                <input type="text" value="${escapeAttr(page.subtitle || '')}" onchange="updatePageField(${index}, 'subtitle', this.value)" />
+                <input type="text" value="${escapeAttr(page.subtitle || '')}" onchange="updatePageField(${pageIndex}, 'subtitle', this.value)" />
               </div>
               <div class="form-group">
                 <label>Date & Location</label>
-                <input type="text" value="${escapeAttr(page.dateLocation || '')}" onchange="updatePageField(${index}, 'dateLocation', this.value)" />
+                <input type="text" value="${escapeAttr(page.dateLocation || '')}" onchange="updatePageField(${pageIndex}, 'dateLocation', this.value)" />
               </div>
               <div class="form-group">
                 <label>Tagline</label>
-                <input type="text" value="${escapeAttr(page.tagline || '')}" onchange="updatePageField(${index}, 'tagline', this.value)" />
+                <input type="text" value="${escapeAttr(page.tagline || '')}" onchange="updatePageField(${pageIndex}, 'tagline', this.value)" />
               </div>
               <div class="form-group">
                 <label>Emblem Image URL or Text</label>
-                <input type="text" value="${escapeAttr(page.emblemImg || page.emblemText || '')}" placeholder="URL or text" onchange="updatePageField(${index}, 'emblemImg', this.value)" />
-                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'emblemImg', val))" />
+                <input type="text" value="${escapeAttr(page.emblemImg || page.emblemText || '')}" placeholder="URL or text" onchange="updatePageField(${pageIndex}, 'emblemImg', this.value)" />
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${pageIndex}, 'emblemImg', val))" />
               </div>
               <div class="form-group">
                 <label>Page Background Image (Per-Page Override)</label>
-                <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${index}, 'bgImage', this.value)" />
-                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'bgImage', val))" />
+                <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${pageIndex}, 'bgImage', this.value)" />
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${pageIndex}, 'bgImage', val))" />
               </div>
               <div class="form-group">
                 <label>Scrollwork Frame for Title</label>
-                <select onchange="updatePageField(${index}, 'scrollworkFrame', this.value === 'true')">
+                <select onchange="updatePageField(${pageIndex}, 'scrollworkFrame', this.value === 'true')">
                   <option value="true" ${page.scrollworkFrame?'selected':''}>Yes (Scrollwork Frame)</option>
                   <option value="false" ${!page.scrollworkFrame?'selected':''}>No (Standard Text)</option>
                 </select>
               </div>
               <div class="form-group">
                 <label>Bottom Banner / Overlay Style</label>
-                <select onchange="updatePageField(${index}, 'bottomBannerStyle', this.value)">
+                <select onchange="updatePageField(${pageIndex}, 'bottomBannerStyle', this.value)">
                   <option value="torn" ${page.bottomBannerStyle==='torn'||!page.bottomBannerStyle?'selected':''}>Torn Parchment Ribbon Scroll</option>
                   <option value="gold" ${page.bottomBannerStyle==='gold'?'selected':''}>Gold Foil Frame</option>
                   <option value="simple" ${page.bottomBannerStyle==='simple'?'selected':''}>Simple Parchment Strip</option>
@@ -1236,32 +1287,32 @@
               </div>
               <div class="form-group">
                 <label>Bottom Parchment Banner Text</label>
-                <input type="text" value="${escapeAttr(page.bottomBannerText || '')}" onchange="updatePageField(${index}, 'bottomBannerText', this.value)" />
+                <input type="text" value="${escapeAttr(page.bottomBannerText || '')}" onchange="updatePageField(${pageIndex}, 'bottomBannerText', this.value)" />
               </div>
             `;
           } else if (page.type === "backCover") {
             specificFieldsHTML = `
               <div class="form-group">
                 <label>Organization Name</label>
-                <input type="text" value="${escapeAttr(page.organization || '')}" onchange="updatePageField(${index}, 'organization', this.value)" />
+                <input type="text" value="${escapeAttr(page.organization || '')}" onchange="updatePageField(${pageIndex}, 'organization', this.value)" />
               </div>
               <div class="form-group">
                 <label>Sub Organization / Council</label>
-                <input type="text" value="${escapeAttr(page.subOrganization || '')}" onchange="updatePageField(${index}, 'subOrganization', this.value)" />
+                <input type="text" value="${escapeAttr(page.subOrganization || '')}" onchange="updatePageField(${pageIndex}, 'subOrganization', this.value)" />
               </div>
               <div class="form-group">
                 <label>QR Code Image URL / Placeholder</label>
-                <input type="text" value="${escapeAttr(page.qrImg || '')}" placeholder="Image URL" onchange="updatePageField(${index}, 'qrImg', this.value)" />
-                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'qrImg', val))" />
+                <input type="text" value="${escapeAttr(page.qrImg || '')}" placeholder="Image URL" onchange="updatePageField(${pageIndex}, 'qrImg', this.value)" />
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${pageIndex}, 'qrImg', val))" />
               </div>
               <div class="form-group">
                 <label>Page Background Image (Per-Page Override)</label>
-                <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${index}, 'bgImage', this.value)" />
-                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'bgImage', val))" />
+                <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${pageIndex}, 'bgImage', this.value)" />
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${pageIndex}, 'bgImage', val))" />
               </div>
               <div class="form-group">
                 <label>Bottom Banner / Overlay Style</label>
-                <select onchange="updatePageField(${index}, 'bottomBannerStyle', this.value)">
+                <select onchange="updatePageField(${pageIndex}, 'bottomBannerStyle', this.value)">
                   <option value="torn" ${page.bottomBannerStyle==='torn'||!page.bottomBannerStyle?'selected':''}>Torn Parchment Ribbon Scroll</option>
                   <option value="gold" ${page.bottomBannerStyle==='gold'?'selected':''}>Gold Foil Frame</option>
                   <option value="simple" ${page.bottomBannerStyle==='simple'?'selected':''}>Simple Parchment Strip</option>
@@ -1270,27 +1321,27 @@
               </div>
               <div class="form-group">
                 <label>Sponsors / Partners (Comma separated)</label>
-                <input type="text" value="${escapeAttr((page.sponsors || []).join(', '))}" onchange="updatePageField(${index}, 'sponsors', this.value.split(',').map(s=>s.trim()))" />
+                <input type="text" value="${escapeAttr((page.sponsors || []).join(', '))}" onchange="updatePageField(${pageIndex}, 'sponsors', this.value.split(',').map(s=>s.trim()))" />
               </div>
             `;
           } else if (page.type === "custom") {
             specificFieldsHTML = `
               <div class="form-group">
                 <label>Page Title</label>
-                <input type="text" value="${escapeAttr(page.title || '')}" onchange="updatePageField(${index}, 'title', this.value)" />
+                <input type="text" value="${escapeAttr(page.title || '')}" onchange="updatePageField(${pageIndex}, 'title', this.value)" />
               </div>
               <div class="form-group">
                 <label>Content (Supports HTML/Text)</label>
-                <textarea onchange="updatePageField(${index}, 'content', this.value)">${escapeAttr(page.content || '')}</textarea>
+                <textarea onchange="updatePageField(${pageIndex}, 'content', this.value)">${escapeAttr(page.content || '')}</textarea>
               </div>
               <div class="form-group">
                 <label>Page Background Image (Per-Page Override)</label>
-                <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${index}, 'bgImage', this.value)" />
-                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'bgImage', val))" />
+                <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${pageIndex}, 'bgImage', this.value)" />
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${pageIndex}, 'bgImage', val))" />
               </div>
               <div class="form-group">
                 <label>Vertical Alignment</label>
-                <select onchange="updatePageField(${index}, 'vAlign', this.value)">
+                <select onchange="updatePageField(${pageIndex}, 'vAlign', this.value)">
                   <option value="top" ${page.vAlign==='top'?'selected':''}>Top</option>
                   <option value="center" ${page.vAlign==='center'?'selected':''}>Center</option>
                   <option value="bottom" ${page.vAlign==='bottom'?'selected':''}>Bottom</option>
@@ -1302,28 +1353,70 @@
             specificFieldsHTML = `
               <div class="form-group">
                 <label>Page Title</label>
-                <input type="text" value="${escapeAttr(page.title || '')}" onchange="updatePageField(${index}, 'title', this.value)" />
+                <input type="text" value="${escapeAttr(page.title || '')}" onchange="updatePageField(${pageIndex}, 'title', this.value)" />
               </div>
               <div class="form-group">
                 <label>Page Background Image (Per-Page Override)</label>
-                <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${index}, 'bgImage', this.value)" />
-                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${index}, 'bgImage', val))" />
+                <input type="text" value="${escapeAttr(page.bgImage || '')}" placeholder="Image URL" onchange="updatePageField(${pageIndex}, 'bgImage', this.value)" />
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.7rem;" onchange="uploadImage(event, null, (val) => updatePageField(${pageIndex}, 'bgImage', val))" />
               </div>
             `;
           }
 
+          // Render Layered Content Blocks section for every page
+          let blocksHTML = `
+            <div style="margin-top:10px; border-top:1px solid #444; padding-top:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <span style="font-size:0.75rem; font-weight:700; color:#f0c070;">Content Blocks Layer</span>
+                <select id="add-block-type-${pageIndex}" style="width:110px; font-size:0.7rem; padding:2px;">
+                  <option value="heading">Subheading</option>
+                  <option value="paragraph">Paragraph</option>
+                  <option value="image">Image</option>
+                  <option value="divider">Divider Line</option>
+                </select>
+                <button onclick="addBlockToPage(${pageIndex})" style="background:#005f73; color:#fff; border:none; padding:2px 6px; border-radius:3px; font-size:0.7rem; cursor:pointer;">+ Add</button>
+              </div>
+          `;
+
+          page.blocks.forEach((block, blockIndex) => {
+            let blockFields = "";
+            if (block.type === "heading" || block.type === "paragraph") {
+              blockFields = `<input type="text" value="${escapeAttr(block.text || '')}" placeholder="Text content" onchange="updateBlockField(${pageIndex}, ${blockIndex}, 'text', this.value)"/>`;
+            } else if (block.type === "image") {
+              blockFields = `
+                <input type="text" value="${escapeAttr(block.url || '')}" placeholder="Image URL" onchange="updateBlockField(${pageIndex}, ${blockIndex}, 'url', this.value)"/>
+                <input type="file" accept="image/*" style="margin-top:2px; font-size:0.68rem;" onchange="uploadImage(event, null, (val) => updateBlockField(${pageIndex}, ${blockIndex}, 'url', val))" />
+              `;
+            }
+
+            blocksHTML += `
+              <div class="block-editor-card">
+                <div class="block-header">
+                  <span>${block.type.toUpperCase()}</span>
+                  <div class="page-actions-btns">
+                    <button onclick="moveBlock(${pageIndex}, ${blockIndex}, -1)">↑</button>
+                    <button onclick="moveBlock(${pageIndex}, ${blockIndex}, 1)">↓</button>
+                    <button class="danger-btn" onclick="deleteBlock(${pageIndex}, ${blockIndex})">×</button>
+                  </div>
+                </div>
+                ${blockFields}
+              </div>
+            `;
+          });
+          blocksHTML += `</div>`;
+
           card.innerHTML = `
             <div class="editor-page-header">
-              <span>Page ${index + 1}: ${page.type.toUpperCase()}</span>
+              <span>Page ${pageIndex + 1}: ${page.type.toUpperCase()}</span>
               <div class="page-actions-btns">
-                <button onclick="movePage(${index}, -1)" title="Move Up">↑</button>
-                <button onclick="movePage(${index}, 1)" title="Move Down">↓</button>
-                <button class="danger-btn" onclick="deletePage(${index})" title="Delete Page">×</button>
+                <button onclick="movePage(${pageIndex}, -1)" title="Move Up">↑</button>
+                <button onclick="movePage(${pageIndex}, 1)" title="Move Down">↓</button>
+                <button class="danger-btn" onclick="deletePage(${pageIndex})" title="Delete Page">×</button>
               </div>
             </div>
             <div class="form-group">
               <label>Page Type</label>
-              <select onchange="changePageType(${index}, this.value)">
+              <select onchange="changePageType(${pageIndex}, this.value)">
                 <option value="cover" ${page.type==='cover'?'selected':''}>Front Cover</option>
                 <option value="schedule" ${page.type==='schedule'?'selected':''}>Schedule / Agenda</option>
                 <option value="leadership" ${page.type==='leadership'?'selected':''}>Leadership Remarks</option>
@@ -1336,6 +1429,7 @@
               </select>
             </div>
             ${specificFieldsHTML}
+            ${blocksHTML}
           `;
 
           container.appendChild(card);
@@ -1379,8 +1473,45 @@
           id: "page-" + (bookletData.pages.length + 1),
           type: "custom",
           title: "New Page " + (bookletData.pages.length + 1),
-          content: "Enter your page content here..."
+          content: "Enter your page content here...",
+          blocks: []
         });
+        renderSidebarPageCards();
+        renderAll();
+      }
+
+      function addBlockToPage(pageIndex) {
+        const type = document.getElementById(`add-block-type-${pageIndex}`).value;
+        if (!bookletData.pages[pageIndex].blocks) bookletData.pages[pageIndex].blocks = [];
+        bookletData.pages[pageIndex].blocks.push({
+          id: "b-" + Date.now(),
+          type: type,
+          text: type === "heading" ? "New Subheading" : type === "paragraph" ? "New paragraph text block..." : "",
+          url: ""
+        });
+        renderSidebarPageCards();
+        renderAll();
+      }
+
+      function updateBlockField(pageIndex, blockIndex, field, value) {
+        bookletData.pages[pageIndex].blocks[blockIndex][field] = value;
+        renderAll();
+      }
+
+      function moveBlock(pageIndex, blockIndex, delta) {
+        const blocks = bookletData.pages[pageIndex].blocks;
+        const newIndex = blockIndex + delta;
+        if (newIndex >= 0 && newIndex < blocks.length) {
+          const temp = blocks[blockIndex];
+          blocks[blockIndex] = blocks[newIndex];
+          blocks[newIndex] = temp;
+          renderSidebarPageCards();
+          renderAll();
+        }
+      }
+
+      function deleteBlock(pageIndex, blockIndex) {
+        bookletData.pages[pageIndex].blocks.splice(blockIndex, 1);
         renderSidebarPageCards();
         renderAll();
       }
@@ -1416,7 +1547,8 @@
             id: `pad-page-${pages.length + 1}`,
             type: "custom",
             title: "Notes",
-            content: "<div style='color:#888; font-style:italic; padding-top:20px;'>This page intentionally left blank for notes.</div>"
+            content: "<div style='color:#888; font-style:italic; padding-top:20px;'>This page intentionally left blank for notes.</div>",
+            blocks: []
           });
         }
         return pages;
@@ -1430,6 +1562,17 @@
         if (style === 'simple') className = 'bottom-banner-simple';
 
         return `<div class="${className}">${page.bottomBannerText}</div>`;
+      }
+
+      function renderContentBlocks(blocks) {
+        if (!blocks || blocks.length === 0) return '';
+        return blocks.map(b => {
+          if (b.type === 'heading') return `<h4 style="font-family:var(--font-title); font-size:0.88rem; color:var(--navy-dark); margin-top:6px;">${b.text || ''}</h4>`;
+          if (b.type === 'paragraph') return `<p style="font-size:0.7rem; line-height:1.4; color:var(--charcoal);">${b.text || ''}</p>`;
+          if (b.type === 'image') return b.url ? `<img src="${b.url}" class="image-block"/>` : '';
+          if (b.type === 'divider') return `<hr style="border:none; border-top:1px solid var(--teal-accent); margin:6px 0;"/>`;
+          return '';
+        }).join('');
       }
 
       function renderPageHTML(page, pageNum, totalPages) {
@@ -1460,6 +1603,7 @@
             <div style="font-size: 0.78rem; font-style: italic; color: var(--charcoal); font-weight: 600;">
               ${page.tagline || ''}
             </div>
+            ${renderContentBlocks(page.blocks)}
             ${renderBottomBanner(page)}
           `;
           return `<div class="booklet-page cover-page ${alignClass}" ${bgStyle}>
@@ -1489,6 +1633,7 @@
                 ${sponsorsList.map(s => `<div class="sponsor-item">${s}</div>`).join('')}
               </div>
             ` : ''}
+            ${renderContentBlocks(page.blocks)}
             ${renderBottomBanner(page)}
           `;
           return `<div class="booklet-page cover-page ${alignClass}" style="justify-content:center; text-align:center;" ${bgStyle}>
@@ -1513,6 +1658,7 @@
                   </div>
                 `).join('')}
               </div>
+              ${renderContentBlocks(page.blocks)}
             </div>
           `;
         } else if (page.type === "leadership") {
@@ -1531,6 +1677,7 @@
                     </div>
                   </div>
                 `).join('')}
+                ${renderContentBlocks(page.blocks)}
               </div>
             </div>
           `;
@@ -1547,6 +1694,7 @@
                     <p style="font-size: 0.68rem; line-height: 1.35; color: var(--charcoal);">${page.bioText || ''}</p>
                   </div>
                 </div>
+                ${renderContentBlocks(page.blocks)}
               </div>
             </div>
           `;
@@ -1573,6 +1721,7 @@
                   </div>
                 `).join('')}
               </div>
+              ${renderContentBlocks(page.blocks)}
             </div>
           `;
         } else if (page.type === "vigilIntro") {
@@ -1591,6 +1740,7 @@
                 <div style="font-family: var(--font-title); font-size: 12pt; font-weight: 700; color: var(--navy-dark);">${page.honoreeTitle || ''}</div>
                 <div style="font-size: 8pt; line-height: 1.35; color: #555; margin-top: 4px;">${page.honoreeBio || ''}</div>
               </div>
+              ${renderContentBlocks(page.blocks)}
             </div>
           `;
         } else if (page.type === "roster") {
@@ -1607,6 +1757,7 @@
                   </div>
                 `).join('')}
               </div>
+              ${renderContentBlocks(page.blocks)}
             </div>
           `;
         } else {
@@ -1616,6 +1767,7 @@
               <div class="page-title">${page.title || ''}</div>
               <div class="page-content-area" style="font-size:0.75rem; line-height:1.45;">
                 ${page.content || ''}
+                ${renderContentBlocks(page.blocks)}
               </div>
             </div>
           `;
@@ -1632,10 +1784,6 @@
         const container = document.getElementById("view-spreads");
         container.innerHTML = "";
 
-        // Reader Spreads: Page 1 standalone or paired (Spread 1: Cover on right or 1 & 2 side by side)
-        // Standard reader view:
-        // Row 1: Page 1 | Page 2
-        // Row 2: Page 3 | Page 4 ...
         for (let i = 0; i < pages.length; i += 2) {
           const spreadRow = document.createElement("div");
           spreadRow.className = "spread-row";
@@ -1664,15 +1812,11 @@
         `;
 
         for (let s = 1; s <= totalSheets; s++) {
-          // Sheet s Front (Outer Side): Left = N - 2*(s-1), Right = 1 + 2*(s-1)
           const frontLeftNum = N - 2 * (s - 1);
           const frontRightNum = 1 + 2 * (s - 1);
-
-          // Sheet s Back (Inner Side): Left = 2*s, Right = N - 2*s + 1
           const backLeftNum = 2 * s;
           const backRightNum = N - 2 * s + 1;
 
-          // Render Sheet Front
           const sheetFront = document.createElement("div");
           sheetFront.className = "imposition-sheet";
           sheetFront.innerHTML = `
@@ -1683,7 +1827,6 @@
             </div>
           `;
 
-          // Render Sheet Back
           const sheetBack = document.createElement("div");
           sheetBack.className = "imposition-sheet";
           sheetBack.innerHTML = `
