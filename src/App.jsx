@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BookletProvider, useBooklet } from './context/BookletContext.jsx';
 import Header from './components/Header.jsx';
 import Sidebar from './components/Sidebar.jsx';
+import SpreadViewer from './components/SpreadViewer.jsx';
+import ImpositionViewer from './components/ImpositionViewer.jsx';
 
 function BookletAppContent() {
-  const {
-    activePresetKey,
-    booklet,
-    theme,
-    pages,
-    jsonState
-  } = useBooklet();
+  const { theme, jsonState } = useBooklet();
+  const [viewMode, setViewMode] = useState('spreads'); // 'spreads' | 'imposition'
+
+  // Dynamic CSS variable application based on theme context state
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--bg-cream', theme.bgCream || '#f4eedb');
+    root.style.setProperty('--navy-dark', theme.navyDark || '#122230');
+    root.style.setProperty('--teal-accent', theme.tealAccent || '#005f73');
+    root.style.setProperty('--charcoal', theme.charcoal || '#2b2b2b');
+    root.style.setProperty('--font-title', theme.titleFont || "'Cinzel', serif");
+  }, [theme]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#1e1e24] text-white">
@@ -26,20 +33,34 @@ function BookletAppContent() {
       <main className="flex-1 flex overflow-hidden">
         <Sidebar />
 
-        {/* Preview Workspace Placeholder */}
-        <section className="flex-1 bg-[#18181c] p-6 flex flex-col items-center justify-start overflow-y-auto">
-          <div className="bg-[#282830] p-4 rounded-lg border border-[#3a3a44] max-w-xl w-full text-center">
-            <h3 className="font-title text-lg text-[#f0e6d2] mb-2">Central State Model Active</h3>
-            <p className="text-xs text-gray-300 mb-3">
-              Booklet Title: <span className="text-[#70c0d0] font-semibold">{booklet.title}</span>
-            </p>
-            <div className="grid grid-cols-2 gap-2 text-left text-xs bg-[#1e1e24] p-3 rounded border border-[#444]">
-              <div><strong className="text-gray-400">Total Pages:</strong> {pages.length}</div>
-              <div><strong className="text-gray-400">Preset:</strong> {activePresetKey}</div>
-              <div><strong className="text-gray-400">Theme Primary:</strong> {theme.navyDark}</div>
-              <div><strong className="text-gray-400">Theme Accent:</strong> {theme.tealAccent}</div>
-            </div>
+        {/* Preview Workspace */}
+        <section className="preview-workspace flex-1 bg-[#18181c] p-5 overflow-y-auto flex flex-col items-center">
+          {/* Controls Bar */}
+          <div className="controls-bar mb-5 flex gap-3 bg-[#282830] px-4 py-2 rounded-lg shadow-md">
+            <button
+              onClick={() => setViewMode('spreads')}
+              className={`text-xs font-semibold px-4 py-2 rounded transition-colors ${
+                viewMode === 'spreads'
+                  ? 'bg-[#122230] text-white border border-[#d9d9d9]'
+                  : 'bg-[#005f73] hover:bg-[#00424f] text-white'
+              }`}
+            >
+              Booklet Reader (Page Spreads)
+            </button>
+            <button
+              onClick={() => setViewMode('imposition')}
+              className={`text-xs font-semibold px-4 py-2 rounded transition-colors ${
+                viewMode === 'imposition'
+                  ? 'bg-[#122230] text-white border border-[#d9d9d9]'
+                  : 'bg-[#005f73] hover:bg-[#00424f] text-white'
+              }`}
+            >
+              Print Imposition (11 × 8.5 in Folded Sheets)
+            </button>
           </div>
+
+          {/* Active Viewer */}
+          {viewMode === 'spreads' ? <SpreadViewer /> : <ImpositionViewer />}
         </section>
       </main>
     </div>
