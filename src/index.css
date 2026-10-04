@@ -15,4 +15,500 @@
 
 body {
   font-family: var(--font-main);
+  background-color: #1e1e24;
+  color: var(--charcoal);
+  min-height: 100vh;
+}
+
+/* Booklet Render Styles from standalone prgram_generator.html */
+.spread-row {
+  width: 11in !important;
+  height: 8.5in !important;
+  min-width: 11in;
+  min-height: 8.5in;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  margin: 15px auto;
+  background: var(--bg-cream);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  background-size: cover;
+  background-position: center;
+}
+
+.spread-row::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #c9bea9;
+  border-left: 1px dashed #c9bea9;
+  z-index: 20;
+}
+
+.booklet-page {
+  flex: 0 0 5.5in !important;
+  width: 5.5in !important;
+  height: 8.5in !important;
+  padding: 0.42in 0.48in 0.4in !important;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-cream);
+  justify-content: space-between;
+  background-size: cover;
+  background-position: center;
+  color: var(--charcoal);
+}
+
+/* Vertical alignment options */
+.booklet-page.align-center { justify-content: center; }
+.booklet-page.align-bottom { justify-content: flex-end; }
+.booklet-page.align-top { justify-content: flex-start; }
+
+/* Custom page elements */
+.top-banner-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: var(--teal-accent);
+}
+
+/* Scrollwork Frame Option */
+.scrollwork-frame {
+  border: 2px solid var(--navy-dark);
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.4);
+  position: relative;
+  margin: 8px 0;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}
+
+.scrollwork-frame::before, .scrollwork-frame::after {
+  content: "❧";
+  position: absolute;
+  font-size: 1.2rem;
+  color: var(--teal-accent);
+}
+
+.scrollwork-frame::before { top: -8px; left: 10px; }
+.scrollwork-frame::after { bottom: -8px; right: 10px; }
+
+/* Bottom Parchment / Torn Edge Ribbon Styles */
+.bottom-banner-torn {
+  background: var(--parchment-subtle, #efe5d0);
+  border-top: 2px dashed #bba990;
+  border-bottom: 1px solid #d0c2a8;
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--navy-dark);
+  margin-top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  box-shadow: 0 -3px 8px rgba(0,0,0,0.08);
+  clip-path: polygon(0 8%, 5% 0%, 10% 6%, 15% 0%, 20% 8%, 25% 0%, 30% 7%, 35% 0%, 40% 6%, 45% 0%, 50% 8%, 55% 0%, 60% 7%, 65% 0%, 70% 8%, 75% 0%, 80% 6%, 85% 0%, 90% 7%, 95% 0%, 100% 8%, 100% 100%, 0% 100%);
+}
+
+.bottom-banner-gold {
+  background: linear-gradient(135deg, #e6ca65 0%, #b89835 100%);
+  border: 2px solid #8c6d1f;
+  padding: 8px 14px;
+  text-align: center;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-top: 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.bottom-banner-simple {
+  background: rgba(225, 212, 185, 0.9);
+  border: 1px solid #c0b298;
+  padding: 6px 12px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--navy-dark);
+  border-radius: 4px;
+  margin-top: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.page-title {
+  font-family: var(--font-title);
+  font-size: 16pt;
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--navy-dark);
+  margin-bottom: 10pt;
+  border-bottom: 1px solid var(--teal-accent);
+  padding-bottom: 3px;
+}
+
+.page-content-area {
+  display: flex;
+  flex-direction: column;
+  gap: 9pt;
+  flex: 1;
+}
+
+.page-number-tag {
+  position: absolute;
+  bottom: 12px;
+  font-size: 7.5pt;
+  color: #777;
+  font-weight: 600;
+}
+
+.page-number-tag.left { left: 32px; }
+.page-number-tag.right { right: 32px; }
+
+/* Front & Back Cover */
+.cover-page {
+  align-items: center;
+  text-align: center;
+  justify-content: space-between;
+  padding: 0.5in 0.45in !important;
+}
+
+.patch-emblem-box {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #bce1f2;
+  border: 3px solid var(--navy-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.patch-emblem-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scroll-title-group h2 {
+  font-family: var(--font-title);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--navy-dark);
+}
+
+.scroll-title-group h3 {
+  font-family: var(--font-title);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--navy-dark);
+  margin: 4px 0;
+}
+
+.scroll-title-group p {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--teal-accent);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-top: 6px;
+}
+
+/* Leadership & Keynote */
+.leader-container {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.leader-photo, .speaker-photo {
+  width: 70px;
+  height: 85px;
+  background: #d8cdb8;
+  border: 1px solid var(--navy-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.55rem;
+  text-align: center;
+  color: #555;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.leader-photo img, .speaker-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.leader-content h4 {
+  font-family: var(--font-title);
+  font-size: 0.82rem;
+  color: var(--navy-dark);
+  margin-bottom: 1px;
+}
+
+.leader-role {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--teal-accent);
+  margin-bottom: 3px;
+}
+
+.leader-content p {
+  font-size: 0.68rem;
+  line-height: 1.32;
+  color: var(--charcoal);
+}
+
+/* Image Block */
+.image-block {
+  width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin: 4px 0;
+}
+
+/* Awards */
+.award-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px 10px;
+}
+
+.award-card-compact {
+  background: rgba(255, 255, 255, 0.45);
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #e2d5bd;
+}
+
+.award-card-compact h4 {
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  color: var(--navy-dark);
+  margin-bottom: 2px;
+}
+
+.award-card-compact p {
+  font-size: 0.6rem;
+  line-height: 1.25;
+  color: var(--charcoal);
+}
+
+.award-card-featured {
+  grid-column: span 2;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(239, 229, 208, 0.7);
+  border: 1px solid var(--teal-accent);
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.award-medallion-placeholder {
+  width: 48px;
+  height: 48px;
+  background: #d8cdb8;
+  border: 1px solid var(--navy-dark);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.48rem;
+  text-align: center;
+  color: var(--navy-dark);
+  font-weight: 700;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.award-medallion-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Schedule */
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.schedule-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px dotted #ccc;
+  padding-bottom: 4px;
+}
+
+.schedule-time {
+  font-family: var(--font-title);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--teal-accent);
+  min-width: 60px;
+}
+
+.schedule-details h4 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--navy-dark);
+}
+
+.schedule-details p {
+  font-size: 0.68rem;
+  color: #555;
+}
+
+/* Vigil & Rosters */
+.vigil-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 5pt;
+  flex: 1;
+  min-height: 0;
+}
+
+.vigil-card {
+  min-height: 0;
+  border: 1px solid #cfc5b4;
+  background: #fbf9f3;
+  padding: 4pt;
+  display: grid;
+  grid-template-columns: 0.58in 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 4pt;
+  align-items: center;
+}
+
+.vigil-photo {
+  grid-row: 1 / span 2;
+  width: 0.58in;
+  height: 0.58in;
+  border: 1px solid #aaa;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6pt;
+  color: #777;
+  overflow: hidden;
+}
+
+.vigil-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vigil-card .vigil-name {
+  font-size: 8pt;
+  line-height: 1.05;
+  font-weight: 700;
+  align-self: end;
+}
+
+.vigil-card .vigil-totem {
+  font-size: 7.5pt;
+  line-height: 1.05;
+  color: var(--teal-accent);
+  font-style: italic;
+  align-self: start;
+}
+
+/* Sponsor Grid on Back Cover */
+.sponsors-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.sponsor-item {
+  background: rgba(255, 255, 255, 0.55);
+  padding: 4px 8px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  border-radius: 3px;
+  border: 1px solid #dcd0b8;
+  text-align: center;
+}
+
+.imposition-sheet {
+  width: 11in;
+  margin: 0 auto 28px;
+}
+
+.sheet-label {
+  color: var(--silver);
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin: 0 0 6px 4px;
+}
+
+.imposition-note {
+  width: 11in;
+  margin: 0 auto 15px;
+  padding: 10px 14px;
+  background: #282830;
+  color: #e0e0e0;
+  border-left: 4px solid var(--teal-accent);
+  font-size: 0.85rem;
+  border-radius: 4px;
+}
+
+@media print {
+  @page {
+    size: 11in 8.5in landscape;
+    margin: 0;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  header, aside, .controls-bar, .imposition-note, .sheet-label {
+    display: none !important;
+  }
+
+  .preview-workspace {
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .spread-row {
+    margin: 0 !important;
+    box-shadow: none !important;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  #view-spreads .spread-row {
+    display: flex !important;
+  }
+
+  #view-spreads {
+    display: block !important;
+  }
 }
