@@ -174,8 +174,8 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                 <label className="block text-[10px] text-gray-400">Width ({page.emblemWidth || 120}px)</label>
                 <input
                   type="range"
-                  min="40"
-                  max="280"
+                  min="30"
+                  max="400"
                   value={page.emblemWidth || 120}
                   onChange={(e) => updatePageField(pageIndex, 'emblemWidth', Number(e.target.value))}
                   className="w-full accent-[#005f73]"
@@ -186,8 +186,8 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                 <label className="block text-[10px] text-gray-400">Height ({page.emblemHeight || 120}px)</label>
                 <input
                   type="range"
-                  min="40"
-                  max="280"
+                  min="30"
+                  max="400"
                   value={page.emblemHeight || 120}
                   onChange={(e) => updatePageField(pageIndex, 'emblemHeight', Number(e.target.value))}
                   className="w-full accent-[#005f73]"
@@ -198,8 +198,8 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                 <label className="block text-[10px] text-gray-400">Shift X ({page.emblemOffsetX || 0}px)</label>
                 <input
                   type="range"
-                  min="-120"
-                  max="120"
+                  min="-200"
+                  max="200"
                   value={page.emblemOffsetX || 0}
                   onChange={(e) => updatePageField(pageIndex, 'emblemOffsetX', Number(e.target.value))}
                   className="w-full accent-[#005f73]"
@@ -210,8 +210,8 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                 <label className="block text-[10px] text-gray-400">Shift Y ({page.emblemOffsetY || 0}px)</label>
                 <input
                   type="range"
-                  min="-120"
-                  max="120"
+                  min="-200"
+                  max="200"
                   value={page.emblemOffsetY || 0}
                   onChange={(e) => updatePageField(pageIndex, 'emblemOffsetY', Number(e.target.value))}
                   className="w-full accent-[#005f73]"
@@ -226,6 +226,47 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                   max="200"
                   value={page.emblemZIndex !== undefined ? page.emblemZIndex : 100}
                   onChange={(e) => updatePageField(pageIndex, 'emblemZIndex', Number(e.target.value))}
+                  className="w-full accent-[#005f73]"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#24242e] p-2 rounded border border-[#3b3b48] space-y-2">
+            <span className="text-[10px] font-bold text-[#70c0d0] block">Title Block Shift & Layering</span>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-[10px] text-gray-400">Shift X ({page.titleGroupOffsetX || 0}px)</label>
+                <input
+                  type="range"
+                  min="-200"
+                  max="200"
+                  value={page.titleGroupOffsetX || 0}
+                  onChange={(e) => updatePageField(pageIndex, 'titleGroupOffsetX', Number(e.target.value))}
+                  className="w-full accent-[#005f73]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-gray-400">Shift Y ({page.titleGroupOffsetY || 0}px)</label>
+                <input
+                  type="range"
+                  min="-200"
+                  max="200"
+                  value={page.titleGroupOffsetY || 0}
+                  onChange={(e) => updatePageField(pageIndex, 'titleGroupOffsetY', Number(e.target.value))}
+                  className="w-full accent-[#005f73]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-gray-400">Layer Level (Z-Index: {page.titleGroupZIndex !== undefined ? page.titleGroupZIndex : 90})</label>
+                <input
+                  type="range"
+                  min="1"
+                  max="200"
+                  value={page.titleGroupZIndex !== undefined ? page.titleGroupZIndex : 90}
+                  onChange={(e) => updatePageField(pageIndex, 'titleGroupZIndex', Number(e.target.value))}
                   className="w-full accent-[#005f73]"
                 />
               </div>

@@ -35,6 +35,7 @@ export function BookletProvider({ children, initialBookletState }) {
     moveContentBlock: (pageIndex, blockIndex, delta) => dispatch({ type: 'MOVE_CONTENT_BLOCK', pageIndex, blockIndex, delta }),
     deleteContentBlock: (pageIndex, blockIndex) => dispatch({ type: 'DELETE_CONTENT_BLOCK', pageIndex, blockIndex }),
     reorderContentBlockLayer: (pageIndex, blockIndex, direction) => dispatch({ type: 'REORDER_CONTENT_BLOCK_LAYER', pageIndex, blockIndex, direction }),
+    updateElementTransform: (pageIndex, elementType, blockIndex, transforms) => dispatch({ type: 'UPDATE_ELEMENT_TRANSFORM', pageIndex, elementType, blockIndex, transforms }),
     setSelectedElement: (selectedElement) => dispatch({ type: 'SET_SELECTED_ELEMENT', selectedElement }),
 
     // JSON Import/Export

@@ -36,7 +36,6 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
   const alignClass = page.vAlign ? `align-${page.vAlign}` : '';
 
   const handlePointerDownDrag = (e, targetType, targetBlockIndex = null, initialX = 0, initialY = 0) => {
-    // Only handle primary mouse/touch button
     if (e.button !== undefined && e.button !== 0) return;
     e.stopPropagation();
 
@@ -58,9 +57,9 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
       if (targetType === 'block' && targetBlockIndex !== null) {
         updateContentBlock(actualPageIndex, targetBlockIndex, 'offsetX', newX);
         updateContentBlock(actualPageIndex, targetBlockIndex, 'offsetY', newY);
-      } else if (targetType === 'emblem') {
-        updatePageField(actualPageIndex, 'emblemOffsetX', newX);
-        updatePageField(actualPageIndex, 'emblemOffsetY', newY);
+      } else {
+        updatePageField(actualPageIndex, `${targetType}OffsetX`, newX);
+        updatePageField(actualPageIndex, `${targetType}OffsetY`, newY);
       }
     };
 
@@ -73,7 +72,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     window.addEventListener('pointerup', onPointerUp);
   };
 
-  const handlePointerDownResize = (e, handleType, targetType, targetBlockIndex = null, initialW = 100, initialH = 120) => {
+  const handlePointerDownResize = (e, handleType, targetType, targetBlockIndex = null, initialW = 100, initialH = null, isPercent = false) => {
     if (e.button !== undefined && e.button !== 0) return;
     e.stopPropagation();
 
@@ -84,19 +83,38 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
       const deltaX = Math.round(moveEvent.clientX - startX);
       const deltaY = Math.round(moveEvent.clientY - startY);
 
+      let dW = 0;
+      let dH = 0;
+
+      if (handleType.includes('r')) dW += deltaX;
+      if (handleType.includes('l')) dW -= deltaX;
+      if (handleType.includes('b')) dH += deltaY;
+      if (handleType.includes('t')) dH -= deltaY;
+
       if (targetType === 'block' && targetBlockIndex !== null) {
-        // Change width percentage (20% - 100%)
-        const widthChange = Math.round(deltaX / 2.2);
-        const isRight = handleType.includes('r');
-        const nextW = Math.min(100, Math.max(20, initialW + (isRight ? widthChange : -widthChange)));
-        updateContentBlock(actualPageIndex, targetBlockIndex, 'width', nextW);
-      } else if (targetType === 'emblem') {
-        const isRight = handleType.includes('r');
-        const isBottom = handleType.includes('b');
-        const nextW = Math.min(280, Math.max(40, initialW + (isRight ? deltaX : -deltaX)));
-        const nextH = Math.min(280, Math.max(40, initialH + (isBottom ? deltaY : -deltaY)));
-        updatePageField(actualPageIndex, 'emblemWidth', nextW);
-        updatePageField(actualPageIndex, 'emblemHeight', nextH);
+        if (isPercent) {
+          const percentChange = Math.round(dW / 2.5);
+          const nextW = Math.min(100, Math.max(15, (initialW || 100) + percentChange));
+          updateContentBlock(actualPageIndex, targetBlockIndex, 'width', nextW);
+        } else {
+          const nextW = Math.max(30, (initialW || 100) + dW);
+          updateContentBlock(actualPageIndex, targetBlockIndex, 'width', nextW);
+        }
+
+        if (dH !== 0) {
+          const baseH = initialH || 60;
+          const nextH = Math.max(20, baseH + dH);
+          updateContentBlock(actualPageIndex, targetBlockIndex, 'height', nextH);
+        }
+      } else {
+        const fieldPrefix = targetType;
+        const nextW = Math.min(500, Math.max(30, (initialW || 120) + dW));
+        updatePageField(actualPageIndex, `${fieldPrefix}Width`, nextW);
+
+        if (dH !== 0 || handleType.includes('b') || handleType.includes('t')) {
+          const nextH = Math.min(500, Math.max(20, (initialH || 100) + dH));
+          updatePageField(actualPageIndex, `${fieldPrefix}Height`, nextH);
+        }
       }
     };
 
@@ -133,6 +151,11 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
   };
 
   const renderCanvaToolbar = (targetType, blockIndex = null, currentX = 0, currentY = 0, currentW = null, currentH = null) => {
+    const isBlock = targetType === 'block' && blockIndex !== null;
+    const currentZ = isBlock
+      ? (page.blocks?.[blockIndex]?.zIndex || (blockIndex + 1) * 10)
+      : (page[`${targetType}ZIndex`] !== undefined ? page[`${targetType}ZIndex`] : 100);
+
     return (
       <div
         className="absolute -top-9 left-1/2 -translate-x-1/2 z-[999] bg-[#122230] text-white px-2 py-1 rounded-md shadow-2xl border border-[#70c0d0] flex items-center gap-1.5 text-[10px] select-none cursor-default whitespace-nowrap"
@@ -147,12 +170,16 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
         {currentW !== null && (
           <span className="flex items-center gap-0.5 text-amber-300 font-mono text-[9px] pr-1 border-r border-[#3a3a44]">
             <Maximize2 className="w-2.5 h-2.5" />
-            {currentW}{typeof currentW === 'number' && targetType === 'block' ? '%' : 'px'}
+            {currentW}{typeof currentW === 'number' && isBlock ? '%' : 'px'}
             {currentH !== null ? ` × ${currentH}px` : ''}
           </span>
         )}
 
-        {targetType === 'block' && blockIndex !== null && (
+        <span className="text-gray-400 font-mono text-[9px] pr-1 border-r border-[#3a3a44]">
+          Z:{currentZ}
+        </span>
+
+        {isBlock ? (
           <>
             <button
               onClick={() => reorderContentBlockLayer(actualPageIndex, blockIndex, 'forward')}
@@ -190,21 +217,19 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
               <Trash2 className="w-3 h-3" />
             </button>
           </>
-        )}
-
-        {targetType === 'emblem' && (
+        ) : (
           <>
             <button
-              onClick={() => updatePageField(actualPageIndex, 'emblemZIndex', (page.emblemZIndex || 100) + 10)}
+              onClick={() => updatePageField(actualPageIndex, `${targetType}ZIndex`, currentZ + 10)}
               className="p-1 hover:bg-[#005f73] rounded text-gray-200 hover:text-white"
-              title="Bring Emblem Forward"
+              title="Bring Element Forward"
             >
               <ArrowUp className="w-3 h-3" />
             </button>
             <button
-              onClick={() => updatePageField(actualPageIndex, 'emblemZIndex', Math.max(1, (page.emblemZIndex || 100) - 10))}
+              onClick={() => updatePageField(actualPageIndex, `${targetType}ZIndex`, Math.max(1, currentZ - 10))}
               className="p-1 hover:bg-[#005f73] rounded text-gray-200 hover:text-white"
-              title="Send Emblem Backward"
+              title="Send Element Backward"
             >
               <ArrowDown className="w-3 h-3" />
             </button>
@@ -214,45 +239,75 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     );
   };
 
-  const renderResizeHandles = (targetType, blockIndex = null, currentW = 100, currentH = 120) => {
+  const renderResizeHandles = (targetType, blockIndex = null, currentW = 100, currentH = null, isPercent = false) => {
     return (
       <>
         {/* Corner Handles */}
         <div
-          onPointerDown={(e) => handlePointerDownResize(e, 'tl', targetType, blockIndex, currentW, currentH)}
+          onPointerDown={(e) => handlePointerDownResize(e, 'tl', targetType, blockIndex, currentW, currentH, isPercent)}
           className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-[#005f73] rounded-full z-[1000] cursor-nwse-resize shadow hover:scale-125 transition-transform"
-          title="Drag to resize"
+          title="Drag corner to resize"
         />
         <div
-          onPointerDown={(e) => handlePointerDownResize(e, 'tr', targetType, blockIndex, currentW, currentH)}
+          onPointerDown={(e) => handlePointerDownResize(e, 'tr', targetType, blockIndex, currentW, currentH, isPercent)}
           className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-[#005f73] rounded-full z-[1000] cursor-nesw-resize shadow hover:scale-125 transition-transform"
-          title="Drag to resize"
+          title="Drag corner to resize"
         />
         <div
-          onPointerDown={(e) => handlePointerDownResize(e, 'bl', targetType, blockIndex, currentW, currentH)}
+          onPointerDown={(e) => handlePointerDownResize(e, 'bl', targetType, blockIndex, currentW, currentH, isPercent)}
           className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-[#005f73] rounded-full z-[1000] cursor-nesw-resize shadow hover:scale-125 transition-transform"
-          title="Drag to resize"
+          title="Drag corner to resize"
         />
         <div
-          onPointerDown={(e) => handlePointerDownResize(e, 'br', targetType, blockIndex, currentW, currentH)}
+          onPointerDown={(e) => handlePointerDownResize(e, 'br', targetType, blockIndex, currentW, currentH, isPercent)}
           className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-[#005f73] rounded-full z-[1000] cursor-nwse-resize shadow hover:scale-125 transition-transform"
-          title="Drag to resize"
+          title="Drag corner to resize"
         />
 
         {/* Edge Handles */}
         <div
-          onPointerDown={(e) => handlePointerDownResize(e, 'r', targetType, blockIndex, currentW, currentH)}
+          onPointerDown={(e) => handlePointerDownResize(e, 'r', targetType, blockIndex, currentW, currentH, isPercent)}
           className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-2.5 h-4 bg-[#005f73] border border-white rounded z-[1000] cursor-ew-resize shadow hover:scale-125 transition-transform"
-          title="Drag to adjust width"
+          title="Drag edge to adjust width"
         />
-        {targetType === 'emblem' && (
-          <div
-            onPointerDown={(e) => handlePointerDownResize(e, 'b', targetType, blockIndex, currentW, currentH)}
-            className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-2.5 bg-[#005f73] border border-white rounded z-[1000] cursor-ns-resize shadow hover:scale-125 transition-transform"
-            title="Drag to adjust height"
-          />
-        )}
+        <div
+          onPointerDown={(e) => handlePointerDownResize(e, 'l', targetType, blockIndex, currentW, currentH, isPercent)}
+          className="absolute top-1/2 -left-1.5 -translate-y-1/2 w-2.5 h-4 bg-[#005f73] border border-white rounded z-[1000] cursor-ew-resize shadow hover:scale-125 transition-transform"
+          title="Drag edge to adjust width"
+        />
+        <div
+          onPointerDown={(e) => handlePointerDownResize(e, 'b', targetType, blockIndex, currentW, currentH, isPercent)}
+          className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-2.5 bg-[#005f73] border border-white rounded z-[1000] cursor-ns-resize shadow hover:scale-125 transition-transform"
+          title="Drag edge to adjust height"
+        />
+        <div
+          onPointerDown={(e) => handlePointerDownResize(e, 't', targetType, blockIndex, currentW, currentH, isPercent)}
+          className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-4 h-2.5 bg-[#005f73] border border-white rounded z-[1000] cursor-ns-resize shadow hover:scale-125 transition-transform"
+          title="Drag edge to adjust height"
+        />
       </>
+    );
+  };
+
+  const renderCanvaWrapper = ({ targetType, blockIndex = null, currentX = 0, currentY = 0, currentW = null, currentH = null, isPercent = false, className = '', style = {}, children }) => {
+    const isSelected = selectedElement?.pageIndex === actualPageIndex &&
+      selectedElement?.elementType === targetType &&
+      (blockIndex === null || selectedElement?.blockIndex === blockIndex);
+
+    return (
+      <div
+        className={`group relative cursor-grab active:cursor-grabbing transition-shadow rounded p-0.5 ${
+          isSelected
+            ? 'ring-2 ring-[#005f73] outline outline-1 outline-[#70c0d0] shadow-md bg-[#005f73]/10 z-[200]'
+            : 'hover:outline hover:outline-1 hover:outline-amber-500/50'
+        } ${className}`}
+        style={style}
+        onPointerDown={(e) => handlePointerDownDrag(e, targetType, blockIndex, currentX, currentY)}
+      >
+        {isSelected && renderCanvaToolbar(targetType, blockIndex, currentX, currentY, currentW, currentH)}
+        {isSelected && renderResizeHandles(targetType, blockIndex, currentW, currentH, isPercent)}
+        {children}
+      </div>
     );
   };
 
@@ -261,16 +316,14 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     return (
       <div className="space-y-1 mt-1 w-full">
         {blocks.map((b, idx) => {
-          const isSelected = selectedElement?.pageIndex === actualPageIndex &&
-            selectedElement?.elementType === 'block' &&
-            selectedElement?.blockIndex === idx;
-
           const align = b.align || (b.type === 'image' ? 'center' : 'left');
           const zIndexVal = b.zIndex !== undefined ? b.zIndex : (idx + 1) * 10;
           const currentW = b.width !== undefined ? b.width : 100;
+          const currentH = b.height !== undefined ? b.height : null;
 
           const blockContainerStyle = {
             width: `${currentW}%`,
+            height: currentH ? `${currentH}px` : undefined,
             opacity: b.opacity !== undefined ? b.opacity / 100 : 1,
             transform: (b.offsetX || b.offsetY) ? `translate(${b.offsetX || 0}px, ${b.offsetY || 0}px)` : undefined,
             textAlign: align,
@@ -307,7 +360,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
           } else if (b.type === 'image') {
             if (!b.url) {
               innerBlockContent = (
-                <div className="p-2 border border-dashed border-gray-400 text-gray-500 text-[10px] text-center rounded">
+                <div className="p-2 border border-dashed border-gray-400 text-gray-500 text-[10px] text-center rounded h-full flex items-center justify-center">
                   [ Image Block: Select or Upload in Sidebar ]
                 </div>
               );
@@ -317,14 +370,14 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
               if (b.shape === 'square' || b.shape === 'natural') borderRadius = '0px';
 
               innerBlockContent = (
-                <div className="my-1">
+                <div className="my-1 h-full w-full flex items-center justify-center">
                   <img
                     src={b.url}
                     alt="Block Content"
-                    className="image-block inline-block"
+                    className="image-block inline-block max-w-full"
                     style={{
                       borderRadius,
-                      maxHeight: '220px',
+                      maxHeight: currentH ? `${currentH}px` : '220px',
                       objectFit: b.shape === 'circle' ? 'cover' : 'contain'
                     }}
                   />
@@ -343,20 +396,19 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
           }
 
           return (
-            <div
-              key={b.id || idx}
-              style={blockContainerStyle}
-              onPointerDown={(e) => handlePointerDownDrag(e, 'block', idx, b.offsetX || 0, b.offsetY || 0)}
-              className={`group relative cursor-grab active:cursor-grabbing transition-shadow rounded p-0.5 ${
-                isSelected
-                  ? 'ring-2 ring-[#005f73] outline outline-1 outline-[#70c0d0] shadow-md bg-[#005f73]/10'
-                  : 'hover:outline hover:outline-1 hover:outline-amber-500/50'
-              }`}
-            >
-              {isSelected && renderCanvaToolbar('block', idx, b.offsetX || 0, b.offsetY || 0, currentW, null)}
-              {isSelected && renderResizeHandles('block', idx, currentW, null)}
-              {innerBlockContent}
-            </div>
+            <React.Fragment key={b.id || idx}>
+              {renderCanvaWrapper({
+                targetType: 'block',
+                blockIndex: idx,
+                currentX: b.offsetX || 0,
+                currentY: b.offsetY || 0,
+                currentW,
+                currentH,
+                isPercent: true,
+                style: blockContainerStyle,
+                children: innerBlockContent
+              })}
+            </React.Fragment>
           );
         })}
       </div>
@@ -373,21 +425,86 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     if (frameStyle === 'badge') frameClassName = 'title-badge-frame';
     if (frameStyle === 'bordered') frameClassName = 'title-bordered-frame';
 
-    const isEmblemSelected = selectedElement?.pageIndex === actualPageIndex &&
-      selectedElement?.elementType === 'emblem';
-
     const currentEmblemW = page.emblemWidth || 120;
     const currentEmblemH = page.emblemHeight || 120;
 
-    const titleGroup = (
-      <div className={frameClassName}>
-        <div className="scroll-title-group">
-          <h2>{page.title || ''}</h2>
-          <h3>{page.subtitle || ''}</h3>
-          <p>{page.dateLocation || ''}</p>
+    const emblemElement = renderCanvaWrapper({
+      targetType: 'emblem',
+      currentX: page.emblemOffsetX || 0,
+      currentY: page.emblemOffsetY || 0,
+      currentW: currentEmblemW,
+      currentH: currentEmblemH,
+      className: 'patch-emblem-box',
+      style: {
+        width: `${currentEmblemW}px`,
+        height: `${currentEmblemH}px`,
+        transform: (page.emblemOffsetX || page.emblemOffsetY) ? `translate(${page.emblemOffsetX || 0}px, ${page.emblemOffsetY || 0}px)` : undefined,
+        opacity: page.emblemOpacity !== undefined ? page.emblemOpacity / 100 : undefined,
+        borderRadius: page.emblemShape === 'square' ? '0px' : page.emblemShape === 'rounded' ? '12px' : page.emblemShape === 'none' ? '0px' : undefined,
+        border: page.emblemShape === 'none' ? 'none' : undefined,
+        background: page.emblemShape === 'none' ? 'transparent' : undefined,
+        boxShadow: page.emblemShape === 'none' ? 'none' : undefined,
+        zIndex: page.emblemZIndex !== undefined ? page.emblemZIndex : 100,
+        position: 'relative'
+      },
+      children: page.emblemImg ? (
+        <img src={page.emblemImg} alt="Emblem" className="w-full h-full object-contain" />
+      ) : (
+        <span
+          style={{ color: 'var(--navy-dark)' }}
+          className="font-bold text-[0.7rem] text-center"
+        >
+          {page.emblemText || '[ Emblem ]'}
+        </span>
+      )
+    });
+
+    const titleGroup = renderCanvaWrapper({
+      targetType: 'titleGroup',
+      currentX: page.titleGroupOffsetX || 0,
+      currentY: page.titleGroupOffsetY || 0,
+      currentW: page.titleGroupWidth || null,
+      currentH: page.titleGroupHeight || null,
+      style: {
+        transform: (page.titleGroupOffsetX || page.titleGroupOffsetY) ? `translate(${page.titleGroupOffsetX || 0}px, ${page.titleGroupOffsetY || 0}px)` : undefined,
+        width: page.titleGroupWidth ? `${page.titleGroupWidth}px` : undefined,
+        height: page.titleGroupHeight ? `${page.titleGroupHeight}px` : undefined,
+        zIndex: page.titleGroupZIndex !== undefined ? page.titleGroupZIndex : 90,
+        position: 'relative'
+      },
+      children: (
+        <div className={frameClassName}>
+          <div className="scroll-title-group">
+            <h2>{page.title || ''}</h2>
+            <h3>{page.subtitle || ''}</h3>
+            <p>{page.dateLocation || ''}</p>
+          </div>
         </div>
-      </div>
-    );
+      )
+    });
+
+    const taglineElement = renderCanvaWrapper({
+      targetType: 'tagline',
+      currentX: page.taglineOffsetX || 0,
+      currentY: page.taglineOffsetY || 0,
+      currentW: page.taglineWidth || null,
+      currentH: page.taglineHeight || null,
+      style: {
+        transform: (page.taglineOffsetX || page.taglineOffsetY) ? `translate(${page.taglineOffsetX || 0}px, ${page.taglineOffsetY || 0}px)` : undefined,
+        width: page.taglineWidth ? `${page.taglineWidth}px` : undefined,
+        height: page.taglineHeight ? `${page.taglineHeight}px` : undefined,
+        zIndex: page.taglineZIndex !== undefined ? page.taglineZIndex : 80,
+        position: 'relative'
+      },
+      children: (
+        <div
+          style={{ color: 'var(--charcoal)' }}
+          className="text-[0.78rem] italic font-semibold text-center"
+        >
+          {page.tagline || ''}
+        </div>
+      )
+    });
 
     contentHTML = (
       <>
@@ -395,45 +512,9 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
           className="top-banner-bar"
           style={{ background: page.topBarColor || theme.tealAccent || 'var(--teal-accent)' }}
         />
-        <div
-          className={`patch-emblem-box relative cursor-grab active:cursor-grabbing transition-shadow ${
-            isEmblemSelected ? 'ring-2 ring-[#005f73] outline outline-1 outline-[#70c0d0]' : 'hover:outline hover:outline-1 hover:outline-amber-500/50'
-          }`}
-          onPointerDown={(e) => handlePointerDownDrag(e, 'emblem', null, page.emblemOffsetX || 0, page.emblemOffsetY || 0)}
-          style={{
-            width: `${currentEmblemW}px`,
-            height: `${currentEmblemH}px`,
-            transform: (page.emblemOffsetX || page.emblemOffsetY) ? `translate(${page.emblemOffsetX || 0}px, ${page.emblemOffsetY || 0}px)` : undefined,
-            opacity: page.emblemOpacity !== undefined ? page.emblemOpacity / 100 : undefined,
-            borderRadius: page.emblemShape === 'square' ? '0px' : page.emblemShape === 'rounded' ? '12px' : page.emblemShape === 'none' ? '0px' : undefined,
-            border: page.emblemShape === 'none' ? 'none' : undefined,
-            background: page.emblemShape === 'none' ? 'transparent' : undefined,
-            boxShadow: page.emblemShape === 'none' ? 'none' : undefined,
-            zIndex: page.emblemZIndex !== undefined ? page.emblemZIndex : 100,
-            position: 'relative'
-          }}
-        >
-          {isEmblemSelected && renderCanvaToolbar('emblem', null, page.emblemOffsetX || 0, page.emblemOffsetY || 0, currentEmblemW, currentEmblemH)}
-          {isEmblemSelected && renderResizeHandles('emblem', null, currentEmblemW, currentEmblemH)}
-
-          {page.emblemImg ? (
-            <img src={page.emblemImg} alt="Emblem" />
-          ) : (
-            <span
-              style={{ color: 'var(--navy-dark)' }}
-              className="font-bold text-[0.7rem] text-center"
-            >
-              {page.emblemText || '[ Emblem ]'}
-            </span>
-          )}
-        </div>
+        {emblemElement}
         {titleGroup}
-        <div
-          style={{ color: 'var(--charcoal)' }}
-          className="text-[0.78rem] italic font-semibold text-center"
-        >
-          {page.tagline || ''}
-        </div>
+        {taglineElement}
         {renderContentBlocks(page.blocks)}
         {renderBottomBanner()}
       </>
@@ -457,27 +538,67 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
   if (pageType === 'backCover') {
     const sponsorsList = page.sponsors || [];
-    contentHTML = (
-      <>
-        <div
-          style={{ fontFamily: 'var(--font-title)', color: 'var(--navy-dark)' }}
-          className="text-[1.1rem] font-bold text-center"
-        >
-          {page.organization || ''}
+
+    const headerElement = renderCanvaWrapper({
+      targetType: 'headerGroup',
+      currentX: page.headerGroupOffsetX || 0,
+      currentY: page.headerGroupOffsetY || 0,
+      currentW: page.headerGroupWidth || null,
+      currentH: page.headerGroupHeight || null,
+      style: {
+        transform: (page.headerGroupOffsetX || page.headerGroupOffsetY) ? `translate(${page.headerGroupOffsetX || 0}px, ${page.headerGroupOffsetY || 0}px)` : undefined,
+        width: page.headerGroupWidth ? `${page.headerGroupWidth}px` : undefined,
+        height: page.headerGroupHeight ? `${page.headerGroupHeight}px` : undefined,
+        zIndex: page.headerGroupZIndex !== undefined ? page.headerGroupZIndex : 100,
+        position: 'relative'
+      },
+      children: (
+        <div>
+          <div
+            style={{ fontFamily: 'var(--font-title)', color: 'var(--navy-dark)' }}
+            className="text-[1.1rem] font-bold text-center"
+          >
+            {page.organization || ''}
+          </div>
+          <div
+            style={{ color: 'var(--teal-accent)' }}
+            className="text-[0.76rem] font-semibold my-1 text-center"
+          >
+            {page.subOrganization || ''}
+          </div>
         </div>
-        <div
-          style={{ color: 'var(--teal-accent)' }}
-          className="text-[0.76rem] font-semibold my-1 text-center"
-        >
-          {page.subOrganization || ''}
-        </div>
-        <div className="w-[70px] h-[70px] bg-white border border-gray-300 flex items-center justify-center text-[0.58rem] text-gray-500 my-2 mx-auto overflow-hidden">
+      )
+    });
+
+    const qrElement = renderCanvaWrapper({
+      targetType: 'qrGroup',
+      currentX: page.qrGroupOffsetX || 0,
+      currentY: page.qrGroupOffsetY || 0,
+      currentW: page.qrGroupWidth || 70,
+      currentH: page.qrGroupHeight || 70,
+      style: {
+        transform: (page.qrGroupOffsetX || page.qrGroupOffsetY) ? `translate(${page.qrGroupOffsetX || 0}px, ${page.qrGroupOffsetY || 0}px)` : undefined,
+        width: page.qrGroupWidth ? `${page.qrGroupWidth}px` : '70px',
+        height: page.qrGroupHeight ? `${page.qrGroupHeight}px` : '70px',
+        zIndex: page.qrGroupZIndex !== undefined ? page.qrGroupZIndex : 90,
+        position: 'relative',
+        margin: '8px auto'
+      },
+      children: (
+        <div className="w-full h-full bg-white border border-gray-300 flex items-center justify-center text-[0.58rem] text-gray-500 overflow-hidden">
           {page.qrImg ? (
             <img src={page.qrImg} alt="QR Code" className="w-full h-full object-cover" />
           ) : (
             '[ QR CODE ]'
           )}
         </div>
+      )
+    });
+
+    contentHTML = (
+      <>
+        {headerElement}
+        {qrElement}
         <div className="text-[0.7rem] text-gray-600 mb-2.5 text-center">
           {page.qrText || ''}
         </div>

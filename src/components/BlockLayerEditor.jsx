@@ -166,10 +166,22 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                     <label className="text-gray-400 block">Width ({block.width !== undefined ? block.width : 100}%)</label>
                     <input
                       type="range"
-                      min="20"
+                      min="15"
                       max="100"
                       value={block.width !== undefined ? block.width : 100}
                       onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'width', Number(e.target.value))}
+                      className="w-full accent-[#005f73]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-gray-400 block">Height ({block.height ? `${block.height}px` : 'Auto'})</label>
+                    <input
+                      type="range"
+                      min="20"
+                      max="400"
+                      value={block.height || 100}
+                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'height', Number(e.target.value))}
                       className="w-full accent-[#005f73]"
                     />
                   </div>
