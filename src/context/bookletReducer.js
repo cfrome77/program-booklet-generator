@@ -253,7 +253,45 @@ export function bookletReducer(state, action) {
           ...state.booklet,
           pages
         },
-        selectedElement: state.selectedElement?.pageIndex === pageIndex && state.selectedElement?.blockIndex === blockIndex ? null : state.selectedElement
+        selectedElement: state.selectedElement?.pageIndex === pageIndex &&
+          state.selectedElement?.elementType === 'block' &&
+          state.selectedElement?.blockIndex === blockIndex ? null : state.selectedElement
+      };
+    }
+
+    case 'UPDATE_ELEMENT_TRANSFORM': {
+      const { pageIndex, elementType, blockIndex, transforms } = action;
+      const pages = [...(state.booklet.pages || [])];
+      if (!pages[pageIndex]) return state;
+
+      const page = { ...pages[pageIndex] };
+
+      if (elementType === 'block' && blockIndex !== undefined && blockIndex !== null) {
+        const blocks = [...(page.blocks || [])];
+        if (blocks[blockIndex]) {
+          blocks[blockIndex] = {
+            ...blocks[blockIndex],
+            ...transforms
+          };
+          page.blocks = blocks;
+        }
+      } else {
+        // Generic page element transforms (e.g. titleTransform, qrTransform, titleGroupTransform, headerTransform, etc.)
+        const prefix = elementType;
+        Object.entries(transforms).forEach(([key, val]) => {
+          const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+          page[`${prefix}${capitalizedKey}`] = val;
+        });
+      }
+
+      pages[pageIndex] = page;
+
+      return {
+        ...state,
+        booklet: {
+          ...state.booklet,
+          pages
+        }
       };
     }
 
