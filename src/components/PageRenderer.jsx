@@ -641,11 +641,31 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     );
   }
 
+  const renderPageTitle = (fallbackTitle) => {
+    return renderCanvaWrapper({
+      targetType: 'pageTitle',
+      currentX: page.pageTitleOffsetX || 0,
+      currentY: page.pageTitleOffsetY || 0,
+      currentW: page.pageTitleWidth || null,
+      currentH: page.pageTitleHeight || null,
+      style: {
+        transform: (page.pageTitleOffsetX || page.pageTitleOffsetY) ? `translate(${page.pageTitleOffsetX || 0}px, ${page.pageTitleOffsetY || 0}px)` : undefined,
+        width: page.pageTitleWidth ? `${page.pageTitleWidth}px` : undefined,
+        height: page.pageTitleHeight ? `${page.pageTitleHeight}px` : undefined,
+        zIndex: page.pageTitleZIndex !== undefined ? page.pageTitleZIndex : 110,
+        position: 'relative'
+      },
+      children: (
+        <div className="page-title">{page.title || fallbackTitle}</div>
+      )
+    });
+  };
+
   if (pageType === 'schedule') {
     const items = page.items || [];
     contentHTML = (
       <div>
-        <div className="page-title">{page.title || 'Schedule'}</div>
+        {renderPageTitle('Schedule')}
         <div className="schedule-list">
           {items.map((item, idx) => (
             <div key={idx} className="schedule-row">
@@ -664,7 +684,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     const leaders = page.leaders || [];
     contentHTML = (
       <div>
-        <div className="page-title">{page.title || 'Leadership'}</div>
+        {renderPageTitle('Leadership')}
         <div className="page-content-area">
           {leaders.map((l, idx) => (
             <div key={idx} className="leader-container">
@@ -685,7 +705,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
   } else if (pageType === 'keynote') {
     contentHTML = (
       <div>
-        <div className="page-title">{page.title || 'Keynote Speaker'}</div>
+        {renderPageTitle('Keynote Speaker')}
         <div className="page-content-area">
           <div className="leader-container">
             <div className="speaker-photo">
@@ -725,7 +745,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     const featured = page.featuredAwards || [];
     contentHTML = (
       <div>
-        <div className="page-title">{page.title || 'Awards'}</div>
+        {renderPageTitle('Awards')}
         <div className="award-grid-compact">
           {awards.map((a, idx) => (
             <div key={idx} className="award-card-compact">
@@ -755,7 +775,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
   } else if (pageType === 'vigilIntro') {
     contentHTML = (
       <div>
-        <div className="page-title">{page.title || 'Vigil Honor'}</div>
+        {renderPageTitle('Vigil Honor')}
         <div className="award-card-compact mb-2.5">
           <h4>The Highest Brotherhood</h4>
           <p>
@@ -797,7 +817,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     const members = page.members || [];
     contentHTML = (
       <div>
-        <div className="page-title">{page.title || 'Roster'}</div>
+        {renderPageTitle('Roster')}
         <div className="vigil-grid">
           {members.map((m, idx) => (
             <div key={idx} className="vigil-card">
@@ -818,13 +838,31 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     );
   } else {
     // Custom / Default HTML
-    contentHTML = (
-      <div>
-        <div className="page-title">{page.title || ''}</div>
+    const mainContentElement = renderCanvaWrapper({
+      targetType: 'mainContent',
+      currentX: page.mainContentOffsetX || 0,
+      currentY: page.mainContentOffsetY || 0,
+      currentW: page.mainContentWidth || null,
+      currentH: page.mainContentHeight || null,
+      style: {
+        transform: (page.mainContentOffsetX || page.mainContentOffsetY) ? `translate(${page.mainContentOffsetX || 0}px, ${page.mainContentOffsetY || 0}px)` : undefined,
+        width: page.mainContentWidth ? `${page.mainContentWidth}px` : undefined,
+        height: page.mainContentHeight ? `${page.mainContentHeight}px` : undefined,
+        zIndex: page.mainContentZIndex !== undefined ? page.mainContentZIndex : 50,
+        position: 'relative'
+      },
+      children: (
         <div
           className="page-content-area text-[0.75rem] leading-relaxed"
           dangerouslySetInnerHTML={{ __html: page.content || '' }}
         />
+      )
+    });
+
+    contentHTML = (
+      <div>
+        {renderPageTitle('Title')}
+        {mainContentElement}
         {renderContentBlocks(page.blocks)}
       </div>
     );
