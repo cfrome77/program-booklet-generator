@@ -15,8 +15,24 @@ export default function PageRenderer({ page, pageNum }) {
 
   const isLeft = pageNum ? isLeftPage(pageNum) : true;
   const bgImgUrl = page.bgImage || theme.bgImage;
-  const bgStyle = bgImgUrl ? { backgroundImage: `url('${bgImgUrl}')` } : {};
+  const rawOpacity = page.bgImage
+    ? (page.bgImageOpacity !== undefined ? page.bgImageOpacity : 100)
+    : (theme.bgImageOpacity !== undefined ? theme.bgImageOpacity : 100);
+  const opacityVal = rawOpacity / 100;
   const alignClass = page.vAlign ? `align-${page.vAlign}` : '';
+
+  const renderBgLayer = () => {
+    if (!bgImgUrl) return null;
+    return (
+      <div
+        className="page-bg-layer"
+        style={{
+          backgroundImage: `url('${bgImgUrl}')`,
+          opacity: opacityVal
+        }}
+      />
+    );
+  };
 
   const renderBottomBanner = () => {
     if (!page.bottomBannerText || page.bottomBannerStyle === 'none') return null;
@@ -31,13 +47,27 @@ export default function PageRenderer({ page, pageNum }) {
   const renderContentBlocks = (blocks) => {
     if (!blocks || blocks.length === 0) return null;
     return (
-      <div className="space-y-1 mt-1">
+      <div className="space-y-1 mt-1 w-full">
         {blocks.map((b, idx) => {
+          const align = b.align || (b.type === 'image' ? 'center' : 'left');
+          const blockContainerStyle = {
+            width: b.width !== undefined ? `${b.width}%` : '100%',
+            opacity: b.opacity !== undefined ? b.opacity / 100 : 1,
+            transform: (b.offsetX || b.offsetY) ? `translate(${b.offsetX || 0}px, ${b.offsetY || 0}px)` : undefined,
+            textAlign: align,
+            marginLeft: align === 'center' || align === 'right' ? 'auto' : undefined,
+            marginRight: align === 'center' || align === 'left' ? 'auto' : undefined,
+          };
+
           if (b.type === 'heading') {
             return (
               <h4
                 key={b.id || idx}
-                style={{ fontFamily: 'var(--font-title)', color: 'var(--navy-dark)' }}
+                style={{
+                  fontFamily: 'var(--font-title)',
+                  color: 'var(--navy-dark)',
+                  ...blockContainerStyle
+                }}
                 className="text-xs font-bold mt-1.5"
               >
                 {b.text || ''}
@@ -48,7 +78,10 @@ export default function PageRenderer({ page, pageNum }) {
             return (
               <p
                 key={b.id || idx}
-                style={{ color: 'var(--charcoal)' }}
+                style={{
+                  color: 'var(--charcoal)',
+                  ...blockContainerStyle
+                }}
                 className="text-[0.7rem] leading-relaxed"
               >
                 {b.text || ''}
@@ -56,20 +89,34 @@ export default function PageRenderer({ page, pageNum }) {
             );
           }
           if (b.type === 'image') {
-            return b.url ? (
-              <img
-                key={b.id || idx}
-                src={b.url}
-                alt="Block Content"
-                className="image-block"
-              />
-            ) : null;
+            if (!b.url) return null;
+            let borderRadius = '4px';
+            if (b.shape === 'circle') borderRadius = '50%';
+            if (b.shape === 'square' || b.shape === 'natural') borderRadius = '0px';
+
+            return (
+              <div key={b.id || idx} style={blockContainerStyle} className="my-1">
+                <img
+                  src={b.url}
+                  alt="Block Content"
+                  className="image-block inline-block"
+                  style={{
+                    borderRadius,
+                    maxHeight: '220px',
+                    objectFit: b.shape === 'circle' ? 'cover' : 'contain'
+                  }}
+                />
+              </div>
+            );
           }
           if (b.type === 'divider') {
             return (
               <hr
                 key={b.id || idx}
-                style={{ borderColor: 'var(--teal-accent)' }}
+                style={{
+                  borderColor: 'var(--teal-accent)',
+                  ...blockContainerStyle
+                }}
                 className="my-1 border-t"
               />
             );
@@ -85,8 +132,14 @@ export default function PageRenderer({ page, pageNum }) {
   let contentHTML = null;
 
   if (pageType === 'cover') {
+    const frameStyle = page.titleFrameStyle || (page.scrollworkFrame !== false ? 'scrollwork' : 'none');
+    let frameClassName = '';
+    if (frameStyle === 'scrollwork') frameClassName = 'scrollwork-frame';
+    if (frameStyle === 'badge') frameClassName = 'title-badge-frame';
+    if (frameStyle === 'bordered') frameClassName = 'title-bordered-frame';
+
     const titleGroup = (
-      <div className={page.scrollworkFrame !== false ? 'scrollwork-frame' : ''}>
+      <div className={frameClassName}>
         <div className="scroll-title-group">
           <h2>{page.title || ''}</h2>
           <h3>{page.subtitle || ''}</h3>
@@ -101,7 +154,19 @@ export default function PageRenderer({ page, pageNum }) {
           className="top-banner-bar"
           style={{ background: page.topBarColor || theme.tealAccent || 'var(--teal-accent)' }}
         />
-        <div className="patch-emblem-box">
+        <div
+          className="patch-emblem-box"
+          style={{
+            width: page.emblemWidth ? `${page.emblemWidth}px` : undefined,
+            height: page.emblemHeight ? `${page.emblemHeight}px` : undefined,
+            transform: (page.emblemOffsetX || page.emblemOffsetY) ? `translate(${page.emblemOffsetX || 0}px, ${page.emblemOffsetY || 0}px)` : undefined,
+            opacity: page.emblemOpacity !== undefined ? page.emblemOpacity / 100 : undefined,
+            borderRadius: page.emblemShape === 'square' ? '0px' : page.emblemShape === 'rounded' ? '12px' : page.emblemShape === 'none' ? '0px' : undefined,
+            border: page.emblemShape === 'none' ? 'none' : undefined,
+            background: page.emblemShape === 'none' ? 'transparent' : undefined,
+            boxShadow: page.emblemShape === 'none' ? 'none' : undefined,
+          }}
+        >
           {page.emblemImg ? (
             <img src={page.emblemImg} alt="Emblem" />
           ) : (
@@ -128,8 +193,8 @@ export default function PageRenderer({ page, pageNum }) {
     return (
       <div
         className={`booklet-page cover-page ${alignClass}`}
-        style={bgStyle}
       >
+        {renderBgLayer()}
         {contentHTML}
         {pageNum && (
           <span className={`page-number-tag ${isLeft ? 'left' : 'right'}`}>
@@ -191,8 +256,9 @@ export default function PageRenderer({ page, pageNum }) {
     return (
       <div
         className={`booklet-page cover-page ${alignClass}`}
-        style={{ justifyContent: 'center', textAlign: 'center', ...bgStyle }}
+        style={{ justifyContent: 'center', textAlign: 'center' }}
       >
+        {renderBgLayer()}
         {contentHTML}
         {pageNum && (
           <span className={`page-number-tag ${isLeft ? 'left' : 'right'}`}>
@@ -393,7 +459,8 @@ export default function PageRenderer({ page, pageNum }) {
   }
 
   return (
-    <div className={`booklet-page ${alignClass}`} style={bgStyle}>
+    <div className={`booklet-page ${alignClass}`}>
+      {renderBgLayer()}
       {contentHTML}
       {pageNum && (
         <span className={`page-number-tag ${isLeft ? 'left' : 'right'}`}>

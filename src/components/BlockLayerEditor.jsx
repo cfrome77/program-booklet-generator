@@ -114,6 +114,88 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
             {block.type === 'divider' && (
               <p className="text-[10px] text-gray-400 italic">Horizontal line divider</p>
             )}
+
+            <div className="bg-[#1e1e24] p-1.5 rounded border border-[#444] space-y-1 mt-1 text-[10px]">
+              <div className="font-semibold text-gray-300 mb-0.5">Sizing, Alignment & Shift Position</div>
+              <div className="grid grid-cols-2 gap-1.5">
+                <div>
+                  <label className="text-gray-400 block">Width ({block.width !== undefined ? block.width : 100}%)</label>
+                  <input
+                    type="range"
+                    min="20"
+                    max="100"
+                    value={block.width !== undefined ? block.width : 100}
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'width', Number(e.target.value))}
+                    className="w-full accent-[#005f73]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-gray-400 block">Align</label>
+                  <select
+                    value={block.align || (block.type === 'image' ? 'center' : 'left')}
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'align', e.target.value)}
+                    className="w-full bg-[#2a2a34] border border-[#555] text-white rounded p-0.5"
+                  >
+                    <option value="left">Left</option>
+                    <option value="center">Center</option>
+                    <option value="right">Right</option>
+                  </select>
+                </div>
+
+                {block.type === 'image' && (
+                  <div>
+                    <label className="text-gray-400 block">Shape</label>
+                    <select
+                      value={block.shape || 'rounded'}
+                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'shape', e.target.value)}
+                      className="w-full bg-[#2a2a34] border border-[#555] text-white rounded p-0.5"
+                    >
+                      <option value="rounded">Rounded Box</option>
+                      <option value="circle">Circle / Oval</option>
+                      <option value="square">Square Corners</option>
+                      <option value="natural">Natural Frame</option>
+                    </select>
+                  </div>
+                )}
+
+                <div>
+                  <label className="text-gray-400 block">Opacity ({block.opacity !== undefined ? block.opacity : 100}%)</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={block.opacity !== undefined ? block.opacity : 100}
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'opacity', Number(e.target.value))}
+                    className="w-full accent-[#005f73]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-gray-400 block">Shift X ({block.offsetX || 0}px)</label>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    value={block.offsetX || 0}
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'offsetX', Number(e.target.value))}
+                    className="w-full accent-[#005f73]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-gray-400 block">Shift Y ({block.offsetY || 0}px)</label>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    value={block.offsetY || 0}
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'offsetY', Number(e.target.value))}
+                    className="w-full accent-[#005f73]"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         ))}
       </div>

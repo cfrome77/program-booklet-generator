@@ -140,15 +140,99 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
               className="mt-1 text-[10px] text-gray-400 file:mr-2 file:py-0.5 file:px-1.5 file:rounded file:border-0 file:text-[10px] file:bg-[#3a3a42] file:text-white hover:file:bg-[#4a4a54] cursor-pointer"
             />
           </div>
+
+          <div className="bg-[#24242e] p-2 rounded border border-[#3b3b48] space-y-2">
+            <span className="text-[10px] font-bold text-[#70c0d0] block">Emblem Shape, Size & Positioning</span>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-[10px] text-gray-400">Shape</label>
+                <select
+                  value={page.emblemShape || 'circle'}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemShape', e.target.value)}
+                  className="w-full bg-[#1e1e24] border border-[#444] text-white text-[10px] p-1 rounded"
+                >
+                  <option value="circle">Circular Patch</option>
+                  <option value="rounded">Rounded Square</option>
+                  <option value="square">Square</option>
+                  <option value="none">Natural / No Border</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-gray-400">Opacity ({page.emblemOpacity !== undefined ? page.emblemOpacity : 100}%)</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={page.emblemOpacity !== undefined ? page.emblemOpacity : 100}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemOpacity', Number(e.target.value))}
+                  className="w-full accent-[#005f73]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-gray-400">Width ({page.emblemWidth || 120}px)</label>
+                <input
+                  type="range"
+                  min="40"
+                  max="280"
+                  value={page.emblemWidth || 120}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemWidth', Number(e.target.value))}
+                  className="w-full accent-[#005f73]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-gray-400">Height ({page.emblemHeight || 120}px)</label>
+                <input
+                  type="range"
+                  min="40"
+                  max="280"
+                  value={page.emblemHeight || 120}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemHeight', Number(e.target.value))}
+                  className="w-full accent-[#005f73]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-gray-400">Shift X ({page.emblemOffsetX || 0}px)</label>
+                <input
+                  type="range"
+                  min="-120"
+                  max="120"
+                  value={page.emblemOffsetX || 0}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemOffsetX', Number(e.target.value))}
+                  className="w-full accent-[#005f73]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-gray-400">Shift Y ({page.emblemOffsetY || 0}px)</label>
+                <input
+                  type="range"
+                  min="-120"
+                  max="120"
+                  value={page.emblemOffsetY || 0}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemOffsetY', Number(e.target.value))}
+                  className="w-full accent-[#005f73]"
+                />
+              </div>
+            </div>
+          </div>
           <div>
-            <label className="block text-[11px] text-gray-400 mb-0.5">Scrollwork Frame for Title</label>
+            <label className="block text-[11px] text-gray-400 mb-0.5">Title Frame Style</label>
             <select
-              value={page.scrollworkFrame !== false ? 'true' : 'false'}
-              onChange={(e) => updatePageField(pageIndex, 'scrollworkFrame', e.target.value === 'true')}
+              value={page.titleFrameStyle || (page.scrollworkFrame === false ? 'none' : 'scrollwork')}
+              onChange={(e) => {
+                updatePageField(pageIndex, 'titleFrameStyle', e.target.value);
+                updatePageField(pageIndex, 'scrollworkFrame', e.target.value === 'scrollwork');
+              }}
               className="w-full bg-[#282830] border border-[#444] text-white p-1 rounded focus:outline-none focus:border-[#005f73]"
             >
-              <option value="true">Yes (Scrollwork Frame)</option>
-              <option value="false">No (Standard Text)</option>
+              <option value="scrollwork">Scrollwork Frame (Ornamental)</option>
+              <option value="badge">Parchment Badge / Card</option>
+              <option value="bordered">Simple Bordered Frame</option>
+              <option value="none">None (Direct Text)</option>
             </select>
           </div>
           <div>
@@ -301,6 +385,22 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
           onChange={(e) => handleImageUpload('bgImage', e)}
           className="mt-1 text-[10px] text-gray-400 file:mr-2 file:py-0.5 file:px-1.5 file:rounded file:border-0 file:text-[10px] file:bg-[#3a3a42] file:text-white hover:file:bg-[#4a4a54] cursor-pointer"
         />
+        <div className="mt-1.5 flex items-center justify-between gap-2">
+          <label className="text-[10px] text-gray-400">BG Image Opacity</label>
+          <div className="flex items-center gap-1.5">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={page.bgImageOpacity !== undefined ? page.bgImageOpacity : 100}
+              onChange={(e) => updatePageField(pageIndex, 'bgImageOpacity', Number(e.target.value))}
+              className="w-20 accent-[#005f73]"
+            />
+            <span className="text-[10px] text-gray-300 min-w-[28px] text-right">
+              {page.bgImageOpacity !== undefined ? page.bgImageOpacity : 100}%
+            </span>
+          </div>
+        </div>
       </div>
 
       <BlockLayerEditor pageIndex={pageIndex} blocks={page.blocks || []} />

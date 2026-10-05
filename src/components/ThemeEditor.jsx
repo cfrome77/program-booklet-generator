@@ -35,6 +35,22 @@ export default function ThemeEditor() {
           onChange={handleFileUpload}
           className="mt-1 text-[11px] text-gray-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#3a3a42] file:text-white hover:file:bg-[#4a4a54] cursor-pointer"
         />
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <label className="text-[11px] text-gray-300 font-semibold">Background Opacity</label>
+          <div className="flex items-center gap-2">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={theme.bgImageOpacity !== undefined ? theme.bgImageOpacity : 100}
+              onChange={(e) => updateThemeField('bgImageOpacity', Number(e.target.value))}
+              className="w-24 accent-[#005f73]"
+            />
+            <span className="text-[11px] text-gray-300 min-w-[32px] text-right">
+              {theme.bgImageOpacity !== undefined ? theme.bgImageOpacity : 100}%
+            </span>
+          </div>
+        </div>
       </div>
 
       <div>
