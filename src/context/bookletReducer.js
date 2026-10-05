@@ -7,7 +7,8 @@ export const INITIAL_STATE = {
     importError: null,
     lastImportedAt: null,
     lastExportedAt: null,
-  }
+  },
+  selectedElement: null // { pageIndex, blockIndex, elementType: 'block' | 'emblem' }
 };
 
 export function bookletReducer(state, action) {
@@ -251,7 +252,64 @@ export function bookletReducer(state, action) {
         booklet: {
           ...state.booklet,
           pages
-        }
+        },
+        selectedElement: state.selectedElement?.pageIndex === pageIndex && state.selectedElement?.blockIndex === blockIndex ? null : state.selectedElement
+      };
+    }
+
+    case 'REORDER_CONTENT_BLOCK_LAYER': {
+      const { pageIndex, blockIndex, direction } = action;
+      const pages = [...(state.booklet.pages || [])];
+      if (!pages[pageIndex]) return state;
+
+      const page = { ...pages[pageIndex] };
+      const blocks = [...(page.blocks || [])];
+      if (blockIndex < 0 || blockIndex >= blocks.length) return state;
+
+      let newIndex = blockIndex;
+      if (direction === 'front') {
+        const [item] = blocks.splice(blockIndex, 1);
+        blocks.push(item);
+        newIndex = blocks.length - 1;
+      } else if (direction === 'back') {
+        const [item] = blocks.splice(blockIndex, 1);
+        blocks.unshift(item);
+        newIndex = 0;
+      } else if (direction === 'forward' && blockIndex < blocks.length - 1) {
+        const temp = blocks[blockIndex];
+        blocks[blockIndex] = blocks[blockIndex + 1];
+        blocks[blockIndex + 1] = temp;
+        newIndex = blockIndex + 1;
+      } else if (direction === 'backward' && blockIndex > 0) {
+        const temp = blocks[blockIndex];
+        blocks[blockIndex] = blocks[blockIndex - 1];
+        blocks[blockIndex - 1] = temp;
+        newIndex = blockIndex - 1;
+      }
+
+      blocks.forEach((b, idx) => {
+        b.zIndex = (idx + 1) * 10;
+      });
+
+      page.blocks = blocks;
+      pages[pageIndex] = page;
+
+      return {
+        ...state,
+        booklet: {
+          ...state.booklet,
+          pages
+        },
+        selectedElement: state.selectedElement?.pageIndex === pageIndex && state.selectedElement?.elementType === 'block'
+          ? { ...state.selectedElement, blockIndex: newIndex }
+          : state.selectedElement
+      };
+    }
+
+    case 'SET_SELECTED_ELEMENT': {
+      return {
+        ...state,
+        selectedElement: action.selectedElement
       };
     }
 

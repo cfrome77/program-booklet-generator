@@ -217,6 +217,18 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                   className="w-full accent-[#005f73]"
                 />
               </div>
+
+              <div>
+                <label className="block text-[10px] text-gray-400">Layer Level (Z-Index: {page.emblemZIndex !== undefined ? page.emblemZIndex : 100})</label>
+                <input
+                  type="range"
+                  min="1"
+                  max="200"
+                  value={page.emblemZIndex !== undefined ? page.emblemZIndex : 100}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemZIndex', Number(e.target.value))}
+                  className="w-full accent-[#005f73]"
+                />
+              </div>
             </div>
           </div>
           <div>
