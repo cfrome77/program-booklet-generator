@@ -59,9 +59,22 @@ body {
   flex-direction: column;
   background: var(--bg-cream);
   justify-content: space-between;
+  color: var(--charcoal);
+}
+
+.page-bg-layer {
+  position: absolute;
+  inset: 0;
   background-size: cover;
   background-position: center;
-  color: var(--charcoal);
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.booklet-page > *:not(.page-bg-layer) {
+  position: relative;
+  z-index: 1;
 }
 
 /* Vertical alignment options */
@@ -79,7 +92,7 @@ body {
   background: var(--teal-accent);
 }
 
-/* Scrollwork Frame Option */
+/* Title Frame Options */
 .scrollwork-frame {
   border: 2px solid var(--navy-dark);
   border-radius: 8px;
@@ -99,6 +112,22 @@ body {
 
 .scrollwork-frame::before { top: -8px; left: 10px; }
 .scrollwork-frame::after { bottom: -8px; right: 10px; }
+
+.title-badge-frame {
+  border: 1px solid #c8bda8;
+  border-radius: 8px;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.75);
+  margin: 8px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.title-bordered-frame {
+  border: 2px solid var(--navy-dark);
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin: 8px 0;
+}
 
 /* Bottom Parchment / Torn Edge Ribbon Styles */
 .bottom-banner-torn {
