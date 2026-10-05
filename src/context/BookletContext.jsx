@@ -19,6 +19,7 @@ export function BookletProvider({ children, initialBookletState }) {
     theme: state.booklet.theme || {},
     pages: state.booklet.pages || [],
     jsonState: state.jsonState,
+    selectedElement: state.selectedElement,
 
     // Action Helpers
     loadPreset: (presetKey) => dispatch({ type: 'LOAD_PRESET', presetKey }),
@@ -33,6 +34,8 @@ export function BookletProvider({ children, initialBookletState }) {
     updateContentBlock: (pageIndex, blockIndex, field, value) => dispatch({ type: 'UPDATE_CONTENT_BLOCK', pageIndex, blockIndex, field, value }),
     moveContentBlock: (pageIndex, blockIndex, delta) => dispatch({ type: 'MOVE_CONTENT_BLOCK', pageIndex, blockIndex, delta }),
     deleteContentBlock: (pageIndex, blockIndex) => dispatch({ type: 'DELETE_CONTENT_BLOCK', pageIndex, blockIndex }),
+    reorderContentBlockLayer: (pageIndex, blockIndex, direction) => dispatch({ type: 'REORDER_CONTENT_BLOCK_LAYER', pageIndex, blockIndex, direction }),
+    setSelectedElement: (selectedElement) => dispatch({ type: 'SET_SELECTED_ELEMENT', selectedElement }),
 
     // JSON Import/Export
     importJSON: (input) => {
