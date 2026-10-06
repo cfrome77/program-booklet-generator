@@ -6,6 +6,7 @@ import SpreadViewer from './components/SpreadViewer.jsx';
 import ImpositionViewer from './components/ImpositionViewer.jsx';
 import PreflightModal from './components/PreflightModal.jsx';
 import PrintMount from './components/PrintMount.jsx';
+import GuideTogglesToolbar from './components/GuideTogglesToolbar.jsx';
 import { Printer, Loader2 } from 'lucide-react';
 
 function BookletAppContent() {
@@ -92,7 +93,7 @@ function BookletAppContent() {
         <section className="preview-workspace flex-1 bg-[#18181c] p-5 overflow-y-auto flex flex-col items-center">
           {/* Controls Bar */}
           <div className="controls-bar mb-5 flex flex-wrap items-center justify-between gap-3 bg-[#282830] px-4 py-2 rounded-lg shadow-md w-full max-w-4xl">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setViewMode('spreads')}
                 className={`text-xs font-semibold px-4 py-2 rounded transition-colors ${
@@ -114,6 +115,8 @@ function BookletAppContent() {
                 Print Imposition (11 × 8.5 in Folded Sheets)
               </button>
             </div>
+
+            <GuideTogglesToolbar />
 
             <button
               onClick={() => setIsPreflightOpen(true)}

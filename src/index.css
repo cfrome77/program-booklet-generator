@@ -62,6 +62,10 @@ body {
   color: var(--charcoal);
 }
 
+.booklet-page.has-overflow {
+  overflow: visible !important;
+}
+
 .page-bg-layer {
   position: absolute;
   inset: 0;
@@ -527,7 +531,7 @@ body {
     print-color-adjust: exact !important;
   }
 
-  /* Hide ALL normal application UI */
+  /* Hide ALL normal application UI & Editor-only guides */
   header,
   aside,
   section,
@@ -539,7 +543,10 @@ body {
   .preview-workspace,
   .sidebar,
   .fixed,
-  button {
+  button,
+  .editor-guide,
+  .overflow-indicator,
+  .overflow-warning-banner {
     display: none !important;
   }
 

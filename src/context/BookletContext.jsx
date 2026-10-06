@@ -20,8 +20,17 @@ export function BookletProvider({ children, initialBookletState }) {
     pages: state.booklet.pages || [],
     jsonState: state.jsonState,
     selectedElement: state.selectedElement,
+    guides: state.guides || {
+      showPageBoundary: true,
+      showSafeArea: true,
+      showCenterFold: true,
+      showBleed: false,
+      showGrid: false
+    },
 
     // Action Helpers
+    toggleGuide: (guideKey) => dispatch({ type: 'TOGGLE_GUIDE', guideKey }),
+    setGuide: (guideKey, value) => dispatch({ type: 'SET_GUIDE', guideKey, value }),
     loadPreset: (presetKey) => dispatch({ type: 'LOAD_PRESET', presetKey }),
     updateGlobalField: (field, value) => dispatch({ type: 'UPDATE_GLOBAL_FIELD', field, value }),
     updateThemeField: (field, value) => dispatch({ type: 'UPDATE_THEME_FIELD', field, value }),
