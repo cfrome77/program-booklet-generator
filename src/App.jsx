@@ -9,10 +9,11 @@ import RecoveryPromptModal from './components/RecoveryPromptModal.jsx';
 import PrintMount from './components/PrintMount.jsx';
 import GuideTogglesToolbar from './components/GuideTogglesToolbar.jsx';
 import PageThumbnailsNav from './components/PageThumbnailsNav.jsx';
+import { getUsedFonts, loadFonts } from './utils/fonts.js';
 import { Printer, Loader2 } from 'lucide-react';
 
 function BookletAppContent() {
-  const { theme, jsonState, isRecoveryPromptOpen, recoverableSession, restoreSession, discardSession } = useBooklet();
+  const { booklet, theme, jsonState, isRecoveryPromptOpen, recoverableSession, restoreSession, discardSession } = useBooklet();
   const [viewMode, setViewMode] = useState('spreads'); // 'spreads' | 'imposition'
   const [isPreflightOpen, setIsPreflightOpen] = useState(false);
 
@@ -40,10 +41,18 @@ function BookletAppContent() {
     setPrintMode(mode);
     setIsPreparingPrint(true);
 
-    // Allow DOM to update and render #print-mount
+    // 1. Audit and load all required fonts before printing
+    const requiredFonts = getUsedFonts(booklet);
+    try {
+      await loadFonts(requiredFonts, { timeout: 4000 });
+    } catch (e) {
+      console.warn('Font pre-loading warning during print prep:', e);
+    }
+
+    // 2. Allow DOM to update and render #print-mount
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    // Wait for fonts
+    // 3. Wait for browser font loader
     if (document.fonts && document.fonts.ready) {
       try {
         await document.fonts.ready;
@@ -52,7 +61,7 @@ function BookletAppContent() {
       }
     }
 
-    // Wait for images inside #print-mount
+    // 4. Wait for images inside #print-mount
     const printMount = document.getElementById('print-mount');
     if (printMount) {
       const images = Array.from(printMount.querySelectorAll('img'));
