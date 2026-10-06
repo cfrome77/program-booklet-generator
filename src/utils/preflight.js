@@ -1,4 +1,5 @@
 import { calculateImpositionSheets } from './imposition.js';
+import { getUnusedAssets, getBrokenImageReferences, resolveAssetUrl } from './assets.js';
 
 /**
  * Valid page types allowed in the booklet system.
@@ -167,12 +168,42 @@ export function runPreflight(booklet, options = {}) {
   // --------------------------------------------------------------------------
   // 2. CONTENT CHECKS
   // --------------------------------------------------------------------------
-  const isValidUrlOrData = (url) => {
-    if (!url || typeof url !== 'string') return false;
-    const trimmed = url.trim();
+  const isValidUrlOrData = (ref) => {
+    if (!ref || typeof ref !== 'string') return false;
+    const trimmed = ref.trim();
     if (!trimmed) return false;
-    return trimmed.startsWith('data:') || trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('/') || trimmed.startsWith('./');
+    const resolved = resolveAssetUrl(booklet, trimmed);
+    if (!resolved) return false;
+    return (
+      resolved.startsWith('data:') ||
+      resolved.startsWith('http://') ||
+      resolved.startsWith('https://') ||
+      resolved.startsWith('/') ||
+      resolved.startsWith('./') ||
+      resolved.startsWith('../')
+    );
   };
+
+  // Asset Manager Checks (Unused Assets & Broken Images)
+  const unusedAssets = getUnusedAssets(booklet);
+  unusedAssets.forEach((asset) => {
+    addIssue({
+      severity: 'INFO',
+      category: 'Content',
+      message: `Unused image asset "${asset.name || asset.filename || asset.id}" is stored in the asset library.`
+    });
+  });
+
+  const brokenRefs = getBrokenImageReferences(booklet);
+  brokenRefs.forEach((broken) => {
+    addIssue({
+      severity: 'ERROR',
+      category: 'Content',
+      message: broken.message,
+      pageIndex: broken.pageIndex !== undefined ? broken.pageIndex : null,
+      blockIndex: broken.blockIndex !== undefined ? broken.blockIndex : null
+    });
+  });
 
   pages.forEach((p, idx) => {
     // Images in cover / back cover

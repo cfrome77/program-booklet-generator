@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, useState, useRef } from 'react';
 import { bookletReducer, INITIAL_STATE } from './bookletReducer.js';
 import { saveAutosaveSession, getAutosaveSession, clearAutosaveSession } from '../utils/storage.js';
+import { resolveAssetUrl as resolveUrl } from '../utils/assets.js';
 
 const BookletContext = createContext(null);
 
@@ -137,6 +138,7 @@ export function BookletProvider({ children, initialBookletState }) {
     dispatch,
     activePresetKey: state.activePresetKey,
     booklet: state.booklet,
+    assets: state.booklet.assets || [],
     theme: state.booklet.theme || {},
     pages: state.booklet.pages || [],
     jsonState: state.jsonState,
@@ -162,6 +164,12 @@ export function BookletProvider({ children, initialBookletState }) {
     isRecoveryPromptOpen,
     restoreSession: handleRestoreSession,
     discardSession: handleDiscardSession,
+
+    // Asset Helpers
+    addAsset: (asset) => dispatch({ type: 'ADD_ASSET', asset }),
+    removeAsset: (assetId) => dispatch({ type: 'REMOVE_ASSET', assetId }),
+    purgeUnusedAssets: () => dispatch({ type: 'PURGE_UNUSED_ASSETS' }),
+    resolveAssetUrl: (ref) => resolveUrl(state.booklet, ref),
 
     // Action Helpers
     toggleGuide: (guideKey) => dispatch({ type: 'TOGGLE_GUIDE', guideKey }),

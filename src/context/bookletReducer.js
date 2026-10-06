@@ -1,12 +1,13 @@
 import { PRESETS } from '../presets/index.js';
 import { validateProject } from '../utils/schemaValidator.js';
 import { migrateProject } from '../utils/migrations.js';
+import { createAssetObject, getUnusedAssets } from '../utils/assets.js';
 
 const MAX_HISTORY = 50;
 
 export const INITIAL_STATE = {
   activePresetKey: 'blank',
-  booklet: JSON.parse(JSON.stringify(PRESETS.blank || {})),
+  booklet: migrateProject(JSON.parse(JSON.stringify(PRESETS.blank || {}))),
   jsonState: {
     importError: null,
     lastImportedAt: null,
@@ -58,13 +59,69 @@ function baseReducer(state, action) {
       const targetPreset = PRESETS[presetKey];
       if (!targetPreset) return state;
 
+      const migratedPreset = migrateProject(JSON.parse(JSON.stringify(targetPreset)));
+
       return {
         ...state,
         activePresetKey: presetKey,
-        booklet: JSON.parse(JSON.stringify(targetPreset)),
+        booklet: migratedPreset,
         jsonState: {
           ...state.jsonState,
           importError: null,
+        }
+      };
+    }
+
+    case 'ADD_ASSET': {
+      const asset = action.asset;
+      if (!asset) return state;
+      const normalizedAsset = createAssetObject(asset);
+      const currentAssets = [...(state.booklet.assets || [])];
+      const existingIndex = currentAssets.findIndex((a) => a.id === normalizedAsset.id);
+
+      if (existingIndex >= 0) {
+        currentAssets[existingIndex] = normalizedAsset;
+      } else {
+        currentAssets.push(normalizedAsset);
+      }
+
+      return {
+        ...state,
+        booklet: {
+          ...state.booklet,
+          assets: currentAssets
+        }
+      };
+    }
+
+    case 'REMOVE_ASSET': {
+      const assetId = action.assetId;
+      if (!assetId) return state;
+      const rawId = String(assetId).startsWith('asset:') ? String(assetId).substring(6) : String(assetId);
+      const currentAssets = (state.booklet.assets || []).filter(
+        (a) => a && a.id !== String(assetId) && a.id !== rawId
+      );
+
+      return {
+        ...state,
+        booklet: {
+          ...state.booklet,
+          assets: currentAssets
+        }
+      };
+    }
+
+    case 'PURGE_UNUSED_ASSETS': {
+      const unusedAssets = getUnusedAssets(state.booklet);
+      if (unusedAssets.length === 0) return state;
+      const unusedIds = new Set(unusedAssets.map((a) => a.id));
+      const filteredAssets = (state.booklet.assets || []).filter((a) => a && !unusedIds.has(a.id));
+
+      return {
+        ...state,
+        booklet: {
+          ...state.booklet,
+          assets: filteredAssets
         }
       };
     }

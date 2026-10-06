@@ -17,7 +17,8 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     updatePageField,
     reorderContentBlockLayer,
     deleteContentBlock,
-    guides
+    guides,
+    resolveAssetUrl
   } = useBooklet();
 
   if (!page) {
@@ -143,7 +144,9 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
       resizeObserver.disconnect();
     };
   }, [page, actualPageIndex, page.type, page.blocks, page.content, page.items, page.leaders, page.sponsors]);
-  const bgImgUrl = page.bgImage || theme.bgImage;
+
+  const bgImgRaw = page.bgImage || theme.bgImage;
+  const bgImgUrl = resolveAssetUrl(bgImgRaw);
   const rawOpacity = page.bgImage
     ? (page.bgImageOpacity !== undefined ? page.bgImageOpacity : 100)
     : (theme.bgImageOpacity !== undefined ? theme.bgImageOpacity : 100);
@@ -417,12 +420,10 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
     return (
       <div className="editor-guide pointer-events-none absolute inset-0 z-[800] select-none">
-        {/* Optional Alignment Grid */}
         {showGrid && (
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#005f7318_1px,transparent_1px),linear-gradient(to_bottom,#005f7318_1px,transparent_1px)] bg-[size:0.25in_0.25in]" />
         )}
 
-        {/* Optional Bleed Zone (0.125 in outer line) */}
         {showBleed && (
           <div className="absolute -inset-[0.125in] border-2 border-dashed border-rose-500/60 pointer-events-none">
             <span className={`absolute -top-2.5 text-[8px] font-mono font-bold text-rose-400 bg-black/90 px-1 rounded border border-rose-700/50 ${
@@ -433,7 +434,6 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
           </div>
         )}
 
-        {/* Page Boundary */}
         {showPageBoundary && (
           <div className="absolute inset-0 border-2 border-[#005f73] pointer-events-none">
             <span className={`absolute top-0 text-[8px] font-mono font-bold text-cyan-300 bg-[#122230]/90 px-1.5 py-0.5 rounded-b border-b border-x border-[#005f73] ${
@@ -444,7 +444,6 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
           </div>
         )}
 
-        {/* Safe Area */}
         {showSafeArea && (
           <div
             className="absolute border border-dashed border-amber-500/70 pointer-events-none"
@@ -461,7 +460,6 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
           </div>
         )}
 
-        {/* Center Fold Line */}
         {showCenterFold && (
           <div
             className={`absolute top-0 bottom-0 w-0 border-r-2 border-dashed border-emerald-500/80 pointer-events-none ${
@@ -502,7 +500,6 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
   const renderResizeHandles = (targetType, blockIndex = null, currentW = 100, currentH = null, isPercent = false) => {
     return (
       <>
-        {/* Corner Handles */}
         <div
           onPointerDown={(e) => handlePointerDownResize(e, 'tl', targetType, blockIndex, currentW, currentH, isPercent)}
           className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-[#005f73] rounded-full z-[1000] cursor-nwse-resize shadow hover:scale-125 transition-transform"
@@ -524,7 +521,6 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
           title="Drag corner to resize"
         />
 
-        {/* Edge Handles */}
         <div
           onPointerDown={(e) => handlePointerDownResize(e, 'r', targetType, blockIndex, currentW, currentH, isPercent)}
           className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-2.5 h-4 bg-[#005f73] border border-white rounded z-[1000] cursor-ew-resize shadow hover:scale-125 transition-transform"
@@ -618,7 +614,8 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
               </p>
             );
           } else if (b.type === 'image') {
-            if (!b.url) {
+            const blockImgSrc = resolveAssetUrl(b.url);
+            if (!blockImgSrc) {
               innerBlockContent = (
                 <div className="p-2 border border-dashed border-gray-400 text-gray-500 text-[10px] text-center rounded h-full flex items-center justify-center">
                   [ Image Block: Select or Upload in Sidebar ]
@@ -632,7 +629,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
               innerBlockContent = (
                 <div className="my-1 h-full w-full flex items-center justify-center">
                   <img
-                    src={b.url}
+                    src={blockImgSrc}
                     alt="Block Content"
                     draggable={false}
                     className="image-block inline-block max-w-full select-none"
@@ -688,6 +685,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
     const currentEmblemW = page.emblemWidth || 120;
     const currentEmblemH = page.emblemHeight || 120;
+    const emblemSrc = resolveAssetUrl(page.emblemImg);
 
     const emblemElement = renderCanvaWrapper({
       targetType: 'emblem',
@@ -708,8 +706,8 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
         zIndex: page.emblemZIndex !== undefined ? page.emblemZIndex : 100,
         position: 'relative'
       },
-      children: page.emblemImg ? (
-        <img src={page.emblemImg} alt="Emblem" draggable={false} className="w-full h-full object-contain select-none" />
+      children: emblemSrc ? (
+        <img src={emblemSrc} alt="Emblem" draggable={false} className="w-full h-full object-contain select-none" />
       ) : (
         <span
           style={{ color: 'var(--navy-dark)' }}
@@ -808,6 +806,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
   if (pageType === 'backCover') {
     const sponsorsList = page.sponsors || [];
+    const qrSrc = resolveAssetUrl(page.qrImg);
 
     const headerElement = renderCanvaWrapper({
       targetType: 'headerGroup',
@@ -856,8 +855,8 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
       },
       children: (
         <div className="w-full h-full bg-white border border-gray-300 flex items-center justify-center text-[0.58rem] text-gray-500 overflow-hidden">
-          {page.qrImg ? (
-            <img src={page.qrImg} alt="QR Code" draggable={false} className="w-full h-full object-cover select-none" />
+          {qrSrc ? (
+            <img src={qrSrc} alt="QR Code" draggable={false} className="w-full h-full object-cover select-none" />
           ) : (
             '[ QR CODE ]'
           )}
@@ -965,31 +964,35 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
       <div>
         {renderPageTitle('Leadership')}
         <div className="page-content-area">
-          {leaders.map((l, idx) => (
-            <div key={idx} className="leader-container">
-              <div className="leader-photo">
-                {l.img ? <img src={l.img} alt={l.title} draggable={false} className="select-none" /> : '[ Photo ]'}
+          {leaders.map((l, idx) => {
+            const lSrc = resolveAssetUrl(l.img);
+            return (
+              <div key={idx} className="leader-container">
+                <div className="leader-photo">
+                  {lSrc ? <img src={lSrc} alt={l.title} draggable={false} className="select-none" /> : '[ Photo ]'}
+                </div>
+                <div className="leader-content">
+                  <h4>{l.title}</h4>
+                  <div className="leader-role">{l.role}</div>
+                  <p>{l.text}</p>
+                </div>
               </div>
-              <div className="leader-content">
-                <h4>{l.title}</h4>
-                <div className="leader-role">{l.role}</div>
-                <p>{l.text}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
           {renderContentBlocks(page.blocks)}
         </div>
       </div>
     );
   } else if (pageType === 'keynote') {
+    const speakerSrc = resolveAssetUrl(page.speakerImg);
     contentHTML = (
       <div>
         {renderPageTitle('Keynote Speaker')}
         <div className="page-content-area">
           <div className="leader-container">
             <div className="speaker-photo">
-              {page.speakerImg ? (
-                <img src={page.speakerImg} alt={page.speakerName} draggable={false} className="select-none" />
+              {speakerSrc ? (
+                <img src={speakerSrc} alt={page.speakerName} draggable={false} className="select-none" />
               ) : (
                 '[ Speaker ]'
               )}
@@ -1032,26 +1035,30 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
               <p>{a.desc}</p>
             </div>
           ))}
-          {featured.map((f, idx) => (
-            <div key={idx} className="award-card-featured">
-              <div className="award-medallion-placeholder">
-                {f.medallionImg ? (
-                  <img src={f.medallionImg} alt={f.name} draggable={false} className="select-none" />
-                ) : (
-                  f.medallion || '[Medallion]'
-                )}
+          {featured.map((f, idx) => {
+            const medallionSrc = resolveAssetUrl(f.medallionImg);
+            return (
+              <div key={idx} className="award-card-featured">
+                <div className="award-medallion-placeholder">
+                  {medallionSrc ? (
+                    <img src={medallionSrc} alt={f.name} draggable={false} className="select-none" />
+                  ) : (
+                    f.medallion || '[Medallion]'
+                  )}
+                </div>
+                <div>
+                  <h4>{f.name}</h4>
+                  <p>{f.desc}</p>
+                </div>
               </div>
-              <div>
-                <h4>{f.name}</h4>
-                <p>{f.desc}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         {renderContentBlocks(page.blocks)}
       </div>
     );
   } else if (pageType === 'vigilIntro') {
+    const honoreeSrc = resolveAssetUrl(page.honoreePhoto);
     contentHTML = (
       <div>
         {renderPageTitle('Vigil Honor')}
@@ -1069,9 +1076,9 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
             {page.honoreeName || 'Class Honoree'}
           </div>
           <div className="w-[1in] h-[1in] my-1.5 mx-auto border border-gray-400 bg-white flex items-center justify-center text-[7pt] text-gray-500 overflow-hidden">
-            {page.honoreePhoto ? (
+            {honoreeSrc ? (
               <img
-                src={page.honoreePhoto}
+                src={honoreeSrc}
                 alt="Honoree"
                 draggable={false}
                 className="w-full h-full object-cover select-none"
@@ -1099,19 +1106,22 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
       <div>
         {renderPageTitle('Roster')}
         <div className="vigil-grid">
-          {members.map((m, idx) => (
-            <div key={idx} className="vigil-card">
-              <div className="vigil-photo">
-                {m.photo ? (
-                  <img src={m.photo} alt={m.name} draggable={false} className="w-full h-full object-cover select-none" />
-                ) : (
-                  'PHOTO'
-                )}
+          {members.map((m, idx) => {
+            const memberPhoto = resolveAssetUrl(m.photo);
+            return (
+              <div key={idx} className="vigil-card">
+                <div className="vigil-photo">
+                  {memberPhoto ? (
+                    <img src={memberPhoto} alt={m.name} draggable={false} className="w-full h-full object-cover select-none" />
+                  ) : (
+                    'PHOTO'
+                  )}
+                </div>
+                <div className="vigil-name">{m.name}</div>
+                <div className="vigil-totem">{m.totem || ''}</div>
               </div>
-              <div className="vigil-name">{m.name}</div>
-              <div className="vigil-totem">{m.totem || ''}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         {renderContentBlocks(page.blocks)}
       </div>
