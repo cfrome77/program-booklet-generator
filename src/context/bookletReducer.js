@@ -1,4 +1,6 @@
 import { PRESETS } from '../presets/index.js';
+import { validateProject } from '../utils/schemaValidator.js';
+import { migrateProject } from '../utils/migrations.js';
 
 const MAX_HISTORY = 50;
 
@@ -416,24 +418,44 @@ function baseReducer(state, action) {
     }
 
     case 'IMPORT_JSON': {
-      const data = action.data;
-      if (!data || !Array.isArray(data.pages)) {
+      const rawData = action.data;
+      if (!rawData || typeof rawData !== 'object' || Array.isArray(rawData)) {
         return {
           ...state,
           jsonState: {
             ...state.jsonState,
-            importError: 'Invalid JSON booklet structure: "pages" array is missing.'
+            importError: 'Invalid JSON format: Content must be a valid JSON object.'
           }
         };
       }
 
+      const migrated = migrateProject(rawData);
+      const validation = validateProject(migrated);
+
+      if (!validation.valid) {
+        const errorDetails = validation.errors.map((e) => `[${e.path}]: ${e.message}`).join('; ');
+        return {
+          ...state,
+          jsonState: {
+            ...state.jsonState,
+            importError: `Project validation failed: ${errorDetails}`
+          }
+        };
+      }
+
+      const now = new Date().toISOString();
+      const updatedBooklet = {
+        ...migrated,
+        updatedAt: now
+      };
+
       return {
         ...state,
         activePresetKey: 'custom',
-        booklet: data,
+        booklet: updatedBooklet,
         jsonState: {
           importError: null,
-          lastImportedAt: new Date().toISOString(),
+          lastImportedAt: now,
           lastExportedAt: state.jsonState.lastExportedAt
         }
       };
@@ -461,12 +483,14 @@ function baseReducer(state, action) {
 
     case 'RESTORE_SESSION': {
       const { booklet, activePresetKey } = action;
-      if (!booklet || !Array.isArray(booklet.pages)) return state;
+      if (!booklet || typeof booklet !== 'object') return state;
+
+      const migrated = migrateProject(booklet);
 
       return {
         ...state,
         activePresetKey: activePresetKey || 'custom',
-        booklet: JSON.parse(JSON.stringify(booklet)),
+        booklet: JSON.parse(JSON.stringify(migrated)),
         jsonState: {
           ...state.jsonState,
           importError: null,
@@ -582,6 +606,13 @@ export function bookletReducer(state, action) {
 
   if (!docChanged) {
     return nextState;
+  }
+
+  if (nextState.booklet !== state.booklet && nextState.booklet) {
+    nextState.booklet = {
+      ...nextState.booklet,
+      updatedAt: new Date().toISOString()
+    };
   }
 
   const prevDoc = {

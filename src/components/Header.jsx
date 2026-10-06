@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Download, Upload, CheckCircle2, ShieldAlert, Undo2, Redo2, CloudCheck, CloudOff, Loader2 } from 'lucide-react';
+import { BookOpen, Download, Upload, CheckCircle2, ShieldAlert, Undo2, Redo2, CloudCheck, CloudOff, Loader2, AlertTriangle, X } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import { runPreflight } from '../utils/preflight.js';
 
@@ -16,7 +16,9 @@ export default function Header({ onOpenPreflight }) {
     importJSON,
     exportJSONData,
     saveStatus,
-    lastSavedAt
+    lastSavedAt,
+    jsonState,
+    clearImportError
   } = useBooklet();
 
   const [timeAgo, setTimeAgo] = useState('');
@@ -78,7 +80,24 @@ export default function Header({ onOpenPreflight }) {
   };
 
   return (
-    <header className="bg-[#111116] border-b border-[#333] px-6 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4">
+    <>
+      {jsonState?.importError && (
+        <div className="bg-red-950/90 border-b border-red-700 text-red-200 px-6 py-2.5 flex items-center justify-between gap-4 text-xs font-mono">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+            <span className="truncate font-semibold text-red-300">Import Failed:</span>
+            <span className="truncate">{jsonState.importError}</span>
+          </div>
+          <button
+            onClick={clearImportError}
+            className="hover:bg-red-900/60 p-1 rounded transition-colors text-red-300 hover:text-white"
+            title="Dismiss import error"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+      <header className="bg-[#111116] border-b border-[#333] px-6 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4">
       <div className="flex items-center gap-3">
         <BookOpen className="w-6 h-6 text-[#005f73]" />
         <div>
@@ -189,6 +208,7 @@ export default function Header({ onOpenPreflight }) {
           </span>
         </button>
       </div>
-    </header>
+      </header>
+    </>
   );
 }
