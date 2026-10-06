@@ -271,7 +271,9 @@ export function BookletProvider({ children, initialBookletState }) {
     pages: state.booklet.pages || [],
     jsonState: state.jsonState,
     selectedElement: state.selectedElement,
+    zoomLevel: state.zoomLevel || '100%',
     guides: state.guides || {
+      showRulers: true,
       showPageBoundary: true,
       showSafeArea: true,
       showCenterFold: true,
@@ -299,7 +301,8 @@ export function BookletProvider({ children, initialBookletState }) {
     purgeUnusedAssets: () => dispatch({ type: 'PURGE_UNUSED_ASSETS' }),
     resolveAssetUrl: (ref) => resolveUrl(state.booklet, ref),
 
-    // Action Helpers
+    // Zoom & Action Helpers
+    setZoomLevel: (zoom) => dispatch({ type: 'SET_ZOOM_LEVEL', zoomLevel: zoom }),
     toggleGuide: (guideKey) => dispatch({ type: 'TOGGLE_GUIDE', guideKey }),
     setGuide: (guideKey, value) => dispatch({ type: 'SET_GUIDE', guideKey, value }),
     loadPreset: (presetKey) => dispatch({ type: 'LOAD_PRESET', presetKey }),

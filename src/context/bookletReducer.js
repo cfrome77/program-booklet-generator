@@ -14,7 +14,9 @@ export const INITIAL_STATE = {
     lastExportedAt: null,
   },
   selectedElement: null, // { pageIndex, blockIndex, elementType: 'block' | 'emblem' }
+  zoomLevel: '100%', // 'fit-page' | 'fit-width' | '50%' | '75%' | '100%' | '125%' | '150%'
   guides: {
+    showRulers: true,
     showPageBoundary: true,
     showSafeArea: true,
     showCenterFold: true,
@@ -30,6 +32,13 @@ export const INITIAL_STATE = {
 
 function baseReducer(state, action) {
   switch (action.type) {
+    case 'SET_ZOOM_LEVEL': {
+      return {
+        ...state,
+        zoomLevel: action.zoomLevel
+      };
+    }
+
     case 'TOGGLE_GUIDE': {
       const guideKey = action.guideKey;
       if (!guideKey || !(guideKey in (state.guides || {}))) return state;

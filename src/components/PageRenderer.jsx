@@ -171,6 +171,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     const startY = e.clientY;
 
     const SNAP_THRESHOLD = 8;
+    const GRID_STEP_PX = 24; // 0.25 inch = 24px
 
     const onPointerMove = (moveEvent) => {
       const deltaX = Math.round(moveEvent.clientX - startX);
@@ -180,19 +181,41 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
       let snapX = false;
       let snapY = false;
+      let snapLabel = 'Center';
 
       if (snapEnabled) {
+        // Snap to center (X=0, Y=0)
         if (Math.abs(newX) <= SNAP_THRESHOLD) {
           newX = 0;
           snapX = true;
+          snapLabel = 'Center X';
         }
         if (Math.abs(newY) <= SNAP_THRESHOLD) {
           newY = 0;
           snapY = true;
+          snapLabel = snapX ? 'Center X & Y' : 'Center Y';
+        }
+
+        // Snap to 0.25" Grid if grid is enabled or if near grid intervals
+        if (!snapX && guides?.showGrid) {
+          const nearestGridX = Math.round(newX / GRID_STEP_PX) * GRID_STEP_PX;
+          if (Math.abs(newX - nearestGridX) <= SNAP_THRESHOLD) {
+            newX = nearestGridX;
+            snapX = true;
+            snapLabel = `Grid X (${(newX / 96).toFixed(2)}")`;
+          }
+        }
+        if (!snapY && guides?.showGrid) {
+          const nearestGridY = Math.round(newY / GRID_STEP_PX) * GRID_STEP_PX;
+          if (Math.abs(newY - nearestGridY) <= SNAP_THRESHOLD) {
+            newY = nearestGridY;
+            snapY = true;
+            snapLabel = snapX ? `Grid` : `Grid Y (${(newY / 96).toFixed(2)}")`;
+          }
         }
       }
 
-      setActiveSnapGuides({ snapX, snapY });
+      setActiveSnapGuides({ snapX, snapY, label: snapLabel });
 
       if (targetType === 'block' && targetBlockIndex !== null) {
         updateContentBlock(actualPageIndex, targetBlockIndex, 'offsetX', newX, true);
@@ -298,6 +321,26 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
       ? (page.blocks?.[blockIndex]?.zIndex || (blockIndex + 1) * 10)
       : (page[`${targetType}ZIndex`] !== undefined ? page[`${targetType}ZIndex`] : 100);
 
+    // Convert pixel values to inches (1 in = 96 px in standard CSS)
+    const inX = (currentX / 96).toFixed(2);
+    const inY = (currentY / 96).toFixed(2);
+    const formattedShiftX = (currentX >= 0 ? `+${inX}"` : `${inX}"`) + ` (${currentX >= 0 ? `+${currentX}` : currentX}px)`;
+    const formattedShiftY = (currentY >= 0 ? `+${inY}"` : `${inY}"`) + ` (${currentY >= 0 ? `+${currentY}` : currentY}px)`;
+
+    let dimString = '';
+    if (currentW !== null) {
+      if (typeof currentW === 'number' && isBlock) {
+        dimString = `${currentW}%`;
+      } else {
+        const inW = (Number(currentW) / 96).toFixed(2);
+        dimString = `${inW}" (${currentW}px)`;
+      }
+      if (currentH !== null) {
+        const inH = (Number(currentH) / 96).toFixed(2);
+        dimString += ` × ${inH}" (${currentH}px)`;
+      }
+    }
+
     return (
       <div
         className="absolute -top-9 left-1/2 -translate-x-1/2 z-[999] bg-[#122230] text-white px-2 py-1 rounded-md shadow-2xl border border-[#70c0d0] flex items-center gap-1.5 text-[10px] select-none cursor-default whitespace-nowrap"
@@ -319,14 +362,13 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
         <span className="flex items-center gap-0.5 text-cyan-300 font-mono font-bold pr-1 border-r border-[#3a3a44]">
           <Move className="w-3 h-3 text-amber-400" />
-          {currentX >= 0 ? `+${currentX}` : currentX}x, {currentY >= 0 ? `+${currentY}` : currentY}y
+          X:{formattedShiftX}, Y:{formattedShiftY}
         </span>
 
         {currentW !== null && (
           <span className="flex items-center gap-0.5 text-amber-300 font-mono text-[9px] pr-1 border-r border-[#3a3a44]">
             <Maximize2 className="w-2.5 h-2.5" />
-            {currentW}{typeof currentW === 'number' && isBlock ? '%' : 'px'}
-            {currentH !== null ? ` × ${currentH}px` : ''}
+            {dimString}
           </span>
         )}
 
@@ -523,7 +565,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
         {(activeSnapGuides.snapX || activeSnapGuides.snapY) && (
           <div className="absolute top-2 right-2 bg-black/80 text-cyan-300 text-[9px] font-mono px-2 py-0.5 rounded border border-cyan-500/50 z-[950] pointer-events-none flex items-center gap-1 shadow-lg backdrop-blur-sm">
             <Grid className="w-2.5 h-2.5 text-amber-400 animate-pulse" />
-            Snapped to {activeSnapGuides.snapX && activeSnapGuides.snapY ? 'Center X & Y' : activeSnapGuides.snapX ? 'Center X' : 'Center Y'}
+            Snapped to {activeSnapGuides.label || (activeSnapGuides.snapX && activeSnapGuides.snapY ? 'Center X & Y' : activeSnapGuides.snapX ? 'Center X' : 'Center Y')}
           </div>
         )}
       </>
