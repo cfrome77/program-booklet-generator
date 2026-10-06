@@ -82,18 +82,35 @@ describe('Document History, Undo/Redo & Coalescing Tests', () => {
     state = bookletReducer(state, { type: 'REDO' });
     assert.equal(state.booklet.pages[pageIndex].blocks[blockCountAfterAdd - 1].text, 'Updated Heading Text');
 
+    // Duplicate block
+    state = bookletReducer(state, {
+      type: 'DUPLICATE_CONTENT_BLOCK',
+      pageIndex,
+      blockIndex: blockCountAfterAdd - 1
+    });
+    assert.equal(state.booklet.pages[pageIndex].blocks.length, blockCountAfterAdd + 1);
+    assert.equal(state.booklet.pages[pageIndex].blocks[blockCountAfterAdd].text, 'Updated Heading Text');
+
+    // Undo block duplication
+    state = bookletReducer(state, { type: 'UNDO' });
+    assert.equal(state.booklet.pages[pageIndex].blocks.length, blockCountAfterAdd);
+
+    // Redo block duplication
+    state = bookletReducer(state, { type: 'REDO' });
+    assert.equal(state.booklet.pages[pageIndex].blocks.length, blockCountAfterAdd + 1);
+
     // Delete block
     state = bookletReducer(state, {
       type: 'DELETE_CONTENT_BLOCK',
       pageIndex,
-      blockIndex: blockCountAfterAdd - 1
+      blockIndex: blockCountAfterAdd
     });
-    assert.equal(state.booklet.pages[pageIndex].blocks.length, blockCountAfterAdd - 1);
+    assert.equal(state.booklet.pages[pageIndex].blocks.length, blockCountAfterAdd);
 
     // Undo block deletion
     state = bookletReducer(state, { type: 'UNDO' });
-    assert.equal(state.booklet.pages[pageIndex].blocks.length, blockCountAfterAdd);
-    assert.equal(state.booklet.pages[pageIndex].blocks[blockCountAfterAdd - 1].text, 'Updated Heading Text');
+    assert.equal(state.booklet.pages[pageIndex].blocks.length, blockCountAfterAdd + 1);
+    assert.equal(state.booklet.pages[pageIndex].blocks[blockCountAfterAdd].text, 'Updated Heading Text');
   });
 
   test('Continuous edits (slider / drag) are coalesced into a single history entry', () => {

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
-import { ArrowUp, ArrowDown, ChevronsUp, ChevronsDown, Trash2, Move, Maximize2, Grid } from 'lucide-react';
+import { ArrowUp, ArrowDown, ChevronsUp, ChevronsDown, Trash2, Move, Maximize2, Grid, Copy, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import { isLeftPage } from '../utils/imposition.js';
 
@@ -13,13 +13,18 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     theme,
     selectedElement,
     setSelectedElement,
+    duplicateContentBlock,
     updateContentBlock,
     updatePageField,
     reorderContentBlockLayer,
     deleteContentBlock,
+    duplicatePage,
+    deletePage,
     guides,
     resolveAssetUrl
   } = useBooklet();
+
+  const isLeft = pageNum ? isLeftPage(pageNum) : true;
 
   if (!page) {
     return (
@@ -76,8 +81,6 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
   const actualPageIndex = pageIndex !== undefined && pageIndex >= 0
     ? pageIndex
     : pages.findIndex(p => p === page);
-
-  const isLeft = pageNum ? isLeftPage(pageNum) : true;
 
   useLayoutEffect(() => {
     const el = pageRef.current;
@@ -333,6 +336,29 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
         {isBlock ? (
           <>
+            <div className="flex items-center gap-0.5 border-r border-[#3a3a44] pr-1">
+              <button
+                onClick={() => updateContentBlock(actualPageIndex, blockIndex, 'align', 'left')}
+                className="p-1 hover:bg-[#005f73] rounded text-gray-200 hover:text-white"
+                title="Align Left"
+              >
+                <AlignLeft className="w-3 h-3" />
+              </button>
+              <button
+                onClick={() => updateContentBlock(actualPageIndex, blockIndex, 'align', 'center')}
+                className="p-1 hover:bg-[#005f73] rounded text-gray-200 hover:text-white"
+                title="Align Center"
+              >
+                <AlignCenter className="w-3 h-3" />
+              </button>
+              <button
+                onClick={() => updateContentBlock(actualPageIndex, blockIndex, 'align', 'right')}
+                className="p-1 hover:bg-[#005f73] rounded text-gray-200 hover:text-white"
+                title="Align Right"
+              >
+                <AlignRight className="w-3 h-3" />
+              </button>
+            </div>
             <button
               onClick={() => reorderContentBlockLayer(actualPageIndex, blockIndex, 'forward')}
               className="p-1 hover:bg-[#005f73] rounded text-gray-200 hover:text-white"
@@ -362,9 +388,16 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
               <ChevronsDown className="w-3 h-3" />
             </button>
             <button
+              onClick={() => duplicateContentBlock(actualPageIndex, blockIndex)}
+              className="p-1 hover:bg-[#005f73] rounded text-cyan-300 hover:text-white pl-1 border-l border-[#3a3a44]"
+              title="Duplicate Block (Ctrl+D)"
+            >
+              <Copy className="w-3 h-3" />
+            </button>
+            <button
               onClick={() => deleteContentBlock(actualPageIndex, blockIndex)}
-              className="p-1 hover:bg-red-700 rounded text-red-300 hover:text-white pl-1 border-l border-[#3a3a44]"
-              title="Delete Block"
+              className="p-1 hover:bg-red-700 rounded text-red-300 hover:text-white"
+              title="Delete Block (Delete)"
             >
               <Trash2 className="w-3 h-3" />
             </button>

@@ -329,6 +329,40 @@ function baseReducer(state, action) {
       };
     }
 
+    case 'DUPLICATE_CONTENT_BLOCK': {
+      const { pageIndex, blockIndex } = action;
+      const pages = [...(state.booklet.pages || [])];
+      if (!pages[pageIndex]) return state;
+
+      const page = { ...pages[pageIndex] };
+      const blocks = [...(page.blocks || [])];
+      if (blockIndex < 0 || blockIndex >= blocks.length) return state;
+
+      const sourceBlock = blocks[blockIndex];
+      const duplicatedBlock = JSON.parse(JSON.stringify(sourceBlock));
+      duplicatedBlock.id = `b-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+      duplicatedBlock.offsetX = (duplicatedBlock.offsetX || 0) + 10;
+      duplicatedBlock.offsetY = (duplicatedBlock.offsetY || 0) + 10;
+
+      const newIndex = blockIndex + 1;
+      blocks.splice(newIndex, 0, duplicatedBlock);
+      page.blocks = blocks;
+      pages[pageIndex] = page;
+
+      return {
+        ...state,
+        booklet: {
+          ...state.booklet,
+          pages
+        },
+        selectedElement: {
+          pageIndex,
+          blockIndex: newIndex,
+          elementType: 'block'
+        }
+      };
+    }
+
     case 'MOVE_CONTENT_BLOCK': {
       const { pageIndex, blockIndex, delta } = action;
       const pages = [...(state.booklet.pages || [])];
