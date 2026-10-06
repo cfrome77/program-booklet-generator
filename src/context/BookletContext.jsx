@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useState, useRef } from 'react';
 import { bookletReducer, INITIAL_STATE } from './bookletReducer.js';
+import { saveAutosaveSession, getAutosaveSession, clearAutosaveSession } from '../utils/storage.js';
 
 const BookletContext = createContext(null);
 
@@ -11,11 +12,101 @@ export function BookletProvider({ children, initialBookletState }) {
     initialBookletState || INITIAL_STATE
   );
 
+  const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
+  const [lastSavedAt, setLastSavedAt] = useState(null);
+  const [recoverableSession, setRecoverableSession] = useState(null);
+  const [isRecoveryPromptOpen, setIsRecoveryPromptOpen] = useState(false);
+  const isInitializedRef = useRef(false);
+  const lastStateStringRef = useRef(JSON.stringify({ booklet: state.booklet, activePresetKey: state.activePresetKey }));
+
   const canUndo = (state.history?.past?.length || 0) > 0;
   const canRedo = (state.history?.future?.length || 0) > 0;
 
   const undo = () => dispatch({ type: 'UNDO' });
   const redo = () => dispatch({ type: 'REDO' });
+
+  // Check for recoverable session on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function checkForRecoverableSession() {
+      try {
+        const saved = await getAutosaveSession();
+        if (isMounted && saved && saved.booklet && Array.isArray(saved.booklet.pages)) {
+          setRecoverableSession(saved);
+          setIsRecoveryPromptOpen(true);
+        }
+      } catch (err) {
+        console.warn('Failed to check recoverable session:', err);
+      } finally {
+        if (isMounted) {
+          isInitializedRef.current = true;
+        }
+      }
+    }
+    checkForRecoverableSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Debounced Autosave effect
+  useEffect(() => {
+    if (!isInitializedRef.current) return;
+
+    const currentStateString = JSON.stringify({ booklet: state.booklet, activePresetKey: state.activePresetKey });
+    if (currentStateString === lastStateStringRef.current) {
+      return;
+    }
+
+    setSaveStatus('unsaved');
+
+    const timer = setTimeout(async () => {
+      try {
+        setSaveStatus('saving');
+        const now = Date.now();
+        await saveAutosaveSession({
+          booklet: state.booklet,
+          activePresetKey: state.activePresetKey,
+          timestamp: now
+        });
+        lastStateStringRef.current = currentStateString;
+        setLastSavedAt(now);
+        setSaveStatus('saved');
+      } catch (err) {
+        console.error('Autosave error:', err);
+        setSaveStatus('error');
+      }
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [state.booklet, state.activePresetKey]);
+
+  const handleRestoreSession = () => {
+    if (recoverableSession) {
+      dispatch({
+        type: 'RESTORE_SESSION',
+        booklet: recoverableSession.booklet,
+        activePresetKey: recoverableSession.activePresetKey
+      });
+      setLastSavedAt(recoverableSession.timestamp);
+      setSaveStatus('saved');
+      lastStateStringRef.current = JSON.stringify({
+        booklet: recoverableSession.booklet,
+        activePresetKey: recoverableSession.activePresetKey
+      });
+    }
+    setRecoverableSession(null);
+    setIsRecoveryPromptOpen(false);
+  };
+
+  const handleDiscardSession = async () => {
+    await clearAutosaveSession();
+    setRecoverableSession(null);
+    setIsRecoveryPromptOpen(false);
+    // Force initial current state as baseline
+    lastStateStringRef.current = JSON.stringify({ booklet: state.booklet, activePresetKey: state.activePresetKey });
+  };
 
   // Global Keyboard Shortcuts for Document History (Ctrl/Cmd + Z, Ctrl/Cmd + Shift + Z, Ctrl/Cmd + Y)
   useEffect(() => {
@@ -63,6 +154,14 @@ export function BookletProvider({ children, initialBookletState }) {
     canRedo,
     undo,
     redo,
+
+    // Autosave & Session
+    saveStatus,
+    lastSavedAt,
+    recoverableSession,
+    isRecoveryPromptOpen,
+    restoreSession: handleRestoreSession,
+    discardSession: handleDiscardSession,
 
     // Action Helpers
     toggleGuide: (guideKey) => dispatch({ type: 'TOGGLE_GUIDE', guideKey }),

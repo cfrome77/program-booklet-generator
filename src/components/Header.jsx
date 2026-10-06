@@ -1,5 +1,5 @@
-import React from 'react';
-import { BookOpen, Download, Upload, CheckCircle2, ShieldAlert, Undo2, Redo2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { BookOpen, Download, Upload, CheckCircle2, ShieldAlert, Undo2, Redo2, CloudCheck, CloudOff, Loader2 } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import { runPreflight } from '../utils/preflight.js';
 
@@ -14,8 +14,38 @@ export default function Header({ onOpenPreflight }) {
     loadPreset,
     updateGlobalField,
     importJSON,
-    exportJSONData
+    exportJSONData,
+    saveStatus,
+    lastSavedAt
   } = useBooklet();
+
+  const [timeAgo, setTimeAgo] = useState('');
+
+  useEffect(() => {
+    if (!lastSavedAt) {
+      setTimeAgo('');
+      return;
+    }
+
+    const updateTimeAgo = () => {
+      const elapsedSec = Math.floor((Date.now() - lastSavedAt) / 1000);
+      if (elapsedSec < 5) {
+        setTimeAgo('just now');
+      } else if (elapsedSec < 60) {
+        setTimeAgo(`${elapsedSec}s ago`);
+      } else if (elapsedSec < 3600) {
+        const mins = Math.floor(elapsedSec / 60);
+        setTimeAgo(`${mins}m ago`);
+      } else {
+        const hours = Math.floor(elapsedSec / 3600);
+        setTimeAgo(`${hours}h ago`);
+      }
+    };
+
+    updateTimeAgo();
+    const interval = setInterval(updateTimeAgo, 5000);
+    return () => clearInterval(interval);
+  }, [lastSavedAt]);
 
   const preflight = runPreflight(booklet);
   const { isReady, counts } = preflight;
@@ -61,7 +91,38 @@ export default function Header({ onOpenPreflight }) {
               className="bg-transparent font-title text-xl font-bold text-[#f0e6d2] border-b border-transparent hover:border-[#555] focus:border-[#005f73] focus:outline-none px-1 transition-colors"
             />
           </div>
-          <p className="text-xs text-[#a0a0a0]">Dynamic 5.5 × 8.5 in Folded Booklet & Imposition Generator</p>
+          <div className="flex items-center gap-2">
+            <p className="text-xs text-[#a0a0a0]">Dynamic 5.5 × 8.5 in Folded Booklet & Imposition Generator</p>
+            {/* Autosave Status Badge */}
+            {saveStatus && saveStatus !== 'idle' && (
+              <div className="flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-[#1a1a20] border border-[#333] text-[#a0a0a0]">
+                {saveStatus === 'saving' && (
+                  <>
+                    <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />
+                    <span className="text-cyan-300">Saving...</span>
+                  </>
+                )}
+                {saveStatus === 'saved' && (
+                  <>
+                    <CloudCheck className="w-3 h-3 text-emerald-400" />
+                    <span className="text-emerald-300">Saved {timeAgo && `(${timeAgo})`}</span>
+                  </>
+                )}
+                {saveStatus === 'unsaved' && (
+                  <>
+                    <CloudCheck className="w-3 h-3 text-amber-400/70" />
+                    <span className="text-amber-300/80">Unsaved changes</span>
+                  </>
+                )}
+                {saveStatus === 'error' && (
+                  <>
+                    <CloudOff className="w-3 h-3 text-red-400" />
+                    <span className="text-red-300">Save failed</span>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
