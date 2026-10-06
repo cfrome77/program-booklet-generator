@@ -17,10 +17,21 @@ function isFiniteNumber(val) {
   return typeof val === 'number' && Number.isFinite(val);
 }
 
-function isValidAssetUrl(url) {
+export function isValidAssetUrl(url, assets = []) {
   if (typeof url !== 'string') return false;
   const trimmed = url.trim();
   if (!trimmed) return true; // empty strings are allowed placeholders
+
+  const isAssetRef = trimmed.startsWith('asset-') || trimmed.startsWith('asset:');
+  if (isAssetRef) return true;
+
+  if (Array.isArray(assets)) {
+    const rawId = trimmed.startsWith('asset:') ? trimmed.substring(6) : trimmed;
+    if (assets.some((a) => a && (a.id === trimmed || a.id === rawId))) {
+      return true;
+    }
+  }
+
   return (
     trimmed.startsWith('data:') ||
     trimmed.startsWith('http://') ||
@@ -77,7 +88,54 @@ export function validateProject(data) {
     }
   }
 
-  // 2. Validate Project Structure & Title
+  // 2. Validate Assets Registry
+  const assetsList = data.assets;
+  if (assetsList !== undefined && assetsList !== null) {
+    if (!Array.isArray(assetsList)) {
+      addErr('assets', 'Field "assets" must be an array.');
+    } else {
+      assetsList.forEach((asset, aIdx) => {
+        const aPath = `assets[${aIdx}]`;
+        if (!asset || typeof asset !== 'object' || Array.isArray(asset)) {
+          addErr(aPath, `Asset at index ${aIdx} must be an object.`);
+          return;
+        }
+
+        if (!asset.id || typeof asset.id !== 'string') {
+          addErr(`${aPath}.id`, `Asset at index ${aIdx} must have a valid string "id".`);
+        }
+
+        const nameVal = asset.name || asset.filename;
+        if (!nameVal || typeof nameVal !== 'string') {
+          addErr(`${aPath}.name`, `Asset at index ${aIdx} must have a string "name" or "filename".`);
+        }
+
+        if (asset.mimeType !== undefined && asset.mimeType !== null && typeof asset.mimeType !== 'string') {
+          addErr(`${aPath}.mimeType`, `Asset at index ${aIdx} "mimeType" must be a string.`);
+        }
+
+        if (asset.width !== undefined && asset.width !== null && !isFiniteNumber(asset.width)) {
+          addErr(`${aPath}.width`, `Asset at index ${aIdx} "width" must be a finite number.`);
+        }
+
+        if (asset.height !== undefined && asset.height !== null && !isFiniteNumber(asset.height)) {
+          addErr(`${aPath}.height`, `Asset at index ${aIdx} "height" must be a finite number.`);
+        }
+
+        const sizeVal = asset.size !== undefined ? asset.size : asset.fileSize;
+        if (sizeVal !== undefined && sizeVal !== null && !isFiniteNumber(sizeVal)) {
+          addErr(`${aPath}.size`, `Asset at index ${aIdx} "size" must be a finite number.`);
+        }
+
+        const srcVal = asset.src || asset.url || asset.data;
+        if (srcVal === undefined || srcVal === null || typeof srcVal !== 'string') {
+          addErr(`${aPath}.src`, `Asset at index ${aIdx} must have a valid string "src" or "url".`);
+        }
+      });
+    }
+  }
+
+  // 3. Validate Project Structure & Title
   if (data.title === undefined || data.title === null) {
     addErr('title', 'Missing required field "title".');
   } else if (typeof data.title !== 'string') {
@@ -89,7 +147,7 @@ export function validateProject(data) {
       addErr('theme', 'Field "theme" must be an object.');
     } else {
       // Validate theme assets & fonts
-      if (data.theme.bgImage && !isValidAssetUrl(data.theme.bgImage)) {
+      if (data.theme.bgImage && !isValidAssetUrl(data.theme.bgImage, assetsList)) {
         addErr('theme.bgImage', 'Theme "bgImage" is not a valid asset URL or data URI.');
       }
       if (data.theme.titleFont && typeof data.theme.titleFont !== 'string') {
@@ -101,7 +159,7 @@ export function validateProject(data) {
     }
   }
 
-  // 3. Validate Pages
+  // 4. Validate Pages
   if (!Array.isArray(data.pages)) {
     addErr('pages', 'Field "pages" must be an array of page objects.');
     return { valid: errors.length === 0, errors };
@@ -136,7 +194,7 @@ export function validateProject(data) {
     // Page assets check
     ['bgImage', 'emblemImg', 'speakerImg', 'qrImg', 'honoreePhoto'].forEach((assetKey) => {
       if (page[assetKey] !== undefined && page[assetKey] !== null) {
-        if (!isValidAssetUrl(page[assetKey])) {
+        if (!isValidAssetUrl(page[assetKey], assetsList)) {
           addErr(`${pPath}.${assetKey}`, `Page ${pIdx + 1} asset "${assetKey}" is not a valid URL or data URI.`);
         }
       }
@@ -162,7 +220,7 @@ export function validateProject(data) {
         page.leaders.forEach((leader, lIdx) => {
           if (!leader || typeof leader !== 'object') {
             addErr(`${pPath}.leaders[${lIdx}]`, `Leader item ${lIdx + 1} on page ${pIdx + 1} must be an object.`);
-          } else if (leader.img && !isValidAssetUrl(leader.img)) {
+          } else if (leader.img && !isValidAssetUrl(leader.img, assetsList)) {
             addErr(`${pPath}.leaders[${lIdx}].img`, `Leader ${lIdx + 1} image on page ${pIdx + 1} is an invalid asset URL.`);
           }
         });
@@ -199,7 +257,7 @@ export function validateProject(data) {
       }
     });
 
-    // 4. Validate Blocks
+    // 5. Validate Blocks
     if (page.blocks !== undefined && page.blocks !== null) {
       if (!Array.isArray(page.blocks)) {
         addErr(`${pPath}.blocks`, `Page ${pIdx + 1} "blocks" must be an array.`);
@@ -227,7 +285,7 @@ export function validateProject(data) {
           }
 
           if (block.url !== undefined && block.url !== null) {
-            if (!isValidAssetUrl(block.url)) {
+            if (!isValidAssetUrl(block.url, assetsList)) {
               addErr(`${bPath}.url`, `Block ${bIdx + 1} on page ${pIdx + 1} "url" is not a valid asset URL or data URI.`);
             }
           }

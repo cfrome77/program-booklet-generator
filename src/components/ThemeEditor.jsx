@@ -1,39 +1,17 @@
 import React from 'react';
 import { useBooklet } from '../context/BookletContext.jsx';
+import AssetPicker from './AssetPicker.jsx';
 
 export default function ThemeEditor() {
   const { theme, updateThemeField } = useBooklet();
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result;
-        if (typeof dataUrl === 'string') {
-          updateThemeField('bgImage', dataUrl);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-xs font-semibold text-gray-300 mb-1">Global Background Image / Pattern URL</label>
-        <input
-          type="text"
+        <AssetPicker
           value={theme.bgImage || ''}
-          placeholder="https://... or upload file"
-          onChange={(e) => updateThemeField('bgImage', e.target.value)}
-          className="w-full bg-[#1e1e24] border border-[#444] text-white text-xs px-2.5 py-1.5 rounded focus:outline-none focus:border-[#005f73]"
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileUpload}
-          className="mt-1 text-[11px] text-gray-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#3a3a42] file:text-white hover:file:bg-[#4a4a54] cursor-pointer"
+          onChange={(val) => updateThemeField('bgImage', val)}
+          label="Global Background Image / Pattern Asset"
         />
         <div className="mt-2 flex items-center justify-between gap-2">
           <label className="text-[11px] text-gray-300 font-semibold">Background Opacity</label>

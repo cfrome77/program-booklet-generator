@@ -3,6 +3,7 @@ import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import ThemeEditor from './ThemeEditor.jsx';
 import PageCardEditor from './PageCardEditor.jsx';
+import AssetLibrary from './AssetLibrary.jsx';
 
 export default function Sidebar() {
   const { pages, addPage } = useBooklet();
@@ -38,6 +39,10 @@ export default function Sidebar() {
       <div className="border-b border-[#3a3a44] pb-4">
         <h3 className="font-title text-sm text-[#f0e6d2] mb-3">Global Styling</h3>
         <ThemeEditor />
+      </div>
+
+      <div className="border-b border-[#3a3a44] pb-4">
+        <AssetLibrary />
       </div>
 
       <div>

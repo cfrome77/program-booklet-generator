@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowUp, ArrowDown, ChevronsUp, ChevronsDown, Trash2, Plus, Layers } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
+import AssetPicker from './AssetPicker.jsx';
 
 export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
   const {
@@ -15,20 +16,6 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
 
   const handleAdd = () => {
     addContentBlock(pageIndex, selectedBlockType);
-  };
-
-  const handleImageUpload = (blockIndex, e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result;
-        if (typeof dataUrl === 'string') {
-          updateContentBlock(pageIndex, blockIndex, 'url', dataUrl);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   return (
@@ -138,19 +125,11 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
               )}
 
               {block.type === 'image' && (
-                <div className="space-y-1" onClick={(e) => e.stopPropagation()}>
-                  <input
-                    type="text"
+                <div onClick={(e) => e.stopPropagation()}>
+                  <AssetPicker
                     value={block.url || ''}
-                    placeholder="Image URL..."
-                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'url', e.target.value)}
-                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px] focus:outline-none focus:border-[#005f73]"
-                  />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleImageUpload(blockIndex, e)}
-                    className="text-[10px] text-gray-400 file:mr-2 file:py-0.5 file:px-1.5 file:rounded file:border-0 file:text-[10px] file:bg-[#3a3a42] file:text-white hover:file:bg-[#4a4a54] cursor-pointer"
+                    onChange={(val) => updateContentBlock(pageIndex, blockIndex, 'url', val)}
+                    label="Image Block Source"
                   />
                 </div>
               )}

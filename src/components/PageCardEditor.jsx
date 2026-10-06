@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowUp, ArrowDown, Trash2, Copy } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import BlockLayerEditor from './BlockLayerEditor.jsx';
+import AssetPicker from './AssetPicker.jsx';
 
 export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
   const {
@@ -11,20 +12,6 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
     duplicatePage,
     deletePage
   } = useBooklet();
-
-  const handleImageUpload = (field, e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result;
-        if (typeof dataUrl === 'string') {
-          updatePageField(pageIndex, field, dataUrl);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleSponsorsChange = (e) => {
     const sponsorsList = e.target.value.split(',').map((s) => s.trim());
@@ -133,19 +120,10 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
             />
           </div>
           <div>
-            <label className="block text-[11px] text-gray-400 mb-0.5">Emblem Image URL or Text</label>
-            <input
-              type="text"
-              value={page.emblemImg || page.emblemText || ''}
-              placeholder="URL or text"
-              onChange={(e) => updatePageField(pageIndex, 'emblemImg', e.target.value)}
-              className="w-full bg-[#282830] border border-[#444] text-white p-1 rounded focus:outline-none focus:border-[#005f73]"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleImageUpload('emblemImg', e)}
-              className="mt-1 text-[10px] text-gray-400 file:mr-2 file:py-0.5 file:px-1.5 file:rounded file:border-0 file:text-[10px] file:bg-[#3a3a42] file:text-white hover:file:bg-[#4a4a54] cursor-pointer"
+            <AssetPicker
+              value={page.emblemImg || ''}
+              onChange={(val) => updatePageField(pageIndex, 'emblemImg', val)}
+              label="Emblem Image Asset"
             />
           </div>
 
@@ -342,19 +320,10 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
             />
           </div>
           <div>
-            <label className="block text-[11px] text-gray-400 mb-0.5">QR Code Image URL / Placeholder</label>
-            <input
-              type="text"
+            <AssetPicker
               value={page.qrImg || ''}
-              placeholder="Image URL"
-              onChange={(e) => updatePageField(pageIndex, 'qrImg', e.target.value)}
-              className="w-full bg-[#282830] border border-[#444] text-white p-1 rounded focus:outline-none focus:border-[#005f73]"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleImageUpload('qrImg', e)}
-              className="mt-1 text-[10px] text-gray-400 file:mr-2 file:py-0.5 file:px-1.5 file:rounded file:border-0 file:text-[10px] file:bg-[#3a3a42] file:text-white hover:file:bg-[#4a4a54] cursor-pointer"
+              onChange={(val) => updatePageField(pageIndex, 'qrImg', val)}
+              label="QR Code Image Asset"
             />
           </div>
           <div>
@@ -432,19 +401,10 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
 
       {/* Per-Page Background Image Override */}
       <div>
-        <label className="block text-[11px] text-gray-400 mb-0.5">Page Background Image (Per-Page Override)</label>
-        <input
-          type="text"
+        <AssetPicker
           value={page.bgImage || ''}
-          placeholder="Image URL"
-          onChange={(e) => updatePageField(pageIndex, 'bgImage', e.target.value)}
-          className="w-full bg-[#282830] border border-[#444] text-white p-1 rounded focus:outline-none focus:border-[#005f73]"
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => handleImageUpload('bgImage', e)}
-          className="mt-1 text-[10px] text-gray-400 file:mr-2 file:py-0.5 file:px-1.5 file:rounded file:border-0 file:text-[10px] file:bg-[#3a3a42] file:text-white hover:file:bg-[#4a4a54] cursor-pointer"
+          onChange={(val) => updatePageField(pageIndex, 'bgImage', val)}
+          label="Page Background Image (Per-Page Override)"
         />
         <div className="mt-1.5 flex items-center justify-between gap-2">
           <label className="text-[10px] text-gray-400">BG Image Opacity</label>
