@@ -134,6 +134,15 @@ function BookletAppContent() {
         onClose={() => setIsPreflightOpen(false)}
         onPrintBooklet={() => handleStartPrint('booklet')}
         onPrintTestSheet={() => handleStartPrint('test-sheet')}
+        onNavigateToPage={(pageIndex) => {
+          setViewMode('spreads');
+          setTimeout(() => {
+            const el = document.getElementById(`editor-page-${pageIndex}`) || document.getElementById(`spread-page-${pageIndex}`);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }, 150);
+        }}
       />
 
       {/* Print Mount Container for window.print() */}
