@@ -2,6 +2,7 @@ import React, { useState, useRef, useLayoutEffect } from 'react';
 import { ArrowUp, ArrowDown, ChevronsUp, ChevronsDown, Trash2, Move, Maximize2, Grid, Copy, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import { isLeftPage } from '../utils/imposition.js';
+import { sanitizeHtml } from '../utils/sanitize.js';
 
 export default function PageRenderer({ page, pageNum, pageIndex }) {
   const [snapEnabled, setSnapEnabled] = useState(true);
@@ -1218,7 +1219,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
       children: (
         <div
           className="page-content-area text-[0.75rem] leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: page.content || '' }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content || '') }}
         />
       )
     });
