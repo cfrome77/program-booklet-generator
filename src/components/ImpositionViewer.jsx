@@ -2,6 +2,7 @@ import React from 'react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import { calculateImpositionSheets } from '../utils/imposition.js';
 import PageRenderer from './PageRenderer.jsx';
+import RulerWrapper from './RulerWrapper.jsx';
 
 export default function ImpositionViewer() {
   const { pages } = useBooklet();
@@ -16,33 +17,37 @@ export default function ImpositionViewer() {
       {sheets.map((sheet) => (
         <React.Fragment key={`sheet-${sheet.sheetNumber}`}>
           {/* Front (Outer) Sheet */}
-          <div className="imposition-sheet">
+          <div className="imposition-sheet flex flex-col items-center">
             <div className="sheet-label">{sheet.front.label}</div>
-            <div className="spread-row">
-              <PageRenderer
-                page={sheet.front.leftPage}
-                pageNum={sheet.front.leftPageNum}
-              />
-              <PageRenderer
-                page={sheet.front.rightPage}
-                pageNum={sheet.front.rightPageNum}
-              />
-            </div>
+            <RulerWrapper widthIn={11} heightIn={8.5}>
+              <div className="spread-row !m-0 shadow-none">
+                <PageRenderer
+                  page={sheet.front.leftPage}
+                  pageNum={sheet.front.leftPageNum}
+                />
+                <PageRenderer
+                  page={sheet.front.rightPage}
+                  pageNum={sheet.front.rightPageNum}
+                />
+              </div>
+            </RulerWrapper>
           </div>
 
           {/* Back (Inner) Sheet */}
-          <div className="imposition-sheet">
+          <div className="imposition-sheet flex flex-col items-center">
             <div className="sheet-label">{sheet.back.label}</div>
-            <div className="spread-row">
-              <PageRenderer
-                page={sheet.back.leftPage}
-                pageNum={sheet.back.leftPageNum}
-              />
-              <PageRenderer
-                page={sheet.back.rightPage}
-                pageNum={sheet.back.rightPageNum}
-              />
-            </div>
+            <RulerWrapper widthIn={11} heightIn={8.5}>
+              <div className="spread-row !m-0 shadow-none">
+                <PageRenderer
+                  page={sheet.back.leftPage}
+                  pageNum={sheet.back.leftPageNum}
+                />
+                <PageRenderer
+                  page={sheet.back.rightPage}
+                  pageNum={sheet.back.rightPageNum}
+                />
+              </div>
+            </RulerWrapper>
           </div>
         </React.Fragment>
       ))}

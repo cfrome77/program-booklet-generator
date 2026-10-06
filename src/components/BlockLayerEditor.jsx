@@ -162,7 +162,9 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                   </div>
 
                   <div>
-                    <label className="text-gray-400 block">Height ({block.height ? `${block.height}px` : 'Auto'})</label>
+                    <label className="text-gray-400 block">
+                      Height ({block.height ? `${(block.height / 96).toFixed(2)}" (${block.height}px)` : 'Auto'})
+                    </label>
                     <input
                       type="range"
                       min="20"
@@ -253,7 +255,9 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                   </div>
 
                   <div>
-                    <label className="text-gray-400 block">Shift X ({block.offsetX || 0}px)</label>
+                    <label className="text-gray-400 block">
+                      Shift X ({((block.offsetX || 0) / 96).toFixed(2)}" / {block.offsetX || 0}px)
+                    </label>
                     <input
                       type="range"
                       min="-120"
@@ -265,7 +269,9 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                   </div>
 
                   <div>
-                    <label className="text-gray-400 block">Shift Y ({block.offsetY || 0}px)</label>
+                    <label className="text-gray-400 block">
+                      Shift Y ({((block.offsetY || 0) / 96).toFixed(2)}" / {block.offsetY || 0}px)
+                    </label>
                     <input
                       type="range"
                       min="-120"
