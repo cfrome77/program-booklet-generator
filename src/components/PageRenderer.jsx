@@ -1,9 +1,11 @@
-import React from 'react';
-import { ArrowUp, ArrowDown, ChevronsUp, ChevronsDown, Trash2, Move, Maximize2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowUp, ArrowDown, ChevronsUp, ChevronsDown, Trash2, Move, Maximize2, Grid } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import { isLeftPage } from '../utils/imposition.js';
 
 export default function PageRenderer({ page, pageNum, pageIndex }) {
+  const [snapEnabled, setSnapEnabled] = useState(true);
+  const [activeSnapGuides, setActiveSnapGuides] = useState({ snapX: false, snapY: false });
   const {
     pages,
     theme,
@@ -37,6 +39,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
   const handlePointerDownDrag = (e, targetType, targetBlockIndex = null, initialX = 0, initialY = 0) => {
     if (e.button !== undefined && e.button !== 0) return;
+    e.preventDefault();
     e.stopPropagation();
 
     setSelectedElement({
@@ -48,11 +51,29 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     const startX = e.clientX;
     const startY = e.clientY;
 
+    const SNAP_THRESHOLD = 8;
+
     const onPointerMove = (moveEvent) => {
       const deltaX = Math.round(moveEvent.clientX - startX);
       const deltaY = Math.round(moveEvent.clientY - startY);
-      const newX = initialX + deltaX;
-      const newY = initialY + deltaY;
+      let newX = initialX + deltaX;
+      let newY = initialY + deltaY;
+
+      let snapX = false;
+      let snapY = false;
+
+      if (snapEnabled) {
+        if (Math.abs(newX) <= SNAP_THRESHOLD) {
+          newX = 0;
+          snapX = true;
+        }
+        if (Math.abs(newY) <= SNAP_THRESHOLD) {
+          newY = 0;
+          snapY = true;
+        }
+      }
+
+      setActiveSnapGuides({ snapX, snapY });
 
       if (targetType === 'block' && targetBlockIndex !== null) {
         updateContentBlock(actualPageIndex, targetBlockIndex, 'offsetX', newX);
@@ -64,6 +85,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     };
 
     const onPointerUp = () => {
+      setActiveSnapGuides({ snapX: false, snapY: false });
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
     };
@@ -74,6 +96,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
   const handlePointerDownResize = (e, handleType, targetType, targetBlockIndex = null, initialW = 100, initialH = null, isPercent = false) => {
     if (e.button !== undefined && e.button !== 0) return;
+    e.preventDefault();
     e.stopPropagation();
 
     const startX = e.clientX;
@@ -162,6 +185,19 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
         onClick={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
       >
+        <button
+          onClick={() => setSnapEnabled(!snapEnabled)}
+          className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold flex items-center gap-1 transition-colors ${
+            snapEnabled
+              ? 'bg-[#005f73] text-cyan-300 border border-[#70c0d0]'
+              : 'bg-[#2a2a34] text-gray-400 border border-[#444] hover:text-white'
+          }`}
+          title={snapEnabled ? 'Smart Alignment Guides Active (Click to Disable)' : 'Smart Alignment Guides Disabled (Click to Enable)'}
+        >
+          <Grid className="w-2.5 h-2.5" />
+          {snapEnabled ? 'SNAP ON' : 'SNAP OFF'}
+        </button>
+
         <span className="flex items-center gap-0.5 text-cyan-300 font-mono font-bold pr-1 border-r border-[#3a3a44]">
           <Move className="w-3 h-3 text-amber-400" />
           {currentX >= 0 ? `+${currentX}` : currentX}x, {currentY >= 0 ? `+${currentY}` : currentY}y
@@ -236,6 +272,26 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
           </>
         )}
       </div>
+    );
+  };
+
+  const renderSmartGuides = () => {
+    if (!snapEnabled) return null;
+    return (
+      <>
+        {activeSnapGuides.snapX && (
+          <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-0.5 border-l-2 border-dashed border-cyan-400 z-[900] pointer-events-none shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+        )}
+        {activeSnapGuides.snapY && (
+          <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-0.5 border-t-2 border-dashed border-amber-400 z-[900] pointer-events-none shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+        )}
+        {(activeSnapGuides.snapX || activeSnapGuides.snapY) && (
+          <div className="absolute top-2 right-2 bg-black/80 text-cyan-300 text-[9px] font-mono px-2 py-0.5 rounded border border-cyan-500/50 z-[950] pointer-events-none flex items-center gap-1 shadow-lg backdrop-blur-sm">
+            <Grid className="w-2.5 h-2.5 text-amber-400 animate-pulse" />
+            Snapped to {activeSnapGuides.snapX && activeSnapGuides.snapY ? 'Center X & Y' : activeSnapGuides.snapX ? 'Center X' : 'Center Y'}
+          </div>
+        )}
+      </>
     );
   };
 
@@ -374,7 +430,8 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
                   <img
                     src={b.url}
                     alt="Block Content"
-                    className="image-block inline-block max-w-full"
+                    draggable={false}
+                    className="image-block inline-block max-w-full select-none"
                     style={{
                       borderRadius,
                       maxHeight: currentH ? `${currentH}px` : '220px',
@@ -448,7 +505,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
         position: 'relative'
       },
       children: page.emblemImg ? (
-        <img src={page.emblemImg} alt="Emblem" className="w-full h-full object-contain" />
+        <img src={page.emblemImg} alt="Emblem" draggable={false} className="w-full h-full object-contain select-none" />
       ) : (
         <span
           style={{ color: 'var(--navy-dark)' }}
@@ -522,10 +579,11 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
     return (
       <div
-        className={`booklet-page cover-page ${alignClass}`}
+        className={`booklet-page cover-page ${alignClass} relative`}
         onClick={() => setSelectedElement(null)}
       >
         {renderBgLayer()}
+        {renderSmartGuides()}
         {contentHTML}
         {pageNum && (
           <span className={`page-number-tag ${isLeft ? 'left' : 'right'}`}>
@@ -587,7 +645,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
       children: (
         <div className="w-full h-full bg-white border border-gray-300 flex items-center justify-center text-[0.58rem] text-gray-500 overflow-hidden">
           {page.qrImg ? (
-            <img src={page.qrImg} alt="QR Code" className="w-full h-full object-cover" />
+            <img src={page.qrImg} alt="QR Code" draggable={false} className="w-full h-full object-cover select-none" />
           ) : (
             '[ QR CODE ]'
           )}
@@ -626,11 +684,12 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
     return (
       <div
-        className={`booklet-page cover-page ${alignClass}`}
+        className={`booklet-page cover-page ${alignClass} relative`}
         style={{ justifyContent: 'center', textAlign: 'center' }}
         onClick={() => setSelectedElement(null)}
       >
         {renderBgLayer()}
+        {renderSmartGuides()}
         {contentHTML}
         {pageNum && (
           <span className={`page-number-tag ${isLeft ? 'left' : 'right'}`}>
@@ -689,7 +748,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
           {leaders.map((l, idx) => (
             <div key={idx} className="leader-container">
               <div className="leader-photo">
-                {l.img ? <img src={l.img} alt={l.title} /> : '[ Photo ]'}
+                {l.img ? <img src={l.img} alt={l.title} draggable={false} className="select-none" /> : '[ Photo ]'}
               </div>
               <div className="leader-content">
                 <h4>{l.title}</h4>
@@ -710,7 +769,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
           <div className="leader-container">
             <div className="speaker-photo">
               {page.speakerImg ? (
-                <img src={page.speakerImg} alt={page.speakerName} />
+                <img src={page.speakerImg} alt={page.speakerName} draggable={false} className="select-none" />
               ) : (
                 '[ Speaker ]'
               )}
@@ -757,7 +816,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
             <div key={idx} className="award-card-featured">
               <div className="award-medallion-placeholder">
                 {f.medallionImg ? (
-                  <img src={f.medallionImg} alt={f.name} />
+                  <img src={f.medallionImg} alt={f.name} draggable={false} className="select-none" />
                 ) : (
                   f.medallion || '[Medallion]'
                 )}
@@ -794,7 +853,8 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
               <img
                 src={page.honoreePhoto}
                 alt="Honoree"
-                className="w-full h-full object-cover"
+                draggable={false}
+                className="w-full h-full object-cover select-none"
               />
             ) : (
               'PHOTO'
@@ -823,7 +883,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
             <div key={idx} className="vigil-card">
               <div className="vigil-photo">
                 {m.photo ? (
-                  <img src={m.photo} alt={m.name} className="w-full h-full object-cover" />
+                  <img src={m.photo} alt={m.name} draggable={false} className="w-full h-full object-cover select-none" />
                 ) : (
                   'PHOTO'
                 )}
@@ -870,10 +930,11 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
   return (
     <div
-      className={`booklet-page ${alignClass}`}
+      className={`booklet-page ${alignClass} relative`}
       onClick={() => setSelectedElement(null)}
     >
       {renderBgLayer()}
+      {renderSmartGuides()}
       {contentHTML}
       {pageNum && (
         <span className={`page-number-tag ${isLeft ? 'left' : 'right'}`}>
