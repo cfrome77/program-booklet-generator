@@ -1,6 +1,7 @@
 import React from 'react';
-import { BookOpen, Download, Upload, Printer } from 'lucide-react';
+import { BookOpen, Download, Upload, Printer, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
+import { runPreflight } from '../utils/preflight.js';
 
 export default function Header({ onOpenPreflight }) {
   const {
@@ -11,6 +12,9 @@ export default function Header({ onOpenPreflight }) {
     importJSON,
     exportJSONData
   } = useBooklet();
+
+  const preflight = runPreflight(booklet);
+  const { isReady, counts } = preflight;
 
   const handleExport = () => {
     const jsonString = exportJSONData();
@@ -82,9 +86,23 @@ export default function Header({ onOpenPreflight }) {
 
         <button
           onClick={onOpenPreflight}
-          className="bg-[#005f73] hover:bg-[#00424f] text-white text-xs font-semibold px-3.5 py-2 rounded flex items-center gap-1.5 transition-colors shadow-sm"
+          className={`text-xs font-bold px-3 py-2 rounded flex items-center gap-2 border transition-all shadow-sm ${
+            isReady
+              ? 'bg-emerald-950/80 hover:bg-emerald-900/80 border-emerald-600 text-emerald-200'
+              : 'bg-red-950/80 hover:bg-red-900/80 border-red-600 text-red-200'
+          }`}
+          title="Open Preflight Inspection & Print Setup"
         >
-          <Printer className="w-4 h-4" /> Print / Save PDF
+          {isReady ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          ) : (
+            <ShieldAlert className="w-4 h-4 text-red-400" />
+          )}
+          <span>
+            {isReady
+              ? `READY TO PRINT (${counts.errors} errors, ${counts.warnings} warnings)`
+              : `PRINT BLOCKED (${counts.errors} error${counts.errors !== 1 ? 's' : ''})`}
+          </span>
         </button>
       </div>
     </header>

@@ -33,7 +33,7 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
   const pageType = page.type || 'custom';
 
   return (
-    <div className="bg-[#1e1e24] border border-[#444] rounded p-3 text-xs space-y-2.5">
+    <div id={`editor-page-${pageIndex}`} className="bg-[#1e1e24] border border-[#444] rounded p-3 text-xs space-y-2.5">
       <div className="flex justify-between items-center font-bold text-[#70c0d0]">
         <span>Page {pageIndex + 1}: {pageType.toUpperCase()}</span>
         <div className="flex items-center gap-1">
