@@ -459,6 +459,26 @@ function baseReducer(state, action) {
       };
     }
 
+    case 'RESTORE_SESSION': {
+      const { booklet, activePresetKey } = action;
+      if (!booklet || !Array.isArray(booklet.pages)) return state;
+
+      return {
+        ...state,
+        activePresetKey: activePresetKey || 'custom',
+        booklet: JSON.parse(JSON.stringify(booklet)),
+        jsonState: {
+          ...state.jsonState,
+          importError: null,
+        },
+        history: {
+          past: [],
+          future: [],
+          lastMutationTime: 0
+        }
+      };
+    }
+
     default:
       return state;
   }
@@ -550,7 +570,8 @@ export function bookletReducer(state, action) {
     'SET_GUIDE',
     'SET_SELECTED_ELEMENT',
     'MARK_EXPORTED',
-    'CLEAR_IMPORT_ERROR'
+    'CLEAR_IMPORT_ERROR',
+    'RESTORE_SESSION'
   ].includes(action.type);
 
   if (isTransientAction) {

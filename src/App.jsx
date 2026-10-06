@@ -5,12 +5,13 @@ import Sidebar from './components/Sidebar.jsx';
 import SpreadViewer from './components/SpreadViewer.jsx';
 import ImpositionViewer from './components/ImpositionViewer.jsx';
 import PreflightModal from './components/PreflightModal.jsx';
+import RecoveryPromptModal from './components/RecoveryPromptModal.jsx';
 import PrintMount from './components/PrintMount.jsx';
 import GuideTogglesToolbar from './components/GuideTogglesToolbar.jsx';
 import { Printer, Loader2 } from 'lucide-react';
 
 function BookletAppContent() {
-  const { theme, jsonState } = useBooklet();
+  const { theme, jsonState, isRecoveryPromptOpen, recoverableSession, restoreSession, discardSession } = useBooklet();
   const [viewMode, setViewMode] = useState('spreads'); // 'spreads' | 'imposition'
   const [isPreflightOpen, setIsPreflightOpen] = useState(false);
   const [printMode, setPrintMode] = useState(null); // 'booklet' | 'test-sheet' | null
@@ -130,6 +131,14 @@ function BookletAppContent() {
           {viewMode === 'spreads' ? <SpreadViewer /> : <ImpositionViewer />}
         </section>
       </main>
+
+      {/* Session Recovery Modal */}
+      <RecoveryPromptModal
+        isOpen={isRecoveryPromptOpen}
+        session={recoverableSession}
+        onRestore={restoreSession}
+        onDiscard={discardSession}
+      />
 
       {/* Preflight Modal */}
       <PreflightModal
