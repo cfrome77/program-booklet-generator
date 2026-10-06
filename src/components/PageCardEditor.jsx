@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
+import { ArrowUp, ArrowDown, Trash2, Copy } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import BlockLayerEditor from './BlockLayerEditor.jsx';
 
@@ -8,6 +8,7 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
     updatePageField,
     changePageType,
     movePage,
+    duplicatePage,
     deletePage
   } = useBooklet();
 
@@ -52,6 +53,13 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
             title="Move Down"
           >
             <ArrowDown className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => duplicatePage(pageIndex)}
+            className="p-1 bg-[#333] hover:bg-[#555] rounded text-cyan-300 hover:text-white"
+            title="Duplicate Page"
+          >
+            <Copy className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => {
@@ -165,7 +173,7 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                   min="0"
                   max="100"
                   value={page.emblemOpacity !== undefined ? page.emblemOpacity : 100}
-                  onChange={(e) => updatePageField(pageIndex, 'emblemOpacity', Number(e.target.value))}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemOpacity', Number(e.target.value), true)}
                   className="w-full accent-[#005f73]"
                 />
               </div>
@@ -177,7 +185,7 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                   min="30"
                   max="400"
                   value={page.emblemWidth || 120}
-                  onChange={(e) => updatePageField(pageIndex, 'emblemWidth', Number(e.target.value))}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemWidth', Number(e.target.value), true)}
                   className="w-full accent-[#005f73]"
                 />
               </div>
@@ -189,7 +197,7 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                   min="30"
                   max="400"
                   value={page.emblemHeight || 120}
-                  onChange={(e) => updatePageField(pageIndex, 'emblemHeight', Number(e.target.value))}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemHeight', Number(e.target.value), true)}
                   className="w-full accent-[#005f73]"
                 />
               </div>
@@ -201,7 +209,7 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                   min="-200"
                   max="200"
                   value={page.emblemOffsetX || 0}
-                  onChange={(e) => updatePageField(pageIndex, 'emblemOffsetX', Number(e.target.value))}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemOffsetX', Number(e.target.value), true)}
                   className="w-full accent-[#005f73]"
                 />
               </div>
@@ -213,7 +221,7 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                   min="-200"
                   max="200"
                   value={page.emblemOffsetY || 0}
-                  onChange={(e) => updatePageField(pageIndex, 'emblemOffsetY', Number(e.target.value))}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemOffsetY', Number(e.target.value), true)}
                   className="w-full accent-[#005f73]"
                 />
               </div>
@@ -225,7 +233,7 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                   min="1"
                   max="200"
                   value={page.emblemZIndex !== undefined ? page.emblemZIndex : 100}
-                  onChange={(e) => updatePageField(pageIndex, 'emblemZIndex', Number(e.target.value))}
+                  onChange={(e) => updatePageField(pageIndex, 'emblemZIndex', Number(e.target.value), true)}
                   className="w-full accent-[#005f73]"
                 />
               </div>
@@ -242,7 +250,7 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                   min="-200"
                   max="200"
                   value={page.titleGroupOffsetX || 0}
-                  onChange={(e) => updatePageField(pageIndex, 'titleGroupOffsetX', Number(e.target.value))}
+                  onChange={(e) => updatePageField(pageIndex, 'titleGroupOffsetX', Number(e.target.value), true)}
                   className="w-full accent-[#005f73]"
                 />
               </div>
@@ -254,7 +262,7 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                   min="-200"
                   max="200"
                   value={page.titleGroupOffsetY || 0}
-                  onChange={(e) => updatePageField(pageIndex, 'titleGroupOffsetY', Number(e.target.value))}
+                  onChange={(e) => updatePageField(pageIndex, 'titleGroupOffsetY', Number(e.target.value), true)}
                   className="w-full accent-[#005f73]"
                 />
               </div>
@@ -266,7 +274,7 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
                   min="1"
                   max="200"
                   value={page.titleGroupZIndex !== undefined ? page.titleGroupZIndex : 90}
-                  onChange={(e) => updatePageField(pageIndex, 'titleGroupZIndex', Number(e.target.value))}
+                  onChange={(e) => updatePageField(pageIndex, 'titleGroupZIndex', Number(e.target.value), true)}
                   className="w-full accent-[#005f73]"
                 />
               </div>
@@ -446,7 +454,7 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
               min="0"
               max="100"
               value={page.bgImageOpacity !== undefined ? page.bgImageOpacity : 100}
-              onChange={(e) => updatePageField(pageIndex, 'bgImageOpacity', Number(e.target.value))}
+              onChange={(e) => updatePageField(pageIndex, 'bgImageOpacity', Number(e.target.value), true)}
               className="w-20 accent-[#005f73]"
             />
             <span className="text-[10px] text-gray-300 min-w-[28px] text-right">

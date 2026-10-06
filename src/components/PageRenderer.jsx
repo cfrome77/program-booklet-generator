@@ -145,11 +145,11 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
       setActiveSnapGuides({ snapX, snapY });
 
       if (targetType === 'block' && targetBlockIndex !== null) {
-        updateContentBlock(actualPageIndex, targetBlockIndex, 'offsetX', newX);
-        updateContentBlock(actualPageIndex, targetBlockIndex, 'offsetY', newY);
+        updateContentBlock(actualPageIndex, targetBlockIndex, 'offsetX', newX, true);
+        updateContentBlock(actualPageIndex, targetBlockIndex, 'offsetY', newY, true);
       } else {
-        updatePageField(actualPageIndex, `${targetType}OffsetX`, newX);
-        updatePageField(actualPageIndex, `${targetType}OffsetY`, newY);
+        updatePageField(actualPageIndex, `${targetType}OffsetX`, newX, true);
+        updatePageField(actualPageIndex, `${targetType}OffsetY`, newY, true);
       }
     };
 
@@ -187,25 +187,25 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
         if (isPercent) {
           const percentChange = Math.round(dW / 2.5);
           const nextW = Math.min(100, Math.max(15, (initialW || 100) + percentChange));
-          updateContentBlock(actualPageIndex, targetBlockIndex, 'width', nextW);
+          updateContentBlock(actualPageIndex, targetBlockIndex, 'width', nextW, true);
         } else {
           const nextW = Math.max(30, (initialW || 100) + dW);
-          updateContentBlock(actualPageIndex, targetBlockIndex, 'width', nextW);
+          updateContentBlock(actualPageIndex, targetBlockIndex, 'width', nextW, true);
         }
 
         if (dH !== 0) {
           const baseH = initialH || 60;
           const nextH = Math.max(20, baseH + dH);
-          updateContentBlock(actualPageIndex, targetBlockIndex, 'height', nextH);
+          updateContentBlock(actualPageIndex, targetBlockIndex, 'height', nextH, true);
         }
       } else {
         const fieldPrefix = targetType;
         const nextW = Math.min(500, Math.max(30, (initialW || 120) + dW));
-        updatePageField(actualPageIndex, `${fieldPrefix}Width`, nextW);
+        updatePageField(actualPageIndex, `${fieldPrefix}Width`, nextW, true);
 
         if (dH !== 0 || handleType.includes('b') || handleType.includes('t')) {
           const nextH = Math.min(500, Math.max(20, (initialH || 100) + dH));
-          updatePageField(actualPageIndex, `${fieldPrefix}Height`, nextH);
+          updatePageField(actualPageIndex, `${fieldPrefix}Height`, nextH, true);
         }
       }
     };
@@ -351,7 +351,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
     return (
       <>
-        {/* Top Floating Warning Badge */}
+        {/* Top Floating Warning Banner */}
         <div className="overflow-warning-banner absolute top-1 left-1 right-1 bg-red-950/95 text-red-100 border-2 border-red-500 rounded p-1.5 shadow-2xl z-[950] font-mono text-[9.5px] font-bold flex items-center justify-between gap-1 border-dashed">
           <div className="flex items-center gap-1">
             <span className="text-red-400 text-xs font-black">⚠️</span>
@@ -1069,7 +1069,6 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
       </div>
     );
   } else {
-    // Custom / Default HTML
     const mainContentElement = renderCanvaWrapper({
       targetType: 'mainContent',
       currentX: page.mainContentOffsetX || 0,

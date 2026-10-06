@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Download, Upload, Printer, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { BookOpen, Download, Upload, CheckCircle2, ShieldAlert, Undo2, Redo2 } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import { runPreflight } from '../utils/preflight.js';
 
@@ -7,6 +7,10 @@ export default function Header({ onOpenPreflight }) {
   const {
     activePresetKey,
     booklet,
+    canUndo,
+    canRedo,
+    undo,
+    redo,
     loadPreset,
     updateGlobalField,
     importJSON,
@@ -62,6 +66,25 @@ export default function Header({ onOpenPreflight }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex items-center gap-1 bg-[#1a1a20] p-1 rounded border border-[#333]">
+          <button
+            onClick={undo}
+            disabled={!canUndo}
+            className="bg-[#282830] hover:bg-[#3a3a44] disabled:opacity-30 disabled:hover:bg-[#282830] text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 transition-colors border border-[#444]"
+            title="Undo (Ctrl+Z / Cmd+Z)"
+          >
+            <Undo2 className="w-3.5 h-3.5" /> Undo
+          </button>
+          <button
+            onClick={redo}
+            disabled={!canRedo}
+            className="bg-[#282830] hover:bg-[#3a3a44] disabled:opacity-30 disabled:hover:bg-[#282830] text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 transition-colors border border-[#444]"
+            title="Redo (Ctrl+Shift+Z / Cmd+Shift+Z / Ctrl+Y)"
+          >
+            <Redo2 className="w-3.5 h-3.5" /> Redo
+          </button>
+        </div>
+
         <select
           value={activePresetKey}
           onChange={(e) => loadPreset(e.target.value)}

@@ -169,7 +169,7 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                       min="15"
                       max="100"
                       value={block.width !== undefined ? block.width : 100}
-                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'width', Number(e.target.value))}
+                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'width', Number(e.target.value), true)}
                       className="w-full accent-[#005f73]"
                     />
                   </div>
@@ -181,7 +181,7 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                       min="20"
                       max="400"
                       value={block.height || 100}
-                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'height', Number(e.target.value))}
+                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'height', Number(e.target.value), true)}
                       className="w-full accent-[#005f73]"
                     />
                   </div>
@@ -206,7 +206,7 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                       min="1"
                       max="200"
                       value={zIndexVal}
-                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'zIndex', Number(e.target.value))}
+                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'zIndex', Number(e.target.value), true)}
                       className="w-full accent-[#005f73]"
                     />
                   </div>
@@ -234,7 +234,7 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                       min="0"
                       max="100"
                       value={block.opacity !== undefined ? block.opacity : 100}
-                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'opacity', Number(e.target.value))}
+                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'opacity', Number(e.target.value), true)}
                       className="w-full accent-[#005f73]"
                     />
                   </div>
@@ -246,7 +246,7 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                       min="-120"
                       max="120"
                       value={block.offsetX || 0}
-                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'offsetX', Number(e.target.value))}
+                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'offsetX', Number(e.target.value), true)}
                       className="w-full accent-[#005f73]"
                     />
                   </div>
@@ -258,7 +258,7 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                       min="-120"
                       max="120"
                       value={block.offsetY || 0}
-                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'offsetY', Number(e.target.value))}
+                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'offsetY', Number(e.target.value), true)}
                       className="w-full accent-[#005f73]"
                     />
                   </div>
