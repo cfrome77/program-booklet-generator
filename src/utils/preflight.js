@@ -1,5 +1,6 @@
 import { calculateImpositionSheets } from './imposition.js';
 import { getUnusedAssets, getBrokenImageReferences, resolveAssetUrl } from './assets.js';
+import { getUsedFonts, isFontLoaded } from './fonts.js';
 
 /**
  * Valid page types allowed in the booklet system.
@@ -317,7 +318,7 @@ export function runPreflight(booklet, options = {}) {
     let overflowDirection = 'below';
 
     // A. Query DOM measurements if document context is available
-    if (doc) {
+    if (doc && typeof doc.querySelector === 'function') {
       const pageEl = doc.querySelector(`[data-page-index="${idx}"]`) ||
                      doc.querySelector(`#spread-page-${idx}`);
       if (pageEl) {
@@ -329,20 +330,24 @@ export function runPreflight(booklet, options = {}) {
           const scrollDiff = pageEl.scrollHeight - pageEl.clientHeight;
           if (scrollDiff > 2) {
             detectedOverflowInches = (scrollDiff / 96).toFixed(2);
-          } else {
+          } else if (typeof pageEl.getBoundingClientRect === 'function') {
             const pageRect = pageEl.getBoundingClientRect();
-            if (pageRect.height > 0) {
+            if (pageRect && pageRect.height > 0 && typeof pageEl.querySelectorAll === 'function') {
               const children = pageEl.querySelectorAll('*');
               let maxDiff = 0;
               children.forEach((child) => {
                 if (
-                  child.classList.contains('editor-guide') ||
-                  child.classList.contains('overflow-warning-banner') ||
-                  child.classList.contains('overflow-indicator')
+                  child.classList && (
+                    child.classList.contains('editor-guide') ||
+                    child.classList.contains('overflow-warning-banner') ||
+                    child.classList.contains('overflow-indicator')
+                  )
                 ) return;
-                const rect = child.getBoundingClientRect();
-                const diff = rect.bottom - pageRect.bottom;
-                if (diff > maxDiff) maxDiff = diff;
+                if (typeof child.getBoundingClientRect === 'function') {
+                  const rect = child.getBoundingClientRect();
+                  const diff = rect.bottom - pageRect.bottom;
+                  if (diff > maxDiff) maxDiff = diff;
+                }
               });
               if (maxDiff > 2) {
                 detectedOverflowInches = (maxDiff / 96).toFixed(2);
@@ -550,8 +555,7 @@ export function runPreflight(booklet, options = {}) {
   // --------------------------------------------------------------------------
   // 4. TYPOGRAPHY CHECKS
   // --------------------------------------------------------------------------
-  const titleFont = theme?.titleFont || "'Cinzel', serif";
-  if (!titleFont || typeof titleFont !== 'string') {
+  if (theme.titleFont !== undefined && (typeof theme.titleFont !== 'string' || !theme.titleFont.trim())) {
     addIssue({
       severity: 'WARNING',
       category: 'Typography',
@@ -559,21 +563,25 @@ export function runPreflight(booklet, options = {}) {
     });
   }
 
-  // If document.fonts is available (browser context), perform font availability check
+  // Audit all configured and used fonts
+  const requiredFonts = getUsedFonts(booklet);
   const docFonts = options.document?.fonts || (typeof document !== 'undefined' ? document.fonts : null);
+
   if (docFonts && typeof docFonts.check === 'function') {
-    try {
-      const isLoaded = docFonts.check(`16px ${titleFont}`);
-      if (!isLoaded) {
-        addIssue({
-          severity: 'INFO',
-          category: 'Typography',
-          message: `Font family ${titleFont} is currently loading or using fallback system serif font.`
-        });
+    requiredFonts.forEach((fontFamily) => {
+      try {
+        const isLoaded = isFontLoaded(fontFamily, { document: options.document });
+        if (!isLoaded) {
+          addIssue({
+            severity: 'WARNING',
+            category: 'Typography',
+            message: `Font family "${fontFamily}" is currently loading or unavailable (falling back to system font).`
+          });
+        }
+      } catch (e) {
+        // ignore font check error
       }
-    } catch (e) {
-      // Ignore font check errors
-    }
+    });
   }
 
   // Detect suspiciously small text in HTML or block settings
