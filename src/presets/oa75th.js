@@ -1,4 +1,8 @@
 export const oa75thPreset = {
+  schemaVersion: "1.0.0",
+  generatorVersion: "0.1.0",
+  createdAt: "2027-01-01T00:00:00.000Z",
+  updatedAt: "2027-01-01T00:00:00.000Z",
   title: "Amangamek-Wipit Lodge 75th Anniversary Banquet Booklet",
   theme: {
     bgCream: "#f4eedb",

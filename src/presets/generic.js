@@ -1,4 +1,8 @@
 export const genericPreset = {
+  schemaVersion: "1.0.0",
+  generatorVersion: "0.1.0",
+  createdAt: "2027-01-01T00:00:00.000Z",
+  updatedAt: "2027-01-01T00:00:00.000Z",
   title: "Annual Conference Program Booklet",
   theme: {
     bgCream: "#ffffff",

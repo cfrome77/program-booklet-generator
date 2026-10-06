@@ -199,7 +199,16 @@ export function BookletProvider({ children, initialBookletState }) {
     },
     exportJSONData: () => {
       dispatch({ type: 'MARK_EXPORTED' });
-      return JSON.stringify(state.booklet, null, 2);
+      const currentBooklet = state.booklet || {};
+      const exportData = {
+        schemaVersion: currentBooklet.schemaVersion || '1.0.0',
+        generatorVersion: currentBooklet.generatorVersion || '0.1.0',
+        createdAt: currentBooklet.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        ...currentBooklet,
+        updatedAt: new Date().toISOString()
+      };
+      return JSON.stringify(exportData, null, 2);
     },
     clearImportError: () => dispatch({ type: 'CLEAR_IMPORT_ERROR' })
   };
