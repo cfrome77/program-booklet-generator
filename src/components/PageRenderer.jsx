@@ -37,6 +37,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
   const handlePointerDownDrag = (e, targetType, targetBlockIndex = null, initialX = 0, initialY = 0) => {
     if (e.button !== undefined && e.button !== 0) return;
+    e.preventDefault();
     e.stopPropagation();
 
     setSelectedElement({
@@ -74,6 +75,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
   const handlePointerDownResize = (e, handleType, targetType, targetBlockIndex = null, initialW = 100, initialH = null, isPercent = false) => {
     if (e.button !== undefined && e.button !== 0) return;
+    e.preventDefault();
     e.stopPropagation();
 
     const startX = e.clientX;
@@ -374,7 +376,8 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
                   <img
                     src={b.url}
                     alt="Block Content"
-                    className="image-block inline-block max-w-full"
+                    draggable={false}
+                    className="image-block inline-block max-w-full select-none"
                     style={{
                       borderRadius,
                       maxHeight: currentH ? `${currentH}px` : '220px',
@@ -448,7 +451,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
         position: 'relative'
       },
       children: page.emblemImg ? (
-        <img src={page.emblemImg} alt="Emblem" className="w-full h-full object-contain" />
+        <img src={page.emblemImg} alt="Emblem" draggable={false} className="w-full h-full object-contain select-none" />
       ) : (
         <span
           style={{ color: 'var(--navy-dark)' }}
@@ -587,7 +590,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
       children: (
         <div className="w-full h-full bg-white border border-gray-300 flex items-center justify-center text-[0.58rem] text-gray-500 overflow-hidden">
           {page.qrImg ? (
-            <img src={page.qrImg} alt="QR Code" className="w-full h-full object-cover" />
+            <img src={page.qrImg} alt="QR Code" draggable={false} className="w-full h-full object-cover select-none" />
           ) : (
             '[ QR CODE ]'
           )}
@@ -689,7 +692,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
           {leaders.map((l, idx) => (
             <div key={idx} className="leader-container">
               <div className="leader-photo">
-                {l.img ? <img src={l.img} alt={l.title} /> : '[ Photo ]'}
+                {l.img ? <img src={l.img} alt={l.title} draggable={false} className="select-none" /> : '[ Photo ]'}
               </div>
               <div className="leader-content">
                 <h4>{l.title}</h4>
@@ -710,7 +713,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
           <div className="leader-container">
             <div className="speaker-photo">
               {page.speakerImg ? (
-                <img src={page.speakerImg} alt={page.speakerName} />
+                <img src={page.speakerImg} alt={page.speakerName} draggable={false} className="select-none" />
               ) : (
                 '[ Speaker ]'
               )}
@@ -757,7 +760,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
             <div key={idx} className="award-card-featured">
               <div className="award-medallion-placeholder">
                 {f.medallionImg ? (
-                  <img src={f.medallionImg} alt={f.name} />
+                  <img src={f.medallionImg} alt={f.name} draggable={false} className="select-none" />
                 ) : (
                   f.medallion || '[Medallion]'
                 )}
@@ -794,7 +797,8 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
               <img
                 src={page.honoreePhoto}
                 alt="Honoree"
-                className="w-full h-full object-cover"
+                draggable={false}
+                className="w-full h-full object-cover select-none"
               />
             ) : (
               'PHOTO'
@@ -823,7 +827,7 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
             <div key={idx} className="vigil-card">
               <div className="vigil-photo">
                 {m.photo ? (
-                  <img src={m.photo} alt={m.name} className="w-full h-full object-cover" />
+                  <img src={m.photo} alt={m.name} draggable={false} className="w-full h-full object-cover select-none" />
                 ) : (
                   'PHOTO'
                 )}
