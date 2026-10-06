@@ -43,7 +43,7 @@ export default function ThemeEditor() {
               min="0"
               max="100"
               value={theme.bgImageOpacity !== undefined ? theme.bgImageOpacity : 100}
-              onChange={(e) => updateThemeField('bgImageOpacity', Number(e.target.value))}
+              onChange={(e) => updateThemeField('bgImageOpacity', Number(e.target.value), true)}
               className="w-24 accent-[#005f73]"
             />
             <span className="text-[11px] text-gray-300 min-w-[32px] text-right">

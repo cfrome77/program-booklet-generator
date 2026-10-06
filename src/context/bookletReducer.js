@@ -1,5 +1,7 @@
 import { PRESETS } from '../presets/index.js';
 
+const MAX_HISTORY = 50;
+
 export const INITIAL_STATE = {
   activePresetKey: 'blank',
   booklet: JSON.parse(JSON.stringify(PRESETS.blank || {})),
@@ -15,10 +17,15 @@ export const INITIAL_STATE = {
     showCenterFold: true,
     showBleed: false,
     showGrid: false
+  },
+  history: {
+    past: [],
+    future: [],
+    lastMutationTime: 0
   }
 };
 
-export function bookletReducer(state, action) {
+function baseReducer(state, action) {
   switch (action.type) {
     case 'TOGGLE_GUIDE': {
       const guideKey = action.guideKey;
@@ -43,6 +50,7 @@ export function bookletReducer(state, action) {
         }
       };
     }
+
     case 'LOAD_PRESET': {
       const presetKey = action.presetKey;
       const targetPreset = PRESETS[presetKey];
@@ -86,7 +94,7 @@ export function bookletReducer(state, action) {
       const newPages = [...(state.booklet.pages || [])];
       const pageIndex = newPages.length + 1;
       const newPage = action.pageObj || {
-        id: `page-${Date.now()}`,
+        id: `page-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
         type: 'custom',
         title: `New Page ${pageIndex}`,
         content: 'Enter page content here...',
@@ -99,6 +107,33 @@ export function bookletReducer(state, action) {
         booklet: {
           ...state.booklet,
           pages: newPages
+        }
+      };
+    }
+
+    case 'DUPLICATE_PAGE': {
+      const { pageIndex } = action;
+      const pages = [...(state.booklet.pages || [])];
+      if (pageIndex < 0 || pageIndex >= pages.length) return state;
+
+      const sourcePage = pages[pageIndex];
+      const duplicatedPage = JSON.parse(JSON.stringify(sourcePage));
+      duplicatedPage.id = `page-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+      duplicatedPage.title = sourcePage.title ? `${sourcePage.title} (Copy)` : 'Page Copy';
+      if (Array.isArray(duplicatedPage.blocks)) {
+        duplicatedPage.blocks = duplicatedPage.blocks.map((b) => ({
+          ...b,
+          id: `b-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`
+        }));
+      }
+
+      pages.splice(pageIndex + 1, 0, duplicatedPage);
+
+      return {
+        ...state,
+        booklet: {
+          ...state.booklet,
+          pages
         }
       };
     }
@@ -306,7 +341,6 @@ export function bookletReducer(state, action) {
           page.blocks = blocks;
         }
       } else {
-        // Generic page element transforms (e.g. titleTransform, qrTransform, titleGroupTransform, headerTransform, etc.)
         const prefix = elementType;
         Object.entries(transforms).forEach(([key, val]) => {
           const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
@@ -428,4 +462,143 @@ export function bookletReducer(state, action) {
     default:
       return state;
   }
+}
+
+export function bookletReducer(state, action) {
+  if (action.type === 'UNDO') {
+    const past = state.history?.past || [];
+    if (past.length === 0) return state;
+
+    const previousDocument = past[past.length - 1];
+    const newPast = past.slice(0, past.length - 1);
+    const currentDocument = {
+      booklet: JSON.parse(JSON.stringify(state.booklet)),
+      activePresetKey: state.activePresetKey
+    };
+    const future = state.history?.future || [];
+    const newFuture = [currentDocument, ...future];
+
+    let newSelectedElement = state.selectedElement;
+    if (newSelectedElement && newSelectedElement.pageIndex !== undefined) {
+      const restoredPages = previousDocument.booklet?.pages || [];
+      const page = restoredPages[newSelectedElement.pageIndex];
+      if (!page) {
+        newSelectedElement = null;
+      } else if (newSelectedElement.elementType === 'block' && newSelectedElement.blockIndex !== undefined) {
+        if (!page.blocks || !page.blocks[newSelectedElement.blockIndex]) {
+          newSelectedElement = null;
+        }
+      }
+    }
+
+    return {
+      ...state,
+      activePresetKey: previousDocument.activePresetKey,
+      booklet: JSON.parse(JSON.stringify(previousDocument.booklet)),
+      selectedElement: newSelectedElement,
+      history: {
+        past: newPast,
+        future: newFuture,
+        lastMutationTime: 0
+      }
+    };
+  }
+
+  if (action.type === 'REDO') {
+    const future = state.history?.future || [];
+    if (future.length === 0) return state;
+
+    const nextDocument = future[0];
+    const newFuture = future.slice(1);
+    const currentDocument = {
+      booklet: JSON.parse(JSON.stringify(state.booklet)),
+      activePresetKey: state.activePresetKey
+    };
+    const past = state.history?.past || [];
+    const newPast = [...past, currentDocument];
+
+    let newSelectedElement = state.selectedElement;
+    if (newSelectedElement && newSelectedElement.pageIndex !== undefined) {
+      const restoredPages = nextDocument.booklet?.pages || [];
+      const page = restoredPages[newSelectedElement.pageIndex];
+      if (!page) {
+        newSelectedElement = null;
+      } else if (newSelectedElement.elementType === 'block' && newSelectedElement.blockIndex !== undefined) {
+        if (!page.blocks || !page.blocks[newSelectedElement.blockIndex]) {
+          newSelectedElement = null;
+        }
+      }
+    }
+
+    return {
+      ...state,
+      activePresetKey: nextDocument.activePresetKey,
+      booklet: JSON.parse(JSON.stringify(nextDocument.booklet)),
+      selectedElement: newSelectedElement,
+      history: {
+        past: newPast,
+        future: newFuture,
+        lastMutationTime: 0
+      }
+    };
+  }
+
+  const nextState = baseReducer(state, action);
+
+  const isTransientAction = [
+    'TOGGLE_GUIDE',
+    'SET_GUIDE',
+    'SET_SELECTED_ELEMENT',
+    'MARK_EXPORTED',
+    'CLEAR_IMPORT_ERROR'
+  ].includes(action.type);
+
+  if (isTransientAction) {
+    return nextState;
+  }
+
+  const docChanged = nextState.booklet !== state.booklet || nextState.activePresetKey !== state.activePresetKey;
+
+  if (!docChanged) {
+    return nextState;
+  }
+
+  const prevDoc = {
+    booklet: JSON.parse(JSON.stringify(state.booklet)),
+    activePresetKey: state.activePresetKey
+  };
+
+  const now = Date.now();
+  const isContinuous = action.isContinuous || action.meta?.continuous;
+
+  const isCoalescableAction = [
+    'UPDATE_GLOBAL_FIELD',
+    'UPDATE_THEME_FIELD',
+    'UPDATE_PAGE_FIELD',
+    'UPDATE_CONTENT_BLOCK',
+    'UPDATE_ELEMENT_TRANSFORM'
+  ].includes(action.type);
+
+  const shouldCoalesce = isCoalescableAction && Boolean(isContinuous);
+
+  const past = state.history?.past || [];
+
+  let newPast;
+  if (shouldCoalesce && past.length > 0) {
+    newPast = past;
+  } else {
+    newPast = [...past, prevDoc];
+    if (newPast.length > MAX_HISTORY) {
+      newPast = newPast.slice(newPast.length - MAX_HISTORY);
+    }
+  }
+
+  return {
+    ...nextState,
+    history: {
+      past: newPast,
+      future: [],
+      lastMutationTime: now
+    }
+  };
 }
