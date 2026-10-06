@@ -24,6 +24,8 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     resolveAssetUrl
   } = useBooklet();
 
+  const isLeft = pageNum ? isLeftPage(pageNum) : true;
+
   if (!page) {
     return (
       <div className="booklet-page flex items-center justify-center text-gray-400 italic text-xs relative">
@@ -79,8 +81,6 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
   const actualPageIndex = pageIndex !== undefined && pageIndex >= 0
     ? pageIndex
     : pages.findIndex(p => p === page);
-
-  const isLeft = pageNum ? isLeftPage(pageNum) : true;
 
   useLayoutEffect(() => {
     const el = pageRef.current;
