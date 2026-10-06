@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
 import { ArrowUp, ArrowDown, ChevronsUp, ChevronsDown, Trash2, Move, Maximize2, Grid } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import { isLeftPage } from '../utils/imposition.js';
@@ -6,6 +6,8 @@ import { isLeftPage } from '../utils/imposition.js';
 export default function PageRenderer({ page, pageNum, pageIndex }) {
   const [snapEnabled, setSnapEnabled] = useState(true);
   const [activeSnapGuides, setActiveSnapGuides] = useState({ snapX: false, snapY: false });
+  const [overflowState, setOverflowState] = useState({ hasOverflow: false, distanceInches: '0', direction: 'below', overflowPx: 0 });
+  const pageRef = useRef(null);
   const {
     pages,
     theme,
@@ -14,7 +16,8 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     updateContentBlock,
     updatePageField,
     reorderContentBlockLayer,
-    deleteContentBlock
+    deleteContentBlock,
+    guides
   } = useBooklet();
 
   if (!page) {
@@ -30,6 +33,72 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
     : pages.findIndex(p => p === page);
 
   const isLeft = pageNum ? isLeftPage(pageNum) : true;
+
+  useLayoutEffect(() => {
+    const el = pageRef.current;
+    if (!el) return;
+
+    const measureOverflow = () => {
+      let maxOverflowPx = Math.max(0, el.scrollHeight - el.clientHeight);
+      let overflowDirection = 'below';
+
+      const pageRect = el.getBoundingClientRect();
+      if (pageRect.height > 0) {
+        const children = el.querySelectorAll('*');
+        children.forEach((child) => {
+          if (
+            child.classList.contains('editor-guide') ||
+            child.classList.contains('overflow-warning-banner') ||
+            child.classList.contains('overflow-indicator') ||
+            child.closest('.editor-guide') ||
+            child.closest('.overflow-warning-banner')
+          ) {
+            return;
+          }
+          const rect = child.getBoundingClientRect();
+          if (rect.height === 0 && rect.width === 0) return;
+
+          const bottomDiff = rect.bottom - pageRect.bottom;
+          if (bottomDiff > maxOverflowPx) {
+            maxOverflowPx = bottomDiff;
+            overflowDirection = 'below';
+          }
+
+          const rightDiff = rect.right - pageRect.right;
+          if (rightDiff > maxOverflowPx && rightDiff > bottomDiff) {
+            maxOverflowPx = rightDiff;
+            overflowDirection = 'right';
+          }
+        });
+      }
+
+      if (maxOverflowPx > 2) {
+        const inches = (maxOverflowPx / 96).toFixed(2);
+        setOverflowState({
+          hasOverflow: true,
+          distanceInches: inches,
+          direction: overflowDirection,
+          overflowPx: Math.round(maxOverflowPx)
+        });
+      } else {
+        setOverflowState({
+          hasOverflow: false,
+          distanceInches: '0',
+          direction: 'below',
+          overflowPx: 0
+        });
+      }
+    };
+
+    measureOverflow();
+
+    const resizeObserver = new ResizeObserver(measureOverflow);
+    resizeObserver.observe(el);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [page, actualPageIndex, page.type, page.blocks, page.content, page.items, page.leaders, page.sponsors]);
   const bgImgUrl = page.bgImage || theme.bgImage;
   const rawOpacity = page.bgImage
     ? (page.bgImageOpacity !== undefined ? page.bgImageOpacity : 100)
@@ -270,6 +339,93 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
               <ArrowDown className="w-3 h-3" />
             </button>
           </>
+        )}
+      </div>
+    );
+  };
+
+  const renderOverflowIndication = () => {
+    if (!overflowState.hasOverflow) return null;
+
+    const displayPageNum = pageNum ? `Page ${pageNum}` : `Page ${actualPageIndex + 1}`;
+
+    return (
+      <>
+        {/* Top Floating Warning Badge */}
+        <div className="overflow-warning-banner absolute top-1 left-1 right-1 bg-red-950/95 text-red-100 border-2 border-red-500 rounded p-1.5 shadow-2xl z-[950] font-mono text-[9.5px] font-bold flex items-center justify-between gap-1 border-dashed">
+          <div className="flex items-center gap-1">
+            <span className="text-red-400 text-xs font-black">⚠️</span>
+            <span>{displayPageNum}: Content extends {overflowState.distanceInches} inches {overflowState.direction} the page.</span>
+          </div>
+        </div>
+
+        {/* Hatched Overflow Zone Indicator */}
+        <div className="overflow-indicator absolute -bottom-1 left-0 right-0 bg-[repeating-linear-gradient(45deg,rgba(220,38,38,0.35),rgba(220,38,38,0.35)_10px,rgba(0,0,0,0.5)_10px,rgba(0,0,0,0.5)_20px)] border-t-2 border-dashed border-red-500 z-[850] pointer-events-none flex items-center justify-center text-[9px] font-mono font-bold text-red-200 shadow-md min-h-[22px]">
+          ⚠️ OVERFLOW (+{overflowState.distanceInches} in)
+        </div>
+      </>
+    );
+  };
+
+  const renderGuidesOverlay = () => {
+    if (!guides) return null;
+    const { showPageBoundary, showSafeArea, showCenterFold, showBleed, showGrid } = guides;
+
+    return (
+      <div className="editor-guide pointer-events-none absolute inset-0 z-[800] select-none">
+        {/* Optional Alignment Grid */}
+        {showGrid && (
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#005f7318_1px,transparent_1px),linear-gradient(to_bottom,#005f7318_1px,transparent_1px)] bg-[size:0.25in_0.25in]" />
+        )}
+
+        {/* Optional Bleed Zone (0.125 in outer line) */}
+        {showBleed && (
+          <div className="absolute -inset-[0.125in] border-2 border-dashed border-rose-500/60 pointer-events-none">
+            <span className="absolute top-0 left-1 text-[8px] font-mono font-bold text-rose-500 bg-black/80 px-1 rounded-b">
+              BLEED 0.125"
+            </span>
+          </div>
+        )}
+
+        {/* Page Boundary */}
+        {showPageBoundary && (
+          <div className="absolute inset-0 border-2 border-[#005f73] pointer-events-none">
+            <span className="absolute top-0 right-1 text-[8px] font-mono font-bold text-cyan-300 bg-[#122230]/80 px-1 rounded-b">
+              5.5" × 8.5" BOUNDARY
+            </span>
+          </div>
+        )}
+
+        {/* Safe Area */}
+        {showSafeArea && (
+          <div
+            className="absolute border border-dashed border-amber-500/70 pointer-events-none"
+            style={{
+              top: '0.42in',
+              right: '0.48in',
+              bottom: '0.4in',
+              left: '0.48in'
+            }}
+          >
+            <span className="absolute -top-3 left-1 text-[8px] font-mono font-bold text-amber-400 bg-black/80 px-1 rounded">
+              SAFE AREA
+            </span>
+          </div>
+        )}
+
+        {/* Center Fold Line */}
+        {showCenterFold && (
+          <div
+            className={`absolute top-0 bottom-0 w-0 border-r-2 border-dashed border-emerald-500/80 pointer-events-none ${
+              isLeft ? 'right-0' : 'left-0'
+            }`}
+          >
+            <span className={`absolute top-1/2 -translate-y-1/2 text-[8px] font-mono font-bold text-emerald-300 bg-emerald-950/90 border border-emerald-600 px-1 py-0.5 rounded ${
+              isLeft ? '-translate-x-full -mr-0.5' : 'left-0 ml-0.5'
+            }`}>
+              CENTER FOLD
+            </span>
+          </div>
         )}
       </div>
     );
@@ -579,11 +735,19 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
     return (
       <div
-        className={`booklet-page cover-page ${alignClass} relative`}
+        ref={pageRef}
+        id={`spread-page-${actualPageIndex}`}
+        data-page-index={actualPageIndex}
+        data-page-num={pageNum || actualPageIndex + 1}
+        data-has-overflow={overflowState.hasOverflow}
+        data-overflow-inches={overflowState.distanceInches}
+        className={`booklet-page cover-page ${alignClass} relative ${overflowState.hasOverflow ? 'has-overflow ring-2 ring-red-600 shadow-[0_0_15px_rgba(239,68,68,0.5)]' : ''}`}
         onClick={() => setSelectedElement(null)}
       >
         {renderBgLayer()}
+        {renderGuidesOverlay()}
         {renderSmartGuides()}
+        {renderOverflowIndication()}
         {contentHTML}
         {pageNum && (
           <span className={`page-number-tag ${isLeft ? 'left' : 'right'}`}>
@@ -684,12 +848,20 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
     return (
       <div
-        className={`booklet-page cover-page ${alignClass} relative`}
+        ref={pageRef}
+        id={`spread-page-${actualPageIndex}`}
+        data-page-index={actualPageIndex}
+        data-page-num={pageNum || actualPageIndex + 1}
+        data-has-overflow={overflowState.hasOverflow}
+        data-overflow-inches={overflowState.distanceInches}
+        className={`booklet-page cover-page ${alignClass} relative ${overflowState.hasOverflow ? 'has-overflow ring-2 ring-red-600 shadow-[0_0_15px_rgba(239,68,68,0.5)]' : ''}`}
         style={{ justifyContent: 'center', textAlign: 'center' }}
         onClick={() => setSelectedElement(null)}
       >
         {renderBgLayer()}
+        {renderGuidesOverlay()}
         {renderSmartGuides()}
+        {renderOverflowIndication()}
         {contentHTML}
         {pageNum && (
           <span className={`page-number-tag ${isLeft ? 'left' : 'right'}`}>
@@ -930,11 +1102,19 @@ export default function PageRenderer({ page, pageNum, pageIndex }) {
 
   return (
     <div
-      className={`booklet-page ${alignClass} relative`}
+      ref={pageRef}
+      id={`spread-page-${actualPageIndex}`}
+      data-page-index={actualPageIndex}
+      data-page-num={pageNum || actualPageIndex + 1}
+      data-has-overflow={overflowState.hasOverflow}
+      data-overflow-inches={overflowState.distanceInches}
+      className={`booklet-page ${alignClass} relative ${overflowState.hasOverflow ? 'has-overflow ring-2 ring-red-600 shadow-[0_0_15px_rgba(239,68,68,0.5)]' : ''}`}
       onClick={() => setSelectedElement(null)}
     >
       {renderBgLayer()}
+      {renderGuidesOverlay()}
       {renderSmartGuides()}
+      {renderOverflowIndication()}
       {contentHTML}
       {pageNum && (
         <span className={`page-number-tag ${isLeft ? 'left' : 'right'}`}>

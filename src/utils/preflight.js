@@ -276,9 +276,89 @@ export function runPreflight(booklet, options = {}) {
   });
 
   // --------------------------------------------------------------------------
-  // 3. LAYOUT CHECKS
+  // 3. LAYOUT CHECKS & OVERFLOW DETECTION
   // --------------------------------------------------------------------------
+  const doc = options.document || (typeof document !== 'undefined' ? document : null);
+
   pages.forEach((p, idx) => {
+    const pageNum = idx + 1;
+    let detectedOverflowInches = null;
+    let overflowDirection = 'below';
+
+    // A. Query DOM measurements if document context is available
+    if (doc) {
+      const pageEl = doc.querySelector(`[data-page-index="${idx}"]`) ||
+                     doc.querySelector(`#spread-page-${idx}`);
+      if (pageEl) {
+        const hasAttrOverflow = pageEl.getAttribute('data-has-overflow') === 'true';
+        const attrInches = pageEl.getAttribute('data-overflow-inches');
+        if (hasAttrOverflow && attrInches && parseFloat(attrInches) > 0) {
+          detectedOverflowInches = parseFloat(attrInches).toFixed(2);
+        } else {
+          const scrollDiff = pageEl.scrollHeight - pageEl.clientHeight;
+          if (scrollDiff > 2) {
+            detectedOverflowInches = (scrollDiff / 96).toFixed(2);
+          } else {
+            const pageRect = pageEl.getBoundingClientRect();
+            if (pageRect.height > 0) {
+              const children = pageEl.querySelectorAll('*');
+              let maxDiff = 0;
+              children.forEach((child) => {
+                if (
+                  child.classList.contains('editor-guide') ||
+                  child.classList.contains('overflow-warning-banner') ||
+                  child.classList.contains('overflow-indicator')
+                ) return;
+                const rect = child.getBoundingClientRect();
+                const diff = rect.bottom - pageRect.bottom;
+                if (diff > maxDiff) maxDiff = diff;
+              });
+              if (maxDiff > 2) {
+                detectedOverflowInches = (maxDiff / 96).toFixed(2);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // B. Static layout estimation fallback
+    if (!detectedOverflowInches) {
+      (p.blocks || []).forEach((b) => {
+        const offsetY = b.offsetY || 0;
+        const blockH = b.height || (b.type === 'image' ? 200 : b.type === 'paragraph' ? 100 : 40);
+        if (offsetY > 180) {
+          const estOverflowPx = offsetY + blockH - 250;
+          if (estOverflowPx > 0) {
+            detectedOverflowInches = (estOverflowPx / 96).toFixed(2);
+          }
+        }
+      });
+
+      if (!detectedOverflowInches) {
+        if (p.type === 'custom' && p.content && p.content.length > 2500) {
+          const overChars = p.content.length - 2000;
+          detectedOverflowInches = Math.max(0.1, (overChars / 500 * 0.15)).toFixed(2);
+        } else if (p.type === 'schedule' && p.items && p.items.length > 8) {
+          detectedOverflowInches = ((p.items.length - 8) * 0.22).toFixed(2);
+        } else if (p.type === 'leadership' && p.leaders && p.leaders.length > 6) {
+          detectedOverflowInches = ((p.leaders.length - 6) * 0.30).toFixed(2);
+        } else if (p.type === 'roster' && p.members && p.members.length > 18) {
+          detectedOverflowInches = ((p.members.length - 18) * 0.18).toFixed(2);
+        }
+      }
+    }
+
+    if (detectedOverflowInches && parseFloat(detectedOverflowInches) > 0) {
+      addIssue({
+        severity: 'ERROR',
+        category: 'Layout',
+        message: `Page ${pageNum}: Content extends ${detectedOverflowInches} inches ${overflowDirection} the page.`,
+        pageIndex: idx,
+        pageNum
+      });
+    }
+
     // Check coordinate validity & overflow
     const checkCoords = (prefix, label) => {
       const offsetX = p[`${prefix}OffsetX`];

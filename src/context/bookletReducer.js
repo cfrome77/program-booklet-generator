@@ -8,11 +8,41 @@ export const INITIAL_STATE = {
     lastImportedAt: null,
     lastExportedAt: null,
   },
-  selectedElement: null // { pageIndex, blockIndex, elementType: 'block' | 'emblem' }
+  selectedElement: null, // { pageIndex, blockIndex, elementType: 'block' | 'emblem' }
+  guides: {
+    showPageBoundary: true,
+    showSafeArea: true,
+    showCenterFold: true,
+    showBleed: false,
+    showGrid: false
+  }
 };
 
 export function bookletReducer(state, action) {
   switch (action.type) {
+    case 'TOGGLE_GUIDE': {
+      const guideKey = action.guideKey;
+      if (!guideKey || !(guideKey in (state.guides || {}))) return state;
+      return {
+        ...state,
+        guides: {
+          ...state.guides,
+          [guideKey]: !state.guides[guideKey]
+        }
+      };
+    }
+
+    case 'SET_GUIDE': {
+      const { guideKey, value } = action;
+      if (!guideKey) return state;
+      return {
+        ...state,
+        guides: {
+          ...state.guides,
+          [guideKey]: Boolean(value)
+        }
+      };
+    }
     case 'LOAD_PRESET': {
       const presetKey = action.presetKey;
       const targetPreset = PRESETS[presetKey];

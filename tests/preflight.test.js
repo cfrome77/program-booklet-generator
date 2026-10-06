@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { runPreflight } from '../src/utils/preflight.js';
 import { oa75thPreset } from '../src/presets/oa75th.js';
+import { bookletReducer, INITIAL_STATE } from '../src/context/bookletReducer.js';
 
 test('Preflight Engine Tests', async (t) => {
   await t.test('returns READY TO PRINT for a valid preset booklet', () => {
@@ -139,5 +140,64 @@ test('Preflight Engine Tests', async (t) => {
     assert.equal(result.specs.totalSheets, 1);
     const infoMsg = result.info.find((i) => i.category === 'Page Structure' && i.message.includes('Page count (3) is not divisible by 4'));
     assert.ok(infoMsg);
+  });
+
+  await t.test('detects content overflow extending beyond physical page bounds', () => {
+    // 1. Static estimation overflow check
+    const booklet = {
+      title: 'Overflow Test',
+      pages: Array.from({ length: 7 }, (_, i) => ({
+        id: `p${i + 1}`,
+        type: i === 6 ? 'custom' : 'custom',
+        title: `Page ${i + 1}`,
+        content: i === 6 ? 'A'.repeat(3000) : 'Short content'
+      }))
+    };
+
+    const result = runPreflight(booklet);
+    assert.equal(result.status, 'PRINT BLOCKED');
+    const overflowErr = result.errors.find((e) => e.category === 'Layout' && e.pageNum === 7 && e.message.includes('Content extends'));
+    assert.ok(overflowErr, 'Should report overflow on Page 7');
+    assert.ok(overflowErr.message.includes('Page 7: Content extends'), `Message should include page number and overflow distance: ${overflowErr.message}`);
+
+    // 2. DOM-based overflow measurement simulation
+    const mockDoc = {
+      querySelector: (selector) => {
+        if (selector.includes('data-page-index="6"') || selector.includes('spread-page-6')) {
+          return {
+            getAttribute: (attr) => {
+              if (attr === 'data-has-overflow') return 'true';
+              if (attr === 'data-overflow-inches') return '0.18';
+              return null;
+            },
+            scrollHeight: 850,
+            clientHeight: 816,
+            getBoundingClientRect: () => ({ height: 816, bottom: 816 }),
+            querySelectorAll: () => []
+          };
+        }
+        return null;
+      }
+    };
+
+    const domResult = runPreflight(booklet, { document: mockDoc });
+    const domErr = domResult.errors.find((e) => e.pageNum === 7 && e.message.includes('0.18 inches below the page'));
+    assert.ok(domErr, 'DOM simulation should detect 0.18 inches overflow below the page');
+    assert.equal(domErr.message, 'Page 7: Content extends 0.18 inches below the page.');
+  });
+
+  await t.test('bookletReducer correctly handles TOGGLE_GUIDE and SET_GUIDE actions', () => {
+    let state = INITIAL_STATE;
+    assert.equal(state.guides.showGrid, false);
+    assert.equal(state.guides.showPageBoundary, true);
+
+    state = bookletReducer(state, { type: 'TOGGLE_GUIDE', guideKey: 'showGrid' });
+    assert.equal(state.guides.showGrid, true);
+
+    state = bookletReducer(state, { type: 'TOGGLE_GUIDE', guideKey: 'showPageBoundary' });
+    assert.equal(state.guides.showPageBoundary, false);
+
+    state = bookletReducer(state, { type: 'SET_GUIDE', guideKey: 'showBleed', value: true });
+    assert.equal(state.guides.showBleed, true);
   });
 });
