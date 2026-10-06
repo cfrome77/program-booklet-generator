@@ -2,7 +2,7 @@ import React from 'react';
 import { BookOpen, Download, Upload, Printer } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 
-export default function Header() {
+export default function Header({ onOpenPreflight }) {
   const {
     activePresetKey,
     booklet,
@@ -81,8 +81,8 @@ export default function Header() {
         </label>
 
         <button
-          onClick={() => window.print()}
-          className="bg-[#3a3a42] hover:bg-[#4a4a54] text-[#e0e0e0] text-xs font-semibold px-3.5 py-2 rounded flex items-center gap-1.5 transition-colors"
+          onClick={onOpenPreflight}
+          className="bg-[#005f73] hover:bg-[#00424f] text-white text-xs font-semibold px-3.5 py-2 rounded flex items-center gap-1.5 transition-colors shadow-sm"
         >
           <Printer className="w-4 h-4" /> Print / Save PDF
         </button>
