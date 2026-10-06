@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { ArrowUp, ArrowDown, ChevronsUp, ChevronsDown, Trash2, Plus, Layers } from 'lucide-react';
+import { ArrowUp, ArrowDown, ChevronsUp, ChevronsDown, Trash2, Plus, Layers, Copy, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import AssetPicker from './AssetPicker.jsx';
 
 export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
   const {
     addContentBlock,
+    duplicateContentBlock,
     updateContentBlock,
     reorderContentBlockLayer,
     deleteContentBlock,
@@ -104,8 +105,15 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                     <ChevronsDown className="w-3 h-3" />
                   </button>
                   <button
+                    onClick={() => duplicateContentBlock(pageIndex, blockIndex)}
+                    className="p-0.5 bg-[#1e1e24] hover:bg-[#005f73] rounded text-cyan-300 hover:text-white ml-1 border-l border-[#444]"
+                    title="Duplicate Block"
+                  >
+                    <Copy className="w-3 h-3" />
+                  </button>
+                  <button
                     onClick={() => deleteContentBlock(pageIndex, blockIndex)}
-                    className="p-0.5 bg-[#1e1e24] hover:bg-red-700 rounded text-red-400 hover:text-white ml-1 border-l border-[#444]"
+                    className="p-0.5 bg-[#1e1e24] hover:bg-red-700 rounded text-red-400 hover:text-white border-l border-[#444]"
                     title="Delete Block"
                   >
                     <Trash2 className="w-3 h-3" />
@@ -166,16 +174,42 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                   </div>
 
                   <div>
-                    <label className="text-gray-400 block">Align</label>
-                    <select
-                      value={block.align || (block.type === 'image' ? 'center' : 'left')}
-                      onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'align', e.target.value)}
-                      className="w-full bg-[#2a2a34] border border-[#555] text-white rounded p-0.5"
-                    >
-                      <option value="left">Left</option>
-                      <option value="center">Center</option>
-                      <option value="right">Right</option>
-                    </select>
+                    <label className="text-gray-400 block mb-0.5">Alignment</label>
+                    <div className="flex items-center gap-1 bg-[#2a2a34] p-0.5 rounded border border-[#555]">
+                      <button
+                        onClick={() => updateContentBlock(pageIndex, blockIndex, 'align', 'left')}
+                        className={`p-1 rounded flex-1 flex justify-center ${
+                          (block.align || (block.type === 'image' ? 'center' : 'left')) === 'left'
+                            ? 'bg-[#005f73] text-white'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                        title="Align Left"
+                      >
+                        <AlignLeft className="w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={() => updateContentBlock(pageIndex, blockIndex, 'align', 'center')}
+                        className={`p-1 rounded flex-1 flex justify-center ${
+                          (block.align || (block.type === 'image' ? 'center' : 'left')) === 'center'
+                            ? 'bg-[#005f73] text-white'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                        title="Align Center"
+                      >
+                        <AlignCenter className="w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={() => updateContentBlock(pageIndex, blockIndex, 'align', 'right')}
+                        className={`p-1 rounded flex-1 flex justify-center ${
+                          (block.align || (block.type === 'image' ? 'center' : 'left')) === 'right'
+                            ? 'bg-[#005f73] text-white'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                        title="Align Right"
+                      >
+                        <AlignRight className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
 
                   <div>

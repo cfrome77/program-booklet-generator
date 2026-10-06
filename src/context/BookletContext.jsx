@@ -109,11 +109,22 @@ export function BookletProvider({ children, initialBookletState }) {
     lastStateStringRef.current = JSON.stringify({ booklet: state.booklet, activePresetKey: state.activePresetKey });
   };
 
-  // Global Keyboard Shortcuts for Document History (Ctrl/Cmd + Z, Ctrl/Cmd + Shift + Z, Ctrl/Cmd + Y)
+  // Global Keyboard Shortcuts (Undo, Redo, Save, Print, Duplicate, Delete, Deselect, Move)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if ((e.ctrlKey || e.metaKey) && !e.altKey) {
-        const key = e.key.toLowerCase();
+      const activeEl = document.activeElement;
+      const isInputFocused = activeEl && (
+        activeEl.tagName === 'INPUT' ||
+        activeEl.tagName === 'TEXTAREA' ||
+        activeEl.tagName === 'SELECT' ||
+        activeEl.isContentEditable
+      );
+
+      const hasCmdOrCtrl = e.ctrlKey || e.metaKey;
+      const key = e.key.toLowerCase();
+
+      // Shortcuts with Ctrl/Cmd
+      if (hasCmdOrCtrl && !e.altKey) {
         if (key === 'z') {
           if (e.shiftKey) {
             e.preventDefault();
@@ -122,16 +133,133 @@ export function BookletProvider({ children, initialBookletState }) {
             e.preventDefault();
             dispatch({ type: 'UNDO' });
           }
+          return;
         } else if (key === 'y') {
           e.preventDefault();
           dispatch({ type: 'REDO' });
+          return;
+        } else if (key === 's') {
+          e.preventDefault();
+          // Force immediate autosave trigger
+          saveAutosaveSession({
+            booklet: state.booklet,
+            activePresetKey: state.activePresetKey,
+            timestamp: Date.now()
+          }).then(() => {
+            setLastSavedAt(Date.now());
+            setSaveStatus('saved');
+          }).catch((err) => {
+            console.error('Manual save failed:', err);
+            setSaveStatus('error');
+          });
+          return;
+        } else if (key === 'p') {
+          e.preventDefault();
+          // Dispatch custom event to trigger preflight/print setup modal in App
+          window.dispatchEvent(new CustomEvent('open-preflight-modal'));
+          return;
+        } else if (key === 'd') {
+          e.preventDefault();
+          if (state.selectedElement) {
+            const { pageIndex, blockIndex, elementType } = state.selectedElement;
+            if (elementType === 'block' && pageIndex !== undefined && blockIndex !== undefined) {
+              dispatch({ type: 'DUPLICATE_CONTENT_BLOCK', pageIndex, blockIndex });
+            } else if ((elementType === 'page' || elementType === undefined) && pageIndex !== undefined) {
+              dispatch({ type: 'DUPLICATE_PAGE', pageIndex });
+            }
+          }
+          return;
+        }
+      }
+
+      // Keyboard shortcuts when NOT typing in an input
+      if (!isInputFocused) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          dispatch({ type: 'SET_SELECTED_ELEMENT', selectedElement: null });
+          return;
+        }
+
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+          if (state.selectedElement) {
+            const { pageIndex, blockIndex, elementType } = state.selectedElement;
+            if (elementType === 'block' && pageIndex !== undefined && blockIndex !== undefined) {
+              e.preventDefault();
+              dispatch({ type: 'DELETE_CONTENT_BLOCK', pageIndex, blockIndex });
+            } else if (elementType === 'page' && pageIndex !== undefined) {
+              e.preventDefault();
+              dispatch({ type: 'DELETE_PAGE', pageIndex });
+              dispatch({ type: 'SET_SELECTED_ELEMENT', selectedElement: null });
+            }
+          }
+          return;
+        }
+
+        // Nudge with Arrow Keys
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+          if (state.selectedElement) {
+            const { pageIndex, blockIndex, elementType } = state.selectedElement;
+            if (pageIndex !== undefined) {
+              e.preventDefault();
+              const step = e.shiftKey ? 10 : 1;
+              let dx = 0;
+              let dy = 0;
+
+              if (e.key === 'ArrowLeft') dx = -step;
+              if (e.key === 'ArrowRight') dx = step;
+              if (e.key === 'ArrowUp') dy = -step;
+              if (e.key === 'ArrowDown') dy = step;
+
+              if (elementType === 'block' && blockIndex !== undefined) {
+                const currentBlock = state.booklet.pages?.[pageIndex]?.blocks?.[blockIndex];
+                if (currentBlock) {
+                  const newX = (currentBlock.offsetX || 0) + dx;
+                  const newY = (currentBlock.offsetY || 0) + dy;
+                  dispatch({
+                    type: 'UPDATE_CONTENT_BLOCK',
+                    pageIndex,
+                    blockIndex,
+                    field: 'offsetX',
+                    value: newX,
+                    isContinuous: true
+                  });
+                  dispatch({
+                    type: 'UPDATE_CONTENT_BLOCK',
+                    pageIndex,
+                    blockIndex,
+                    field: 'offsetY',
+                    value: newY,
+                    isContinuous: true
+                  });
+                }
+              } else if (elementType && elementType !== 'page') {
+                const prefix = elementType;
+                const currX = state.booklet.pages?.[pageIndex]?.[`${prefix}OffsetX`] || 0;
+                const currY = state.booklet.pages?.[pageIndex]?.[`${prefix}OffsetY`] || 0;
+                dispatch({
+                  type: 'UPDATE_PAGE_FIELD',
+                  pageIndex,
+                  field: `${prefix}OffsetX`,
+                  value: currX + dx,
+                  isContinuous: true
+                });
+                dispatch({
+                  type: 'UPDATE_PAGE_FIELD',
+                  pageIndex,
+                  field: `${prefix}OffsetY`,
+                  value: currY + dy,
+                  isContinuous: true
+                });
+              }
+            }
+          }
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [state.selectedElement, state.booklet, state.activePresetKey]);
 
   const value = {
     state,
@@ -184,6 +312,7 @@ export function BookletProvider({ children, initialBookletState }) {
     movePage: (pageIndex, delta) => dispatch({ type: 'MOVE_PAGE', pageIndex, delta }),
     deletePage: (pageIndex) => dispatch({ type: 'DELETE_PAGE', pageIndex }),
     addContentBlock: (pageIndex, blockType) => dispatch({ type: 'ADD_CONTENT_BLOCK', pageIndex, blockType }),
+    duplicateContentBlock: (pageIndex, blockIndex) => dispatch({ type: 'DUPLICATE_CONTENT_BLOCK', pageIndex, blockIndex }),
     updateContentBlock: (pageIndex, blockIndex, field, value, isContinuous = false) => dispatch({ type: 'UPDATE_CONTENT_BLOCK', pageIndex, blockIndex, field, value, isContinuous }),
     moveContentBlock: (pageIndex, blockIndex, delta) => dispatch({ type: 'MOVE_CONTENT_BLOCK', pageIndex, blockIndex, delta }),
     deleteContentBlock: (pageIndex, blockIndex) => dispatch({ type: 'DELETE_CONTENT_BLOCK', pageIndex, blockIndex }),

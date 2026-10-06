@@ -8,12 +8,20 @@ import PreflightModal from './components/PreflightModal.jsx';
 import RecoveryPromptModal from './components/RecoveryPromptModal.jsx';
 import PrintMount from './components/PrintMount.jsx';
 import GuideTogglesToolbar from './components/GuideTogglesToolbar.jsx';
+import PageThumbnailsNav from './components/PageThumbnailsNav.jsx';
 import { Printer, Loader2 } from 'lucide-react';
 
 function BookletAppContent() {
   const { theme, jsonState, isRecoveryPromptOpen, recoverableSession, restoreSession, discardSession } = useBooklet();
   const [viewMode, setViewMode] = useState('spreads'); // 'spreads' | 'imposition'
   const [isPreflightOpen, setIsPreflightOpen] = useState(false);
+
+  // Listen for open-preflight-modal custom event triggered by Ctrl+P keyboard shortcut
+  useEffect(() => {
+    const handleOpenPreflight = () => setIsPreflightOpen(true);
+    window.addEventListener('open-preflight-modal', handleOpenPreflight);
+    return () => window.removeEventListener('open-preflight-modal', handleOpenPreflight);
+  }, []);
   const [printMode, setPrintMode] = useState(null); // 'booklet' | 'test-sheet' | null
   const [isPreparingPrint, setIsPreparingPrint] = useState(false);
 
@@ -126,6 +134,9 @@ function BookletAppContent() {
               <Printer className="w-4 h-4" /> Print Setup & Preflight
             </button>
           </div>
+
+          {/* Page Thumbnails Navigation Bar */}
+          <PageThumbnailsNav />
 
           {/* Active Viewer */}
           {viewMode === 'spreads' ? <SpreadViewer /> : <ImpositionViewer />}
