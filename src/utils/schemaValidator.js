@@ -6,10 +6,21 @@ export const CURRENT_GENERATOR_VERSION = '0.1.0';
 export const VALID_BLOCK_TYPES = new Set([
   'heading',
   'paragraph',
-  'image',
-  'divider',
-  'emblem',
+  'richText',
+  'list',
+  'table',
   'quote',
+  'image',
+  'imageText',
+  'twoColumn',
+  'threeColumn',
+  'divider',
+  'spacer',
+  'qrCode',
+  'logo',
+  'photoGrid',
+  'caption',
+  'emblem',
   'custom'
 ]);
 
@@ -287,6 +298,36 @@ export function validateProject(data) {
           if (block.url !== undefined && block.url !== null) {
             if (!isValidAssetUrl(block.url, assetsList)) {
               addErr(`${bPath}.url`, `Block ${bIdx + 1} on page ${pIdx + 1} "url" is not a valid asset URL or data URI.`);
+            }
+          }
+
+          if (block.qrUrl !== undefined && block.qrUrl !== null) {
+            if (typeof block.qrUrl !== 'string') {
+              addErr(`${bPath}.qrUrl`, `Block ${bIdx + 1} on page ${pIdx + 1} "qrUrl" must be a string.`);
+            }
+          }
+
+          if (block.items !== undefined && block.items !== null) {
+            if (!Array.isArray(block.items)) {
+              addErr(`${bPath}.items`, `Block ${bIdx + 1} on page ${pIdx + 1} "items" must be an array.`);
+            }
+          }
+
+          if (block.images !== undefined && block.images !== null) {
+            if (!Array.isArray(block.images)) {
+              addErr(`${bPath}.images`, `Block ${bIdx + 1} on page ${pIdx + 1} "images" must be an array.`);
+            } else {
+              block.images.forEach((imgUrl, imgIdx) => {
+                if (imgUrl && !isValidAssetUrl(imgUrl, assetsList)) {
+                  addErr(`${bPath}.images[${imgIdx}]`, `Block ${bIdx + 1} on page ${pIdx + 1} photo grid image ${imgIdx + 1} is an invalid asset URL.`);
+                }
+              });
+            }
+          }
+
+          if (block.columns !== undefined && block.columns !== null && block.type !== 'photoGrid') {
+            if (!Array.isArray(block.columns)) {
+              addErr(`${bPath}.columns`, `Block ${bIdx + 1} on page ${pIdx + 1} "columns" must be an array.`);
             }
           }
 

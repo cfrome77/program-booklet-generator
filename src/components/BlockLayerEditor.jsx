@@ -34,8 +34,20 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
           >
             <option value="heading">Subheading</option>
             <option value="paragraph">Paragraph</option>
+            <option value="richText">Rich Text</option>
+            <option value="list">List</option>
+            <option value="table">Table</option>
+            <option value="quote">Quote</option>
             <option value="image">Image</option>
+            <option value="imageText">Image + Text</option>
+            <option value="twoColumn">2 Columns</option>
+            <option value="threeColumn">3 Columns</option>
             <option value="divider">Divider Line</option>
+            <option value="spacer">Spacer</option>
+            <option value="qrCode">QR Code</option>
+            <option value="logo">Logo / Emblem</option>
+            <option value="photoGrid">Photo Grid</option>
+            <option value="caption">Caption</option>
           </select>
           <button
             onClick={handleAdd}
@@ -121,7 +133,7 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                 </div>
               </div>
 
-              {(block.type === 'heading' || block.type === 'paragraph') && (
+              {(block.type === 'heading' || block.type === 'paragraph' || block.type === 'caption') && (
                 <input
                   type="text"
                   value={block.text || ''}
@@ -132,12 +144,171 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                 />
               )}
 
-              {block.type === 'image' && (
+              {block.type === 'richText' && (
+                <textarea
+                  rows={3}
+                  value={block.text || block.content || ''}
+                  placeholder="HTML / Rich Text content..."
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'text', e.target.value)}
+                  className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px] focus:outline-none focus:border-[#005f73] font-mono"
+                />
+              )}
+
+              {block.type === 'quote' && (
+                <div className="space-y-1" onClick={(e) => e.stopPropagation()}>
+                  <input
+                    type="text"
+                    value={block.text || ''}
+                    placeholder="Quote text..."
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'text', e.target.value)}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
+                  />
+                  <input
+                    type="text"
+                    value={block.author || ''}
+                    placeholder="Author attribution..."
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'author', e.target.value)}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
+                  />
+                </div>
+              )}
+
+              {block.type === 'list' && (
+                <div className="space-y-1" onClick={(e) => e.stopPropagation()}>
+                  <select
+                    value={block.listType || 'bullet'}
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'listType', e.target.value)}
+                    className="w-full bg-[#1e1e24] text-white border border-[#444] text-[10px] p-1 rounded"
+                  >
+                    <option value="bullet">Bullet List</option>
+                    <option value="number">Numbered List</option>
+                  </select>
+                  <textarea
+                    rows={3}
+                    value={Array.isArray(block.items) ? block.items.join('\n') : ''}
+                    placeholder="Enter list items (one per line)..."
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'items', e.target.value.split('\n'))}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
+                  />
+                </div>
+              )}
+
+              {(block.type === 'image' || block.type === 'logo') && (
                 <div onClick={(e) => e.stopPropagation()}>
                   <AssetPicker
                     value={block.url || ''}
                     onChange={(val) => updateContentBlock(pageIndex, blockIndex, 'url', val)}
-                    label="Image Block Source"
+                    label={block.type === 'logo' ? 'Logo Asset Source' : 'Image Block Source'}
+                  />
+                </div>
+              )}
+
+              {block.type === 'imageText' && (
+                <div className="space-y-1" onClick={(e) => e.stopPropagation()}>
+                  <AssetPicker
+                    value={block.url || ''}
+                    onChange={(val) => updateContentBlock(pageIndex, blockIndex, 'url', val)}
+                    label="Side Image Source"
+                  />
+                  <select
+                    value={block.imagePosition || 'left'}
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'imagePosition', e.target.value)}
+                    className="w-full bg-[#1e1e24] text-white border border-[#444] text-[10px] p-1 rounded"
+                  >
+                    <option value="left">Image on Left</option>
+                    <option value="right">Image on Right</option>
+                  </select>
+                  <textarea
+                    rows={2}
+                    value={block.text || ''}
+                    placeholder="Accompanying text..."
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'text', e.target.value)}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
+                  />
+                </div>
+              )}
+
+              {block.type === 'twoColumn' && (
+                <div className="space-y-1" onClick={(e) => e.stopPropagation()}>
+                  <textarea
+                    rows={2}
+                    value={(block.columns || [])[0] || ''}
+                    placeholder="Left column content..."
+                    onChange={(e) => {
+                      const cols = [...(block.columns || ['', ''])];
+                      cols[0] = e.target.value;
+                      updateContentBlock(pageIndex, blockIndex, 'columns', cols);
+                    }}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
+                  />
+                  <textarea
+                    rows={2}
+                    value={(block.columns || [])[1] || ''}
+                    placeholder="Right column content..."
+                    onChange={(e) => {
+                      const cols = [...(block.columns || ['', ''])];
+                      cols[1] = e.target.value;
+                      updateContentBlock(pageIndex, blockIndex, 'columns', cols);
+                    }}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
+                  />
+                </div>
+              )}
+
+              {block.type === 'threeColumn' && (
+                <div className="space-y-1" onClick={(e) => e.stopPropagation()}>
+                  <textarea
+                    rows={2}
+                    value={(block.columns || [])[0] || ''}
+                    placeholder="Column 1..."
+                    onChange={(e) => {
+                      const cols = [...(block.columns || ['', '', ''])];
+                      cols[0] = e.target.value;
+                      updateContentBlock(pageIndex, blockIndex, 'columns', cols);
+                    }}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
+                  />
+                  <textarea
+                    rows={2}
+                    value={(block.columns || [])[1] || ''}
+                    placeholder="Column 2..."
+                    onChange={(e) => {
+                      const cols = [...(block.columns || ['', '', ''])];
+                      cols[1] = e.target.value;
+                      updateContentBlock(pageIndex, blockIndex, 'columns', cols);
+                    }}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
+                  />
+                  <textarea
+                    rows={2}
+                    value={(block.columns || [])[2] || ''}
+                    placeholder="Column 3..."
+                    onChange={(e) => {
+                      const cols = [...(block.columns || ['', '', ''])];
+                      cols[2] = e.target.value;
+                      updateContentBlock(pageIndex, blockIndex, 'columns', cols);
+                    }}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
+                  />
+                </div>
+              )}
+
+              {block.type === 'qrCode' && (
+                <div className="space-y-1" onClick={(e) => e.stopPropagation()}>
+                  <input
+                    type="text"
+                    value={block.qrUrl || ''}
+                    placeholder="Target URL or text..."
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'qrUrl', e.target.value)}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
+                  />
+                  <input
+                    type="text"
+                    value={block.label || ''}
+                    placeholder="QR Code caption / label..."
+                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'label', e.target.value)}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
                   />
                 </div>
               )}
