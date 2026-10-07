@@ -1,6 +1,7 @@
 import React from 'react';
 import SelectionOverlay from './SelectionOverlay.jsx';
 import ContentBlocks from './ContentBlocks.jsx';
+import { generateQrSvg, validateQrContent } from '../../utils/qrcode.js';
 
 function BottomBanner({ page }) {
   if (!page.bottomBannerText || page.bottomBannerStyle === 'none') return null;
@@ -49,6 +50,20 @@ export default function BackCoverPage({ page, resolveAssetUrl, canvaProps }) {
     </SelectionOverlay>
   );
 
+  let generatedQrSvgStr = null;
+  if (page.qrUrl) {
+    const val = validateQrContent(page.qrUrl);
+    if (val.valid) {
+      const res = generateQrSvg(page.qrUrl, {
+        errorCorrectionLevel: page.qrErrorCorrection || 'M',
+        size: page.qrGroupWidth || 70
+      });
+      if (res.valid) {
+        generatedQrSvgStr = res.svg;
+      }
+    }
+  }
+
   const qrElement = (
     <SelectionOverlay
       targetType="qrGroup"
@@ -67,7 +82,9 @@ export default function BackCoverPage({ page, resolveAssetUrl, canvaProps }) {
       {...canvaProps}
     >
       <div className="w-full h-full bg-white border border-gray-300 flex items-center justify-center text-[0.58rem] text-gray-500 overflow-hidden">
-        {qrSrc ? (
+        {generatedQrSvgStr ? (
+          <div className="w-full h-full flex items-center justify-center" dangerouslySetInnerHTML={{ __html: generatedQrSvgStr }} />
+        ) : qrSrc ? (
           <img src={qrSrc} alt="QR Code" draggable={false} className="w-full h-full object-cover select-none" />
         ) : (
           '[ QR CODE ]'

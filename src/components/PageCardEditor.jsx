@@ -1,8 +1,9 @@
 import React from 'react';
-import { ArrowUp, ArrowDown, Trash2, Copy } from 'lucide-react';
+import { ArrowUp, ArrowDown, Trash2, Copy, AlertTriangle } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import BlockLayerEditor from './BlockLayerEditor.jsx';
 import AssetPicker from './AssetPicker.jsx';
+import { validateQrContent } from '../utils/qrcode.js';
 
 export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
   const {
@@ -299,33 +300,89 @@ export default function PageCardEditor({ page, pageIndex, isFirst, isLast }) {
         </>
       )}
 
-      {pageType === 'backCover' && (
-        <>
-          <div>
-            <label className="block text-[11px] text-gray-400 mb-0.5">Organization Name</label>
-            <input
-              type="text"
-              value={page.organization || ''}
-              onChange={(e) => updatePageField(pageIndex, 'organization', e.target.value)}
-              className="w-full bg-[#282830] border border-[#444] text-white p-1 rounded focus:outline-none focus:border-[#005f73]"
-            />
-          </div>
-          <div>
-            <label className="block text-[11px] text-gray-400 mb-0.5">Sub Organization / Council</label>
-            <input
-              type="text"
-              value={page.subOrganization || ''}
-              onChange={(e) => updatePageField(pageIndex, 'subOrganization', e.target.value)}
-              className="w-full bg-[#282830] border border-[#444] text-white p-1 rounded focus:outline-none focus:border-[#005f73]"
-            />
-          </div>
-          <div>
-            <AssetPicker
-              value={page.qrImg || ''}
-              onChange={(val) => updatePageField(pageIndex, 'qrImg', val)}
-              label="QR Code Image Asset"
-            />
-          </div>
+      {pageType === 'backCover' && (() => {
+        const qrUrlVal = page.qrUrl || '';
+        const qrValidation = qrUrlVal ? validateQrContent(qrUrlVal) : { valid: true };
+        return (
+          <>
+            <div>
+              <label className="block text-[11px] text-gray-400 mb-0.5">Organization Name</label>
+              <input
+                type="text"
+                value={page.organization || ''}
+                onChange={(e) => updatePageField(pageIndex, 'organization', e.target.value)}
+                className="w-full bg-[#282830] border border-[#444] text-white p-1 rounded focus:outline-none focus:border-[#005f73]"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] text-gray-400 mb-0.5">Sub Organization / Council</label>
+              <input
+                type="text"
+                value={page.subOrganization || ''}
+                onChange={(e) => updatePageField(pageIndex, 'subOrganization', e.target.value)}
+                className="w-full bg-[#282830] border border-[#444] text-white p-1 rounded focus:outline-none focus:border-[#005f73]"
+              />
+            </div>
+
+            <div className="bg-[#24242e] p-2 rounded border border-[#3b3b48] space-y-2">
+              <span className="text-[10px] font-bold text-[#70c0d0] block">QR Code Settings</span>
+              <div>
+                <label className="block text-[10px] text-gray-400 mb-0.5">Generated QR Code URL / Text Target</label>
+                <input
+                  type="text"
+                  value={qrUrlVal}
+                  placeholder="https://example.com or event URL..."
+                  onChange={(e) => updatePageField(pageIndex, 'qrUrl', e.target.value)}
+                  className={`w-full bg-[#1e1e24] border text-white p-1 rounded text-[11px] focus:outline-none ${
+                    !qrValidation.valid ? 'border-red-500' : 'border-[#444] focus:border-[#005f73]'
+                  }`}
+                />
+                {!qrValidation.valid && (
+                  <div className="flex items-center gap-1 text-red-400 text-[10px] mt-0.5 font-medium">
+                    <AlertTriangle className="w-3 h-3 flex-shrink-0" />
+                    <span>{qrValidation.error}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-1.5">
+                <div>
+                  <label className="block text-[10px] text-gray-400 mb-0.5">Error Correction Level</label>
+                  <select
+                    value={page.qrErrorCorrection || 'M'}
+                    onChange={(e) => updatePageField(pageIndex, 'qrErrorCorrection', e.target.value)}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white text-[10px] p-1 rounded"
+                  >
+                    <option value="L">Low (7% recovery)</option>
+                    <option value="M">Medium (15% recovery)</option>
+                    <option value="Q">Quartile (25% recovery)</option>
+                    <option value="H">High (30% recovery)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] text-gray-400 mb-0.5">Caption Text</label>
+                  <input
+                    type="text"
+                    value={page.qrText || ''}
+                    placeholder="Scan to view details..."
+                    onChange={(e) => updatePageField(pageIndex, 'qrText', e.target.value)}
+                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <AssetPicker
+                  value={page.qrImg || ''}
+                  onChange={(val) => updatePageField(pageIndex, 'qrImg', val)}
+                  label="Custom QR Code Image Override (Optional)"
+                />
+              </div>
+            </div>
+          </>
+        );
+      })()}
           <div>
             <label className="block text-[11px] text-gray-400 mb-0.5">Bottom Banner / Overlay Style</label>
             <select

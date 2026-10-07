@@ -1,6 +1,7 @@
 import { calculateImpositionSheets } from './imposition.js';
 import { getUnusedAssets, getBrokenImageReferences, resolveAssetUrl } from './assets.js';
 import { getUsedFonts, isFontLoaded } from './fonts.js';
+import { validateQrContent } from './qrcode.js';
 
 /**
  * Valid page types allowed in the booklet system.
@@ -227,11 +228,21 @@ export function runPreflight(booklet, options = {}) {
     }
 
     if (p.type === 'backCover') {
-      if (!p.qrImg) {
+      if (p.qrUrl) {
+        const val = validateQrContent(p.qrUrl);
+        if (!val.valid) {
+          addIssue({
+            severity: 'WARNING',
+            category: 'Content',
+            message: `Page ${idx + 1} (Back Cover) generated QR code URL is invalid: ${val.error}`,
+            pageIndex: idx
+          });
+        }
+      } else if (!p.qrImg) {
         addIssue({
           severity: 'INFO',
           category: 'Content',
-          message: `Page ${idx + 1} (Back Cover) has no custom QR code image uploaded (using fallback placeholder).`,
+          message: `Page ${idx + 1} (Back Cover) has no custom QR code image uploaded or target URL specified (using fallback placeholder).`,
           pageIndex: idx
         });
       } else if (!isValidUrlOrData(p.qrImg)) {
@@ -255,6 +266,20 @@ export function runPreflight(booklet, options = {}) {
 
     // Content blocks checks
     (p.blocks || []).forEach((b, bIdx) => {
+      if (b.type === 'qrCode') {
+        const qrContent = b.qrUrl || b.content || '';
+        const val = validateQrContent(qrContent);
+        if (!val.valid) {
+          addIssue({
+            severity: 'WARNING',
+            category: 'Content',
+            message: `Page ${idx + 1}, Block ${bIdx + 1} (QR Code) has invalid or empty target content. ${val.error}`,
+            pageIndex: idx,
+            blockIndex: bIdx
+          });
+        }
+      }
+
       if (b.type === 'image' || b.type === 'logo' || b.type === 'imageText') {
         if (!b.url) {
           addIssue({
