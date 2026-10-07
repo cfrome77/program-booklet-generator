@@ -307,6 +307,24 @@ export function validateProject(data) {
             }
           }
 
+          if (block.label !== undefined && block.label !== null) {
+            if (typeof block.label !== 'string') {
+              addErr(`${bPath}.label`, `Block ${bIdx + 1} on page ${pIdx + 1} "label" must be a string.`);
+            }
+          }
+
+          if (block.errorCorrection !== undefined && block.errorCorrection !== null) {
+            if (typeof block.errorCorrection !== 'string' || !['L', 'M', 'Q', 'H'].includes(block.errorCorrection.toUpperCase())) {
+              addErr(`${bPath}.errorCorrection`, `Block ${bIdx + 1} on page ${pIdx + 1} "errorCorrection" must be one of "L", "M", "Q", or "H".`);
+            }
+          }
+
+          if (block.qrSize !== undefined && block.qrSize !== null) {
+            if (!isFiniteNumber(block.qrSize) || block.qrSize <= 0) {
+              addErr(`${bPath}.qrSize`, `Block ${bIdx + 1} on page ${pIdx + 1} "qrSize" must be a finite positive number.`);
+            }
+          }
+
           if (block.items !== undefined && block.items !== null) {
             if (!Array.isArray(block.items)) {
               addErr(`${bPath}.items`, `Block ${bIdx + 1} on page ${pIdx + 1} "items" must be an array.`);

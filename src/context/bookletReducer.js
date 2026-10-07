@@ -319,7 +319,7 @@ function baseReducer(state, action) {
       } else if (blockType === 'spacer') {
         defaultProps = { height: 30 };
       } else if (blockType === 'qrCode') {
-        defaultProps = { qrUrl: 'https://example.com', label: 'Scan to visit link' };
+        defaultProps = { qrUrl: 'https://example.com', label: 'Scan to visit link', errorCorrection: 'M', qrSize: 100 };
       } else if (blockType === 'logo') {
         defaultProps = { url: '', shape: 'natural' };
       } else if (blockType === 'photoGrid') {

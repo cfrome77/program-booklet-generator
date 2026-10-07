@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { ArrowUp, ArrowDown, ChevronsUp, ChevronsDown, Trash2, Plus, Layers, Copy, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { ArrowUp, ArrowDown, ChevronsUp, ChevronsDown, Trash2, Plus, Layers, Copy, AlignLeft, AlignCenter, AlignRight, AlertTriangle } from 'lucide-react';
 import { useBooklet } from '../context/BookletContext.jsx';
 import AssetPicker from './AssetPicker.jsx';
+import { validateQrContent } from '../utils/qrcode.js';
 
 export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
   const {
@@ -294,24 +295,77 @@ export default function BlockLayerEditor({ pageIndex, blocks = [] }) {
                 </div>
               )}
 
-              {block.type === 'qrCode' && (
-                <div className="space-y-1" onClick={(e) => e.stopPropagation()}>
-                  <input
-                    type="text"
-                    value={block.qrUrl || ''}
-                    placeholder="Target URL or text..."
-                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'qrUrl', e.target.value)}
-                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
-                  />
-                  <input
-                    type="text"
-                    value={block.label || ''}
-                    placeholder="QR Code caption / label..."
-                    onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'label', e.target.value)}
-                    className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
-                  />
-                </div>
-              )}
+              {block.type === 'qrCode' && (() => {
+                const qrVal = block.qrUrl || '';
+                const validation = validateQrContent(qrVal);
+                return (
+                  <div className="space-y-1.5" onClick={(e) => e.stopPropagation()}>
+                    <div>
+                      <label className="block text-[10px] text-gray-400 mb-0.5">Target URL or Text Input</label>
+                      <input
+                        type="text"
+                        value={qrVal}
+                        placeholder="https://example.com or text content..."
+                        onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'qrUrl', e.target.value)}
+                        className={`w-full bg-[#1e1e24] border text-white p-1 rounded text-[11px] focus:outline-none ${
+                          !validation.valid ? 'border-red-500 focus:border-red-400' : 'border-[#444] focus:border-[#005f73]'
+                        }`}
+                      />
+                      {!validation.valid && (
+                        <div className="flex items-center gap-1 text-red-400 text-[10px] mt-0.5 font-medium">
+                          <AlertTriangle className="w-3 h-3 flex-shrink-0" />
+                          <span>{validation.error}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-1.5">
+                      <div>
+                        <label className="block text-[10px] text-gray-400 mb-0.5">Error Correction Level</label>
+                        <select
+                          value={block.errorCorrection || 'M'}
+                          onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'errorCorrection', e.target.value)}
+                          className="w-full bg-[#1e1e24] border border-[#444] text-white text-[10px] p-1 rounded"
+                        >
+                          <option value="L">Low (7% recovery)</option>
+                          <option value="M">Medium (15% recovery)</option>
+                          <option value="Q">Quartile (25% recovery)</option>
+                          <option value="H">High (30% recovery)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] text-gray-400 mb-0.5">
+                          QR Size ({block.qrSize || block.height || 100}px)
+                        </label>
+                        <input
+                          type="range"
+                          min="40"
+                          max="300"
+                          value={block.qrSize || block.height || 100}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            updateContentBlock(pageIndex, blockIndex, 'qrSize', val, true);
+                            updateContentBlock(pageIndex, blockIndex, 'height', val, true);
+                          }}
+                          className="w-full accent-[#005f73]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-gray-400 mb-0.5">Optional Caption / Label</label>
+                      <input
+                        type="text"
+                        value={block.label || ''}
+                        placeholder="Scan for event agenda, details, etc..."
+                        onChange={(e) => updateContentBlock(pageIndex, blockIndex, 'label', e.target.value)}
+                        className="w-full bg-[#1e1e24] border border-[#444] text-white p-1 rounded text-[11px]"
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
 
               {block.type === 'divider' && (
                 <p className="text-[10px] text-gray-400 italic">Horizontal line divider</p>

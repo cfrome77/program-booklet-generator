@@ -1,6 +1,7 @@
 import React from 'react';
 import SelectionOverlay from './SelectionOverlay.jsx';
 import { sanitizeHtml } from '../../utils/sanitize.js';
+import { generateQrSvg, validateQrContent } from '../../utils/qrcode.js';
 
 export default function ContentBlocks({ blocks, resolveAssetUrl, canvaProps }) {
   if (!blocks || blocks.length === 0) return null;
@@ -187,14 +188,45 @@ export default function ContentBlocks({ blocks, resolveAssetUrl, canvaProps }) {
         } else if (b.type === 'spacer') {
           innerBlockContent = <div style={{ height: `${b.height || 20}px` }} className="w-full" />;
         } else if (b.type === 'qrCode') {
-          const qrVal = b.qrUrl || 'https://example.com';
-          const qrImgSrc = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(qrVal)}`;
-          innerBlockContent = (
-            <div className="my-1 flex flex-col items-center justify-center">
-              <img src={qrImgSrc} alt="QR Code" className="w-20 h-20 object-contain border border-gray-200 p-1 rounded bg-white" />
-              {b.label && <span className="text-[0.6rem] text-gray-600 mt-0.5">{b.label}</span>}
-            </div>
-          );
+          const qrContent = b.qrUrl || b.content || '';
+          const validation = validateQrContent(qrContent);
+
+          if (!validation.valid) {
+            innerBlockContent = (
+              <div className="my-1 p-2 border border-dashed border-red-400 bg-red-50 text-red-600 text-[10px] text-center rounded flex flex-col items-center justify-center">
+                <span className="font-bold mb-0.5">⚠️ QR Code Content Required</span>
+                <span>{validation.error}</span>
+              </div>
+            );
+          } else {
+            const qrResult = generateQrSvg(qrContent, {
+              errorCorrectionLevel: b.errorCorrection || 'M',
+              size: b.qrSize || b.height || 100,
+              label: b.label
+            });
+
+            if (!qrResult.valid) {
+              innerBlockContent = (
+                <div className="my-1 p-2 border border-dashed border-red-400 bg-red-50 text-red-600 text-[10px] text-center rounded">
+                  ⚠️ Error generating QR code: {qrResult.error}
+                </div>
+              );
+            } else {
+              innerBlockContent = (
+                <div className="my-1 flex flex-col items-center justify-center">
+                  <div
+                    className="p-1 rounded bg-white border border-gray-200 shadow-sm inline-block"
+                    dangerouslySetInnerHTML={{ __html: qrResult.svg }}
+                  />
+                  {b.label && (
+                    <span className="text-[0.6rem] text-gray-600 mt-1 text-center font-medium">
+                      {b.label}
+                    </span>
+                  )}
+                </div>
+              );
+            }
+          }
         } else if (b.type === 'photoGrid') {
           const imgs = Array.isArray(b.images) ? b.images : [];
           const gridCols = b.columns === 3 ? 'grid-cols-3' : b.columns === 4 ? 'grid-cols-4' : 'grid-cols-2';
