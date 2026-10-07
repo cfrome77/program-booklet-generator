@@ -292,11 +292,46 @@ function baseReducer(state, action) {
       const page = { ...pages[pageIndex] };
       const blocks = [...(page.blocks || [])];
 
+      let defaultProps = {};
+      if (blockType === 'heading') {
+        defaultProps = { text: 'New Subheading' };
+      } else if (blockType === 'paragraph') {
+        defaultProps = { text: 'New paragraph text block...' };
+      } else if (blockType === 'richText') {
+        defaultProps = { text: '<p>Enter <strong>rich text</strong> formatting here...</p>' };
+      } else if (blockType === 'list') {
+        defaultProps = { listType: 'bullet', items: ['Item 1', 'Item 2', 'Item 3'] };
+      } else if (blockType === 'table') {
+        defaultProps = {
+          headers: ['Header 1', 'Header 2'],
+          rows: [['Row 1, Cell 1', 'Row 1, Cell 2'], ['Row 2, Cell 1', 'Row 2, Cell 2']]
+        };
+      } else if (blockType === 'quote') {
+        defaultProps = { text: 'To achieve greatness, start where you are.', author: 'Anonymous' };
+      } else if (blockType === 'image') {
+        defaultProps = { url: '', shape: 'rounded' };
+      } else if (blockType === 'imageText') {
+        defaultProps = { url: '', text: 'Descriptive text alongside the image.', imagePosition: 'left' };
+      } else if (blockType === 'twoColumn') {
+        defaultProps = { columns: ['Left column text...', 'Right column text...'] };
+      } else if (blockType === 'threeColumn') {
+        defaultProps = { columns: ['Column 1 text...', 'Column 2 text...', 'Column 3 text...'] };
+      } else if (blockType === 'spacer') {
+        defaultProps = { height: 30 };
+      } else if (blockType === 'qrCode') {
+        defaultProps = { qrUrl: 'https://example.com', label: 'Scan to visit link' };
+      } else if (blockType === 'logo') {
+        defaultProps = { url: '', shape: 'natural' };
+      } else if (blockType === 'photoGrid') {
+        defaultProps = { images: ['', '', '', ''], columns: 2 };
+      } else if (blockType === 'caption') {
+        defaultProps = { text: 'Caption text describing the figure or image above.' };
+      }
+
       const newBlock = {
         id: `b-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
         type: blockType,
-        text: blockType === 'heading' ? 'New Subheading' : blockType === 'paragraph' ? 'New paragraph text block...' : '',
-        url: ''
+        ...defaultProps
       };
 
       blocks.push(newBlock);

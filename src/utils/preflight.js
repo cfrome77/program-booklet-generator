@@ -255,12 +255,12 @@ export function runPreflight(booklet, options = {}) {
 
     // Content blocks checks
     (p.blocks || []).forEach((b, bIdx) => {
-      if (b.type === 'image') {
+      if (b.type === 'image' || b.type === 'logo' || b.type === 'imageText') {
         if (!b.url) {
           addIssue({
             severity: 'WARNING',
             category: 'Content',
-            message: `Page ${idx + 1}, Block ${bIdx + 1} (Image) has no image URL or file selected.`,
+            message: `Page ${idx + 1}, Block ${bIdx + 1} (${b.type}) has no image URL or file selected.`,
             pageIndex: idx,
             blockIndex: bIdx
           });
@@ -268,15 +268,40 @@ export function runPreflight(booklet, options = {}) {
           addIssue({
             severity: 'ERROR',
             category: 'Content',
-            message: `Page ${idx + 1}, Block ${bIdx + 1} (Image) has an invalid or malformed image URL.`,
+            message: `Page ${idx + 1}, Block ${bIdx + 1} (${b.type}) has an invalid or malformed image URL.`,
             pageIndex: idx,
             blockIndex: bIdx
           });
         }
       }
 
-      if (b.type === 'heading' || b.type === 'paragraph') {
-        if (!b.text || !b.text.trim()) {
+      if (b.type === 'photoGrid') {
+        if (!b.images || b.images.length === 0) {
+          addIssue({
+            severity: 'WARNING',
+            category: 'Content',
+            message: `Page ${idx + 1}, Block ${bIdx + 1} (Photo Grid) has no images selected.`,
+            pageIndex: idx,
+            blockIndex: bIdx
+          });
+        } else {
+          b.images.forEach((imgUrl, imgIdx) => {
+            if (imgUrl && !isValidUrlOrData(imgUrl)) {
+              addIssue({
+                severity: 'ERROR',
+                category: 'Content',
+                message: `Page ${idx + 1}, Block ${bIdx + 1} (Photo Grid) image ${imgIdx + 1} has an invalid URL.`,
+                pageIndex: idx,
+                blockIndex: bIdx
+              });
+            }
+          });
+        }
+      }
+
+      const textVal = b.text || b.content || '';
+      if (['heading', 'paragraph', 'richText', 'quote', 'caption'].includes(b.type)) {
+        if (!textVal || !textVal.trim()) {
           addIssue({
             severity: 'WARNING',
             category: 'Content',
@@ -284,11 +309,11 @@ export function runPreflight(booklet, options = {}) {
             pageIndex: idx,
             blockIndex: bIdx
           });
-        } else if (b.text.length > 2500) {
+        } else if (textVal.length > 2500) {
           addIssue({
             severity: 'WARNING',
             category: 'Content',
-            message: `Page ${idx + 1}, Block ${bIdx + 1} contains suspiciously large text (${b.text.length} characters) which may cause page overflow.`,
+            message: `Page ${idx + 1}, Block ${bIdx + 1} contains suspiciously large text (${textVal.length} characters) which may cause page overflow.`,
             pageIndex: idx,
             blockIndex: bIdx
           });
